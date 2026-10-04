@@ -65,6 +65,7 @@ requirements.txt           # Thư viện cho TF-IDF
 requirements-semantic.txt  # Thêm Sentence Transformers
 data/
   jobs.csv                 # 20 công việc giả lập
+  jobs_vi.csv              # 20 công việc tương ứng bằng tiếng Việt
   resumes.json             # 3 đoạn CV giả lập
 outputs/<backend>/
   similar_jobs.csv          # Kết quả truy vấn việc làm gần nhất
@@ -94,6 +95,38 @@ có thể nhận cả tiếng Việt. TF-IDF không tự dịch và không hiể
 ở hai ngôn ngữ khác nhau. Dữ liệu cố định để mỗi lần sinh cho cùng kết quả.
 
 ## 4. Giai đoạn 2 — thiết kế OOP
+
+### Dùng dữ liệu việc làm tiếng Việt
+
+`data/jobs_vi.csv` có 20 tin đã dịch chức danh, lĩnh vực, mô tả và các kỹ năng
+khái niệm sang tiếng Việt; giữ tên công nghệ như Python, SQL, PyTorch. File giữ
+nguyên 6 cột, Job_ID và số năm kinh nghiệm tương ứng với bản tiếng Anh. Dùng
+riêng từng file vì ghép cả hai sẽ làm trùng Job_ID. CSV dùng UTF-8 BOM để mở
+bằng Excel đúng dấu. Đây vẫn là dữ liệu giả lập.
+
+Tạo lại **chỉ file tiếng Việt** bằng script pandas:
+
+```powershell
+.\.venv\Scripts\python.exe generate_mock_data.py --language vi
+```
+
+Nạp trực tiếp vào engine (chạy Python tại thư mục gốc dự án):
+
+```python
+from job_recommender import JobRecommenderSystem
+
+engine = JobRecommenderSystem.from_csv("data/jobs_vi.csv", backend="tfidf")
+print(engine.recommend_similar_jobs("J001", top_n=5))
+print(engine.match_cv_to_jobs(
+    "Tôi có 1 năm kinh nghiệm phân tích dữ liệu, sử dụng SQL, Python, Pandas, "
+    "Excel và Power BI để làm sạch dữ liệu bán hàng và xây dựng báo cáo."
+))
+```
+
+`demo.py` vẫn dùng `jobs.csv` và ba CV tiếng Anh như trước. Với TF-IDF, nên
+dùng CV tiếng Việt khi truy vấn file tiếng Việt để so khớp từ vựng nhất quán.
+
+### Các lớp và thuật toán
 
 | Class | Trách nhiệm |
 |---|---|

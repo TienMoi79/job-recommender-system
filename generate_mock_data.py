@@ -114,6 +114,114 @@ class MockDataGenerator:
         ]
         return pd.DataFrame(rows, columns=JOB_COLUMNS)
 
+    def create_vietnamese_jobs(self) -> pd.DataFrame:
+        """Dịch nội dung, giữ nguyên Job_ID và kinh nghiệm để đối chiếu hai bản.
+
+        Tên công nghệ giữ nguyên; kỹ năng khái niệm được dịch sang tiếng Việt.
+        Hai bộ dữ liệu dùng chung Job_ID nên cần nạp riêng vào AI Engine.
+        """
+        translations = {
+            "J001": ("Chuyên viên phân tích dữ liệu", "Phân tích dữ liệu",
+                     "Phân tích dữ liệu bán hàng và khách hàng bằng SQL, Python và Pandas. "
+                     "Làm sạch dữ liệu, xây dựng bảng điều khiển Power BI và báo cáo Excel, "
+                     "giải thích xu hướng kinh doanh."),
+            "J002": ("Chuyên viên phân tích dữ liệu kinh doanh", "Phân tích dữ liệu",
+                     "Xây dựng bảng điều khiển phân tích kinh doanh và báo cáo bán hàng bằng "
+                     "Power BI, DAX và SQL. Xác định chỉ số KPI và trình bày kết quả phân tích "
+                     "cho các bộ phận liên quan."),
+            "J003": ("Nhà khoa học dữ liệu", "Trí tuệ nhân tạo",
+                     "Khám phá dữ liệu khách hàng bằng Python và Pandas. Áp dụng phương pháp "
+                     "thống kê, huấn luyện mô hình học máy dự đoán khách hàng rời bỏ dịch vụ "
+                     "và đo lường kết quả thử nghiệm."),
+            "J004": ("Kỹ sư dữ liệu", "Kỹ thuật dữ liệu",
+                     "Phát triển quy trình trích xuất, biến đổi và nạp dữ liệu ETL bằng Python, "
+                     "SQL, Spark và Airflow. Duy trì kho dữ liệu và cung cấp dữ liệu sạch "
+                     "cho hoạt động phân tích và học máy."),
+            "J005": ("Kỹ sư trí tuệ nhân tạo", "Trí tuệ nhân tạo",
+                     "Xây dựng ứng dụng xử lý ngôn ngữ tự nhiên bằng Transformers và PyTorch. "
+                     "Phát triển mô hình tìm kiếm ngữ nghĩa và hệ gợi ý, cung cấp dịch vụ "
+                     "dự đoán của mô hình học máy thông qua FastAPI."),
+            "J006": ("Kỹ sư học máy", "Trí tuệ nhân tạo",
+                     "Huấn luyện và triển khai mô hình học máy bằng Python, Scikit-learn và "
+                     "PyTorch. Theo dõi thử nghiệm bằng MLflow và đóng gói dịch vụ suy luận "
+                     "bằng Docker."),
+            "J007": ("Kỹ sư xử lý ngôn ngữ tự nhiên", "Trí tuệ nhân tạo",
+                     "Xử lý văn bản và xây dựng mô hình xử lý ngôn ngữ tự nhiên để phân loại "
+                     "văn bản, tìm kiếm ngữ nghĩa và tạo véc-tơ biểu diễn tài liệu bằng "
+                     "Python, Transformers và PyTorch."),
+            "J008": ("Kỹ sư thị giác máy tính", "Trí tuệ nhân tạo",
+                     "Xây dựng hệ thống phân loại ảnh và phát hiện đối tượng. Chuẩn bị dữ liệu "
+                     "hình ảnh bằng OpenCV và huấn luyện mô hình học sâu sử dụng mạng nơ-ron "
+                     "tích chập CNN bằng PyTorch."),
+            "J009": ("Lập trình viên Backend Python", "Phát triển phần mềm",
+                     "Phát triển dịch vụ REST API bằng Python, FastAPI và Django. Thiết kế "
+                     "cơ sở dữ liệu PostgreSQL, triển khai chức năng xác thực người dùng "
+                     "và viết kiểm thử đơn vị cho hệ thống phía máy chủ."),
+            "J010": ("Lập trình viên Backend Java", "Phát triển phần mềm",
+                     "Phát triển các vi dịch vụ phía máy chủ và REST API bằng Java và "
+                     "Spring Boot. Tối ưu truy vấn PostgreSQL và triển khai dịch vụ bằng Docker."),
+            "J011": ("Lập trình viên Backend Node.js", "Phát triển phần mềm",
+                     "Xây dựng dịch vụ REST API phía máy chủ bằng Node.js, TypeScript và "
+                     "Express. Triển khai chức năng xác thực người dùng và duy trì "
+                     "cơ sở dữ liệu PostgreSQL."),
+            "J012": ("Lập trình viên Frontend", "Phát triển phần mềm",
+                     "Xây dựng giao diện web thích ứng với nhiều kích thước màn hình bằng "
+                     "React, TypeScript, HTML và CSS. Tích hợp REST API và cải thiện khả năng "
+                     "tiếp cận của giao diện trên trình duyệt."),
+            "J013": ("Lập trình viên Full Stack", "Phát triển phần mềm",
+                     "Phát triển giao diện web React và dịch vụ phía máy chủ Node.js bằng "
+                     "TypeScript. Thiết kế cấu trúc cơ sở dữ liệu PostgreSQL và tích hợp "
+                     "REST API xuyên suốt ứng dụng."),
+            "J014": ("Lập trình viên ứng dụng di động", "Phát triển ứng dụng di động",
+                     "Xây dựng ứng dụng di động Android và iOS bằng Flutter và Dart. "
+                     "Tích hợp xác thực Firebase, thông báo đẩy và các dịch vụ REST API."),
+            "J015": ("Kỹ sư DevOps", "Hạ tầng điện toán đám mây",
+                     "Tự động hóa quy trình tích hợp và triển khai liên tục CI/CD, đóng gói "
+                     "dịch vụ bằng Docker và vận hành cụm Kubernetes trên AWS. Giám sát máy "
+                     "chủ Linux và bảo đảm độ tin cậy của quá trình triển khai."),
+            "J016": ("Kỹ sư điện toán đám mây", "Hạ tầng điện toán đám mây",
+                     "Cấp phát hạ tầng đám mây AWS bằng Terraform. Cấu hình máy chủ Linux, "
+                     "mạng và các ứng dụng chạy bằng Docker, cải thiện tính sẵn sàng "
+                     "và tối ưu chi phí đám mây."),
+            "J017": ("Kỹ sư kiểm thử tự động", "Đảm bảo chất lượng phần mềm",
+                     "Viết kiểm thử trình duyệt tự động bằng Selenium, Python và Pytest. "
+                     "Thực hiện kiểm thử API và tích hợp kiểm thử hồi quy vào quy trình CI/CD."),
+            "J018": ("Chuyên viên phân tích an ninh mạng", "An ninh mạng",
+                     "Điều tra cảnh báo bảo mật trên hệ thống SIEM, kiểm tra lưu lượng mạng "
+                     "và nhật ký Linux. Tự động hóa phân tích sự cố bằng Python và đánh giá "
+                     "lỗ hổng của hệ thống."),
+            "J019": ("Quản trị viên cơ sở dữ liệu", "Quản trị cơ sở dữ liệu",
+                     "Quản trị cơ sở dữ liệu PostgreSQL và MySQL trên Linux. Tối ưu truy vấn "
+                     "SQL, cấu hình sao chép dữ liệu và kiểm tra quy trình sao lưu, khôi phục."),
+            "J020": ("Lập trình viên Backend .NET", "Phát triển phần mềm",
+                     "Phát triển dịch vụ REST API phía máy chủ bằng C# và ASP.NET Core. "
+                     "Thiết kế cơ sở dữ liệu SQL Server, triển khai xác thực người dùng "
+                     "và bảo trì ứng dụng doanh nghiệp."),
+        }
+        skill_translations = {
+            "Statistics": "Thống kê", "NLP": "Xử lý ngôn ngữ tự nhiên (NLP)",
+            "Text Classification": "Phân loại văn bản", "Deep Learning": "Học sâu",
+            "Networking": "Mạng máy tính", "API Testing": "Kiểm thử API",
+            "Security": "Bảo mật", "Backup": "Sao lưu dữ liệu",
+        }
+        jobs = self.create_jobs()
+        for index, row in jobs.iterrows():
+            title, domain, description = translations[row["Job_ID"]]
+            jobs.loc[index, ["Title", "Domain", "Job_Description"]] = [title, domain, description]
+            jobs.loc[index, "Skills"] = "; ".join(
+                skill_translations.get(skill.strip(), skill.strip())
+                for skill in row["Skills"].split(";")
+            )
+        return jobs
+
+    def save_vietnamese_jobs(self, output_dir: str | Path = DATA_DIR) -> Path:
+        """Chỉ ghi jobs_vi.csv bằng UTF-8 BOM để Excel hiển thị đúng dấu."""
+        folder = Path(output_dir)
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / "jobs_vi.csv"
+        self.create_vietnamese_jobs().to_csv(path, index=False, encoding="utf-8-sig")
+        return path
+
     def create_resumes(self) -> list[dict[str, str]]:
         """Ba đoạn CV theo ba hướng nghề nghiệp khác nhau để thử truy vấn."""
         return [
@@ -165,6 +273,15 @@ class MockDataGenerator:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Tạo 20 việc làm và 3 CV giả lập.")
     parser.add_argument("--output-dir", type=Path, default=DATA_DIR)
+    parser.add_argument(
+        "--language", choices=["en", "vi"], default="en",
+        help="en: tạo jobs.csv và 3 CV; vi: chỉ tạo thêm jobs_vi.csv.",
+    )
     args = parser.parse_args()
-    for path in MockDataGenerator().save(args.output_dir):
+    generator = MockDataGenerator()
+    paths = (
+        [generator.save_vietnamese_jobs(args.output_dir)]
+        if args.language == "vi" else generator.save(args.output_dir)
+    )
+    for path in paths:
         print(f"Đã tạo: {path}")
