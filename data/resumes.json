@@ -1,0 +1,17 @@
+[
+  {
+    "Resume_ID": "CV001",
+    "Profile": "Ứng viên phân tích dữ liệu",
+    "CV_Text": "I am a Data Analyst with 1 year of experience in data analytics. I use SQL, Python and Pandas to clean and analyze sales and customer data. I build Power BI dashboards and Excel reports to explain business trends and KPIs. I want to work in data analytics or business intelligence."
+  },
+  {
+    "Resume_ID": "CV002",
+    "Profile": "Ứng viên backend Python",
+    "CV_Text": "I am a Python Backend Developer with 2 years of experience in software development. I build REST API services using FastAPI and Django, design PostgreSQL databases and implement authentication. I write unit tests, use Docker and collaborate with frontend developers."
+  },
+  {
+    "Resume_ID": "CV003",
+    "Profile": "Ứng viên AI và xử lý ngôn ngữ",
+    "CV_Text": "I am an AI Engineer with 2 years of experience in artificial intelligence. I use Python, PyTorch and Transformers for NLP and text classification. I have built semantic search, document embeddings and recommendation models. I deploy machine learning inference services with FastAPI and Docker."
+  }
+]

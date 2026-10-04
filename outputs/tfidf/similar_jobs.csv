@@ -1,0 +1,6 @@
+﻿Job_ID,Title,Skills,Experience_Years,Domain,Job_Description,Similarity_Score,Rank
+J002,Business Intelligence Analyst,SQL; Power BI; Tableau; Excel; DAX,2,Data Analytics,"Build business intelligence dashboards and sales reports with Power BI, DAX and SQL. Define business KPIs and communicate insights to stakeholders.",0.34749480341766575,1
+J003,Data Scientist,Python; Pandas; SQL; Statistics; Scikit-learn,2,Artificial Intelligence,"Explore customer data with Python and Pandas. Apply statistics, train machine learning models for churn prediction and measure experiments.",0.1773917787126264,2
+J004,Data Engineer,Python; SQL; Spark; Airflow; ETL,2,Data Engineering,"Develop ETL pipelines using Python, SQL, Spark and Airflow. Maintain a data warehouse and provide clean datasets for analytics and machine learning.",0.15742273525624662,3
+J017,QA Automation Engineer,Python; Selenium; Pytest; API Testing; CI/CD,1,Quality Assurance,Write automated browser tests with Selenium and Python Pytest. Perform API testing and integrate regression tests into CI/CD pipelines.,0.06571747983925809,4
+J011,Node.js Backend Developer,JavaScript; TypeScript; Node.js; Express; PostgreSQL,1,Software Development,"Build backend REST API services using Node.js, TypeScript and Express. Implement authentication and maintain PostgreSQL databases.",0.059839377489441965,5
