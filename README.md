@@ -16,6 +16,39 @@ cd job-recommender-system
 Nếu không dùng Git, mở [repository trên GitHub](https://github.com/TienMoi79/job-recommender-system),
 chọn **Code → Download ZIP**, giải nén rồi mở terminal trong thư mục vừa giải nén.
 
+### Chạy bằng Jupyter Notebook để trình bày đồ án
+
+Mở **[job_recommender_notebook.ipynb](job_recommender_notebook.ipynb)**. Notebook có
+giải thích tiếng Việt, đọc 20 tin từ `data/jobs_vie.cvs`, chuẩn bị 3 CV tiếng Việt,
+minh họa TF-IDF/cosine, chạy hai chức năng gợi ý và lưu kết quả. Mặc định dùng TF-IDF
+để không cần tải trọng số mô hình. Các lớp OOP được import từ module trong repo,
+vì vậy cần tải **toàn bộ repository**, không chỉ riêng file notebook.
+
+Trong PowerShell tại thư mục dự án:
+
+```powershell
+$env:PYTHONIOENCODING='utf-8'
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-notebook.txt
+.\.venv\Scripts\python.exe -m notebook job_recommender_notebook.ipynb
+```
+
+Nếu đã có `.venv`, bỏ qua lệnh tạo môi trường. Khi notebook mở trong trình duyệt,
+chọn kernel **Python 3 (ipykernel)**, rồi chạy toàn bộ từ đầu bằng **Restart Kernel
+and Run All Cells**; hoặc nhấn **Shift + Enter** để chạy từng ô. Nếu báo thiếu thư
+viện, kiểm tra kernel đang dùng môi trường vừa cài. Có thể đăng ký kernel riêng:
+
+```powershell
+.\.venv\Scripts\python.exe -m ipykernel install --user --name job-recommender --display-name "Python (Job Recommender)"
+```
+
+Sau đó chọn **Python (Job Recommender)** trong notebook. Đổi `JOB_ID`, `TOP_N`,
+`LANGUAGE` hoặc `my_cv` để thử dữ liệu khác. Hướng dẫn bật Sentence Transformers
+nằm ở cuối notebook. Xem trên GitHub chỉ hiển thị mã và kết quả đã lưu; cần mở
+bằng Jupyter để chạy và sửa các ô.
+
+### Chạy bằng script Python
+
 Yêu cầu Python 3.10 trở lên; môi trường đã dùng để kiểm tra là Python 3.12.
 Các lệnh dưới đây chạy tại thư mục gốc dự án bằng PowerShell. Gọi trực tiếp
 Python trong virtual environment để không phải thay đổi Execution Policy.
@@ -61,6 +94,8 @@ khi chưa có cả hai file. Demo lưu lại kết quả của lần chạy gầ
 generate_mock_data.py       # MockDataGenerator: tạo và lưu dữ liệu
 job_recommender.py          # Tiền xử lý, hai vectorizer, JobRecommenderSystem
 demo.py                    # Chạy item-to-item và cả 3 CV, in/lưu kết quả
+job_recommender_notebook.ipynb # Chạy từng bước bằng Jupyter Notebook
+requirements-notebook.txt  # Thư viện để mở và thực thi notebook
 requirements.txt           # Thư viện cho TF-IDF
 requirements-semantic.txt  # Thêm Sentence Transformers
 data/
@@ -234,6 +269,9 @@ Recall@K, MRR hoặc NDCG của Giai đoạn 3.
   `outputs/tfidf/`. Top-1 của CV001/CV002/CV003 lần lượt là Data Analyst,
   Python Backend Developer và AI Engineer.
 - Đã chạy thành công 18 unit tests; các file Python đã qua kiểm tra biên dịch.
+- Notebook gồm 21 ô (10 ô mã) đã được thực thi từ đầu đến cuối bằng kernel
+  Jupyter với dữ liệu tiếng Việt và TF-IDF, không có ô lỗi. File `.ipynb` lưu sẵn
+  kết quả; các bảng được xuất vào `outputs/notebook/vi/tfidf/`.
 - Đã cài Sentence Transformers, nhưng quá trình tải trọng số Hugging Face
   chưa hoàn tất trong lần kiểm tra. Đã dừng tiến trình tải thử; **chưa xác nhận
   chạy end-to-end backend semantic**, không có kết quả semantic để báo cáo.
