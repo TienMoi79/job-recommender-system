@@ -215,10 +215,10 @@ class MockDataGenerator:
         return jobs
 
     def save_vietnamese_jobs(self, output_dir: str | Path = DATA_DIR) -> Path:
-        """Chỉ ghi jobs_vi.csv bằng UTF-8 BOM để Excel hiển thị đúng dấu."""
+        """Chỉ ghi jobs_vie.cvs bằng UTF-8 BOM để Excel hiển thị đúng dấu."""
         folder = Path(output_dir)
         folder.mkdir(parents=True, exist_ok=True)
-        path = folder / "jobs_vi.csv"
+        path = folder / "jobs_vie.cvs"
         self.create_vietnamese_jobs().to_csv(path, index=False, encoding="utf-8-sig")
         return path
 
@@ -275,7 +275,7 @@ if __name__ == "__main__":
     parser.add_argument("--output-dir", type=Path, default=DATA_DIR)
     parser.add_argument(
         "--language", choices=["en", "vi"], default="en",
-        help="en: tạo jobs.csv và 3 CV; vi: chỉ tạo thêm jobs_vi.csv.",
+        help="en: tạo jobs.csv và 3 CV; vi: chỉ tạo thêm jobs_vie.cvs.",
     )
     args = parser.parse_args()
     generator = MockDataGenerator()
