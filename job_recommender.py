@@ -175,6 +175,11 @@ class JobRecommenderSystem:
         """Đọc CSV mà vẫn bảo toàn Job_ID có số 0 ở đầu."""
         return cls(pd.read_csv(path, encoding="utf-8-sig", dtype={"Job_ID": str}), **kwargs)
 
+    @property
+    def jobs(self) -> pd.DataFrame:
+        """Danh mục công khai cho giao diện; trả bản sao để bảo vệ engine dùng chung."""
+        return self._jobs.copy(deep=True)
+
     @staticmethod
     def _validate_jobs(jobs: pd.DataFrame) -> pd.DataFrame:
         if not isinstance(jobs, pd.DataFrame):

@@ -1,8 +1,9 @@
 # Đồ án: Hệ gợi ý việc làm trực tuyến
 
-Mã nguồn hoàn chỉnh cho **Giai đoạn 1: Mock Data** và **Giai đoạn 2: AI Engine**.
-Python theo hướng đối tượng, có comment/docstring tiếng Việt. Chưa triển khai
-evaluation metrics (Giai đoạn 3) hoặc Streamlit (Giai đoạn 4).
+Mã nguồn cho **Giai đoạn 1: Mock Data**, **Giai đoạn 2: AI Engine** và
+**giao diện web Streamlit (Giai đoạn 4)**, kèm Jupyter Notebook để trình bày.
+Python theo hướng đối tượng, có comment/docstring tiếng Việt. Evaluation metrics
+trên dữ liệu có nhãn (Giai đoạn 3) chưa triển khai.
 
 ## 1. Cài đặt và chạy
 
@@ -15,6 +16,52 @@ cd job-recommender-system
 
 Nếu không dùng Git, mở [repository trên GitHub](https://github.com/TienMoi79/job-recommender-system),
 chọn **Code → Download ZIP**, giải nén rồi mở terminal trong thư mục vừa giải nén.
+
+### Chạy giao diện web Streamlit
+
+Sau khi tải repo, mở terminal tại thư mục dự án:
+
+```powershell
+$env:PYTHONIOENCODING='utf-8'
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-web.txt
+.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1
+```
+
+Nếu đã có `.venv`, bỏ qua lệnh tạo môi trường. Mở **http://127.0.0.1:8501** trên
+máy đang chạy ứng dụng. Đây là địa chỉ cục bộ; đưa mã nguồn lên GitHub không tự
+triển khai thành website công khai. Nhấn `Ctrl+C` trong terminal để dừng server.
+
+- **Khám phá việc làm:** tìm theo chức danh, kỹ năng, mô tả (hỗ trợ không dấu),
+  lọc lĩnh vực/kinh nghiệm yêu cầu, xóa bộ lọc, mở chi tiết và xem gợi ý tương tự.
+- **Tìm việc theo CV:** chọn một trong ba CV mẫu hoặc dán văn bản, chọn số kết quả,
+  bấm tìm. Có thể mở chi tiết kết quả rồi quay lại mà không mất CV/kết quả.
+- Mặc định dùng `data/jobs_vie.cvs` và TF-IDF. Có thể chọn dữ liệu tiếng Anh ở
+  sidebar; CV mẫu đổi theo ngôn ngữ. Kết quả cũ được xóa khi đổi dữ liệu/backend.
+- Trong **Cài đặt nâng cao**, có thể chọn Sentence Transformers sau khi cài
+  `requirements-semantic.txt`. Lỗi tải mô hình hiển thị thông báo để quay lại TF-IDF;
+  ứng dụng không âm thầm thay phương pháp hoặc tạo điểm giả.
+
+**Tích hợp:** Streamlit gọi trực tiếp `JobRecommenderSystem`, không cần API server
+riêng. `engine.jobs` trả bản sao danh mục để giao diện không sửa được dữ liệu của
+engine dùng chung. Cache engine theo nội dung file, backend và model: sửa CSV sẽ
+được nhận biết ở lần tương tác/rerun kế tiếp. CV/kết quả chỉ lưu trong bộ nhớ từng
+phiên, không vào cache dùng chung, file, hoặc log ứng dụng. Nút **Xóa CV** xóa cả hai.
+
+Điểm hiển thị là cosine nguyên gốc, không quy thành xác suất trúng tuyển. Bộ lọc
+kinh nghiệm trong danh sách là bộ lọc theo yêu cầu của tin; chức năng ghép CV chưa
+kiểm tra điều kiện kinh nghiệm bắt buộc.
+
+Kiểm thử backend và các luồng giao diện bằng Streamlit AppTest:
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
+`tests/test_web.py` kiểm tra điểm UI khớp engine thật, điều hướng CV → chi tiết →
+quay lại, tìm ký tự đặc biệt, đặt lại bộ lọc, đổi ngôn ngữ, CV rỗng/ngoài từ vựng,
+tách phiên, cache đổi theo dữ liệu, thiếu file và lỗi tải semantic. Khi chỉ cài
+requirements cơ bản, các test AppTest được bỏ qua với thông báo cần cài thư viện web.
 
 ### Chạy bằng Jupyter Notebook để trình bày đồ án
 
@@ -94,6 +141,11 @@ khi chưa có cả hai file. Demo lưu lại kết quả của lần chạy gầ
 generate_mock_data.py       # MockDataGenerator: tạo và lưu dữ liệu
 job_recommender.py          # Tiền xử lý, hai vectorizer, JobRecommenderSystem
 demo.py                    # Chạy item-to-item và cả 3 CV, in/lưu kết quả
+app.py                     # Giao diện web Streamlit, quản lý phiên và cache engine
+ui_helper.py               # Phong cách giao diện và CV mẫu tiếng Việt
+web_support.py             # Tìm kiếm, lọc, hiển thị thẻ và chọn CV mẫu theo ngôn ngữ
+requirements-web.txt       # Thư viện chạy giao diện web
+.streamlit/config.toml     # Chủ đề sáng, màu sắc giao diện
 job_recommender_notebook.ipynb # Chạy từng bước bằng Jupyter Notebook
 requirements-notebook.txt  # Thư viện để mở và thực thi notebook
 requirements.txt           # Thư viện cho TF-IDF
@@ -106,6 +158,7 @@ outputs/<backend>/
   similar_jobs.csv          # Kết quả truy vấn việc làm gần nhất
   cv_matches.csv            # Kết quả các CV trong lần chạy gần nhất
 tests/test_recommender.py   # Kiểm thử chức năng phần mềm
+tests/test_web.py           # Kiểm thử tích hợp thật và luồng giao diện
 ```
 
 ## 3. Giai đoạn 1 — dữ liệu
@@ -253,7 +306,7 @@ Recall@K, MRR hoặc NDCG của Giai đoạn 3.
 | Giai đoạn 1 | Sinh ít nhất 15 tin với đủ 6 cột và 3 CV; có file đọc lại được |
 | Giai đoạn 2 | Hai hàm trả top-N theo cosine; có OOP, comment, demo, kiểm tra đầu vào |
 | Giai đoạn 3 — để sau | Xây ground truth, chia dữ liệu, đo metrics và so sánh backend |
-| Giai đoạn 4 — để sau | Streamlit hiển thị tin, nhập CV và xem gợi ý |
+| Giai đoạn 4 — đã triển khai | Streamlit hiển thị/lọc tin, nhập CV, mở chi tiết và xem gợi ý thật |
 
 ## 8. Tài liệu thuật toán và API
 
@@ -261,6 +314,8 @@ Recall@K, MRR hoặc NDCG của Giai đoạn 3.
 - [Model card của mô hình mặc định](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2)
 - [scikit-learn: TfidfVectorizer](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)
 - [scikit-learn: cosine_similarity](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html)
+- [Streamlit: Session State](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state)
+- [Streamlit: AppTest](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest)
 
 ## 9. Trạng thái kiểm chứng khi bàn giao
 
@@ -268,7 +323,8 @@ Recall@K, MRR hoặc NDCG của Giai đoạn 3.
 - Đã chạy demo TF-IDF cho truy vấn `J001` và cả 3 CV, lưu kết quả trong
   `outputs/tfidf/`. Top-1 của CV001/CV002/CV003 lần lượt là Data Analyst,
   Python Backend Developer và AI Engineer.
-- Đã chạy thành công 18 unit tests; các file Python đã qua kiểm tra biên dịch.
+- Đã chạy thành công 34 kiểm thử engine, tiện ích web và Streamlit AppTest trên
+  Python 3.12.5/Streamlit 1.65.0. Nhánh web đã chạy với TF-IDF và hai bộ dữ liệu.
 - Notebook gồm 21 ô (10 ô mã) đã được thực thi từ đầu đến cuối bằng kernel
   Jupyter với dữ liệu tiếng Việt và TF-IDF, không có ô lỗi. File `.ipynb` lưu sẵn
   kết quả; các bảng được xuất vào `outputs/notebook/vi/tfidf/`.
