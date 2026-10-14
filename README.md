@@ -47,6 +47,8 @@ triển khai thành website công khai. Nhấn `Ctrl+C` trong terminal để d�
   tiếng Việt và tiếng Anh. Nhãn nút, bộ lọc, điểm số và thông báo lỗi cùng đổi
   ngôn ngữ. Cả hai dùng cùng 500 tin trong `data/jobs_catalog.csv`; phần tiếng
   Anh có thể là tóm tắt có cấu trúc từ tin gốc, không phải bản dịch đầy đủ.
+  Tin có mô tả gốc tiếng Anh được tóm tắt bằng tiếng Việt khi chọn giao diện Việt;
+  toàn văn nguồn vẫn giữ trong CSV và có đường dẫn đối chiếu.
   Khi không có catalog, web nhận CSV 20 tin cũ. Đổi ngôn ngữ xóa CV cũ; đổi
   cách tìm giữ CV nhưng yêu cầu tìm lại để cập nhật kết quả.
 - Điều hướng chỉ gồm **Khám phá việc làm / Explore jobs** và **Tìm việc theo CV /

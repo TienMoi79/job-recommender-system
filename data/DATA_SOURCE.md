@@ -37,6 +37,10 @@ bất thường. Lấy mẫu tái lập với seed 42, xen kẽ nhóm nghề tro
 
 ## Phiên bản tiếng Anh
 
+Trong giao diện tiếng Việt, tin có mô tả gốc bằng tiếng Anh dùng tóm tắt tiếng
+Việt có cấu trúc từ các trường của cùng bản ghi. CSV vẫn giữ toàn văn nguyên
+ngôn ngữ để đối chiếu; tóm tắt không được trình bày như bản dịch đầy đủ.
+
 Các cột `_EN` dùng chức danh/mô tả tiếng Anh gốc nếu có; nếu không thì dùng tên
 nhóm nghề và tóm tắt có cấu trúc từ kỹ năng, kinh nghiệm và vùng của nguồn. Bản
 tóm tắt **không phải bản dịch đầy đủ** của mô tả/yêu cầu. Tên công ty bản Anh bỏ

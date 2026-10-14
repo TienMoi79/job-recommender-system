@@ -44,6 +44,9 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(vi.Job_ID.tolist(), en.Job_ID.tolist())
         self.assertFalse(en.Domain.str.contains(r"[À-ỹ]").any())
         self.assertFalse(en.Job_Description.str.contains(r"[À-ỹ]").any())
+        english_originals = ~self.jobs.Job_Description.str.contains(r"[À-ỹ]") & self.jobs.Job_Description.str.contains(r"\b(?:the|with|and|responsibilities|develop)\b", case=False)
+        if english_originals.any():
+            self.assertTrue(vi.loc[english_originals, "Job_Description"].str.contains("tóm tắt từ mô tả gốc tiếng Anh").all())
         for language, jobs, cv in [("vi", vi, "Vị trí ứng tuyển: Backend Python\nKỹ năng: Python, FastAPI, Django, PostgreSQL, SQL, Docker"),
                                    ("en", en, "Backend Python Developer\nPython, FastAPI, Django, PostgreSQL, SQL, Docker")]:
             with self.subTest(language=language):
