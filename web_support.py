@@ -7,6 +7,7 @@ import pandas as pd
 
 from generate_mock_data import MockDataGenerator
 from ui_helper import SAMPLE_RESUMES, parse_skills
+from ui_text import experience_text, tr
 
 
 def search_text(value: str) -> str:
@@ -15,18 +16,21 @@ def search_text(value: str) -> str:
     return " ".join("".join(c for c in decomposed if not unicodedata.combining(c)).split())
 
 
-def filter_jobs(jobs: pd.DataFrame, keyword: str = "", domain: str = "Tất cả",
-                experience: str = "Tất cả") -> pd.DataFrame:
+def filter_jobs(jobs: pd.DataFrame, keyword: str = "", domain: str | None = "Tất cả",
+                experience: str | float | None = "Tất cả") -> pd.DataFrame:
     """Lọc từ khóa theo nghĩa đen, không diễn giải C++ hoặc dấu [ như regex."""
     result = jobs.copy()
     query = search_text(keyword)
     if query:
         text = result["Title"] + " " + result["Skills"] + " " + result["Job_Description"]
         result = result[text.map(search_text).str.contains(query, regex=False, na=False)]
-    if domain != "Tất cả":
+    if domain not in (None, "Tất cả"):
         result = result[result["Domain"] == domain]
-    if experience != "Tất cả":
-        result = result[result["Experience_Years"] == float(experience.removesuffix(" năm"))]
+    if experience not in (None, "Tất cả"):
+        # Web truyền giá trị số, không phải nhãn đã dịch. Chuỗi tiếng Việt cũ
+        # vẫn được hỗ trợ để giữ tương thích với các lời gọi bên ngoài.
+        years = float(experience.removesuffix(" năm")) if isinstance(experience, str) else float(experience)
+        result = result[result["Experience_Years"] == years]
     return result
 
 
@@ -40,7 +44,7 @@ def sample_resumes(language: str) -> dict:
     }
 
 
-def job_card_html(row: pd.Series, *, detail: bool = False) -> str:
+def job_card_html(row: pd.Series, *, detail: bool = False, language: str = "vi") -> str:
     """Escape mọi nội dung dữ liệu trước khi ghép HTML để hiển thị đúng và an toàn."""
     value = lambda column: escape(str(row[column]))
     skills = "".join(f'<span class="skill-tag">{escape(skill)}</span>' for skill in parse_skills(row["Skills"]))
@@ -48,7 +52,7 @@ def job_card_html(row: pd.Series, *, detail: bool = False) -> str:
     if "Similarity_Score" in row:
         score = (
             f'<div class="recommendation-heading"><span class="rank-badge">#{int(row["Rank"])}</span>'
-            f'<span class="similarity-badge">Điểm tương đồng nội dung '
+            f'<span class="similarity-badge">{escape(tr(language, "similarity"))} '
             f'<strong>{float(row["Similarity_Score"]):.4f}</strong></span></div>'
         )
     description_class = "desc-full-text" if detail else "job-desc-snippet"
@@ -58,7 +62,7 @@ def job_card_html(row: pd.Series, *, detail: bool = False) -> str:
         f'<div class="job-card-header"><h3 class="job-title">{value("Title")}</h3>'
         f'<span class="job-id-tag">{value("Job_ID")}</span></div>'
         f'<div class="meta-row"><span class="domain-pill">{value("Domain")}</span>'
-        f'<span class="exp-pill">{float(row["Experience_Years"]):g} năm kinh nghiệm</span></div>'
+        f'<span class="exp-pill">{escape(experience_text(language, float(row["Experience_Years"]), badge=True))}</span></div>'
         f'<div class="skills-wrapper">{skills}</div>'
         f'<div class="{description_class}">{value("Job_Description")}</div></div>'
     )

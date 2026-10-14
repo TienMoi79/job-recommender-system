@@ -1,5 +1,6 @@
 """Kiểm thử tích hợp thật qua Streamlit AppTest và AI Engine, không giả điểm gợi ý."""
 import importlib.util
+import re
 from pathlib import Path
 import unittest
 from unittest.mock import patch
@@ -9,9 +10,13 @@ import pandas as pd
 from generate_mock_data import MockDataGenerator
 from job_recommender import JobRecommenderSystem
 from web_support import filter_jobs, job_card_html, sample_resumes
+from ui_text import TEXT, experience_text
 
 HAS_STREAMLIT = importlib.util.find_spec("streamlit") is not None
 BASE_DIR = Path(__file__).resolve().parent.parent
+VI_DATA_PATH = BASE_DIR / "data/jobs_vie.csv"
+if not VI_DATA_PATH.exists():
+    VI_DATA_PATH = BASE_DIR / "data/jobs_vie.cvs"
 
 
 class WebSupportTests(unittest.TestCase):
@@ -28,6 +33,24 @@ class WebSupportTests(unittest.TestCase):
     def test_combined_filters(self):
         rows = filter_jobs(self.jobs, "Python", "Trí tuệ nhân tạo", "3 năm")
         self.assertEqual(rows["Job_ID"].tolist(), ["J006"])
+
+    def test_filters_use_values_independent_of_translated_labels(self):
+        rows = filter_jobs(self.jobs, "Python", "Trí tuệ nhân tạo", 3)
+        self.assertEqual(rows["Job_ID"].tolist(), ["J006"])
+        self.assertEqual(len(filter_jobs(self.jobs, domain=None, experience=None)), 20)
+
+    def test_english_job_card_and_experience_labels(self):
+        row = MockDataGenerator().create_jobs().iloc[0].copy()
+        row["Similarity_Score"], row["Rank"] = 0.7, 1
+        html = job_card_html(row, language="en", detail=True)
+        self.assertIn("Content similarity score", html)
+        self.assertIn("1 year of experience", html)
+        self.assertNotRegex(html, r"[À-ỹ]")
+        self.assertEqual(experience_text("en", 2), "2 years")
+        self.assertEqual(experience_text("vi", 2, badge=True), "2 năm kinh nghiệm")
+
+    def test_translation_keys_are_complete_in_both_languages(self):
+        self.assertEqual(set(TEXT["vi"]), set(TEXT["en"]))
 
     def test_job_html_escapes_data_and_has_no_percentage(self):
         row = self.jobs.iloc[0].copy()
@@ -65,7 +88,7 @@ class StreamlitFlowTests(unittest.TestCase):
         self.assertFalse(self.at.exception)
 
     def show_cv(self):
-        self.at.radio(key="page").set_value("Tìm việc theo CV").run()
+        self.at.radio(key="page").set_value("match").run()
 
     def match_sample(self):
         self.show_cv()
@@ -79,11 +102,11 @@ class StreamlitFlowTests(unittest.TestCase):
         self.assertFalse(self.at.exception)
         self.assertTrue(any("Không tìm thấy" in v.value for v in self.at.info))
         self.at.selectbox(key="_filter_domain").select("Trí tuệ nhân tạo").run()
-        self.at.selectbox(key="_filter_exp").select("3 năm").run()
+        self.at.selectbox(key="_filter_exp").set_value(3).run()
         self.at.button(key="reset_filters").click().run()
         self.assertEqual(self.at.text_input(key="_filter_keyword").value, "")
-        self.assertEqual(self.at.selectbox(key="_filter_domain").value, "Tất cả")
-        self.assertEqual(self.at.selectbox(key="_filter_exp").value, "Tất cả")
+        self.assertEqual(self.at.selectbox(key="_filter_domain").value, "__all__")
+        self.assertEqual(self.at.selectbox(key="_filter_exp").value, "__all__")
         self.assertEqual(len([b for b in self.at.button if str(b.key).startswith("job_")]), 20)
 
     def test_detail_and_similar_navigation(self):
@@ -98,13 +121,13 @@ class StreamlitFlowTests(unittest.TestCase):
 
     def test_cv_real_engine_scores_and_open_detail_return(self):
         self.match_sample()
-        expected = JobRecommenderSystem.from_csv(BASE_DIR / "data/jobs_vie.cvs", backend="tfidf").match_cv_to_jobs(sample_resumes("vi")["CV001"]["text"])
+        expected = JobRecommenderSystem.from_csv(VI_DATA_PATH, backend="tfidf").match_cv_to_jobs(sample_resumes("vi")["CV001"]["text"])
         pd.testing.assert_frame_equal(self.at.session_state["cv_results"], expected)
         self.at.button(key="match_J001").click().run()
-        self.assertEqual(self.at.radio(key="page").value, "Khám phá việc làm")
+        self.assertEqual(self.at.radio(key="page").value, "explore")
         self.assertEqual(self.at.session_state["selected_job_id"], "J001")
         self.at.button(key="back_detail").click().run()
-        self.assertEqual(self.at.radio(key="page").value, "Tìm việc theo CV")
+        self.assertEqual(self.at.radio(key="page").value, "match")
         pd.testing.assert_frame_equal(self.at.session_state["cv_results"], expected)
         self.assertIn("match_J001", [b.key for b in self.at.button])
         self.assertEqual(self.at.text_area(key="_cv_text").value, sample_resumes("vi")["CV001"]["text"])
@@ -131,7 +154,7 @@ class StreamlitFlowTests(unittest.TestCase):
 
     def test_dataset_switch_uses_english_cv_and_clears_old_matches(self):
         self.match_sample()
-        self.at.selectbox(key="dataset").select("Tiếng Anh").run()
+        self.at.selectbox(key="dataset").set_value("en").run()
         self.assertFalse(self.at.exception)
         self.assertIsNone(self.at.session_state["cv_results"])
         self.assertEqual(self.at.text_area(key="_cv_text").value, "")
@@ -150,7 +173,7 @@ class StreamlitFlowTests(unittest.TestCase):
     def test_single_job_detail_does_not_create_invalid_top_n(self):
         single = MockDataGenerator().create_vietnamese_jobs().iloc[:1].to_csv(index=False).encode("utf-8-sig")
         real_read = Path.read_bytes
-        with patch.object(Path, "read_bytes", lambda path: single if path.name == "jobs_vie.cvs" else real_read(path)):
+        with patch.object(Path, "read_bytes", lambda path: single if path.name in ("jobs_vie.cvs", "jobs_vie.csv") else real_read(path)):
             self.at.run()
             self.at.button(key="job_J001").click().run()
         self.assertFalse(self.at.exception)
@@ -159,7 +182,7 @@ class StreamlitFlowTests(unittest.TestCase):
     def test_missing_data_is_visible_error(self):
         real_read = Path.read_bytes
         def read(path):
-            if path.name == "jobs_vie.cvs":
+            if path.name in ("jobs_vie.cvs", "jobs_vie.csv"):
                 raise FileNotFoundError()
             return real_read(path)
         with patch.object(Path, "read_bytes", read):
@@ -184,6 +207,96 @@ class StreamlitFlowTests(unittest.TestCase):
         updated = get_recommender_engine(jobs.to_csv(index=False).encode("utf-8"), "tfidf")
         self.assertIsNot(original, updated)
         self.assertEqual(updated.jobs.iloc[0]["Title"], "Chức danh được cập nhật")
+
+    def assert_english_interface(self):
+        """Kiểm tra cả nhãn và nội dung hiển thị; bỏ CSS/comment khỏi HTML."""
+        displayed = []
+        for kind in ("markdown", "caption", "subheader", "info", "warning", "error", "success"):
+            for element in getattr(self.at, kind):
+                html = re.sub(r"<style>.*?</style>", "", element.value, flags=re.S)
+                displayed.append(re.sub(r"<[^>]+>", "", html))
+        for kind in ("button", "selectbox", "radio", "text_input", "text_area", "number_input", "expander"):
+            for element in getattr(self.at, kind):
+                displayed.append(element.label)
+                if kind in ("selectbox", "radio"):
+                    displayed.extend(element.options)
+                if kind in ("text_input", "text_area"):
+                    displayed.append(element.placeholder)
+        self.assertNotRegex("\n".join(displayed), r"[À-ỹ]")
+        self.assertFalse(self.at.exception)
+
+    def test_full_language_switch_and_only_two_navigation_pages(self):
+        self.assertEqual(self.at.radio(key="page").options, ["Khám phá việc làm", "Tìm việc theo CV"])
+        self.at.selectbox(key="dataset").set_value("en").run()
+        self.assertEqual(self.at.radio(key="page").options, ["Explore jobs", "Match your CV"])
+        self.assertEqual(self.at.selectbox(key="dataset").label, "Language")
+        self.assertEqual(self.at.selectbox(key="dataset").options, ["Vietnamese", "English"])
+        self.assertEqual(self.at.selectbox(key="_filter_exp").options, ["All", "1 year", "2 years", "3 years"])
+        self.assertEqual(self.at.button(key="job_J001").label, "View details")
+        self.assert_english_interface()
+        self.at.selectbox(key="_filter_domain").set_value("Artificial Intelligence").run()
+        self.at.selectbox(key="_filter_exp").set_value(3).run()
+        self.assertEqual([b.key for b in self.at.button if str(b.key).startswith("job_")], ["job_J006"])
+        self.assert_english_interface()
+        self.at.selectbox(key="dataset").set_value("vi").run()
+        self.assertEqual(self.at.selectbox(key="dataset").label, "Ngôn ngữ")
+        self.assertEqual(self.at.radio(key="page").options, ["Khám phá việc làm", "Tìm việc theo CV"])
+        self.assertEqual(self.at.button(key="job_J001").label, "Xem chi tiết")
+        self.assertEqual(self.at.selectbox(key="_filter_exp").value, "__all__")
+
+    def test_english_cv_detail_scores_and_return_navigation(self):
+        self.show_cv()
+        self.at.selectbox(key="dataset").set_value("en").run()
+        self.assertEqual(self.at.radio(key="page").value, "match")
+        self.assert_english_interface()
+        self.at.button(key="sample_CV002").click().run()
+        self.at.button(key="match_cv").click().run()
+        self.assert_english_interface()
+        expected = JobRecommenderSystem.from_csv(BASE_DIR / "data/jobs.csv", backend="tfidf").match_cv_to_jobs(sample_resumes("en")["CV002"]["text"])
+        pd.testing.assert_frame_equal(self.at.session_state["cv_results"], expected)
+        self.at.button(key="match_J009").click().run()
+        self.assertEqual(self.at.button(key="back_detail").label, "← Back to CV results")
+        self.assert_english_interface()
+        self.at.button(key="back_detail").click().run()
+        self.assertEqual(self.at.radio(key="page").value, "match")
+        self.assert_english_interface()
+
+    def test_english_empty_search_cv_and_errors_are_translated(self):
+        self.at.selectbox(key="dataset").set_value("en").run()
+        self.at.text_input(key="_filter_keyword").input("[").run()
+        self.assertTrue(any("No jobs found" in v.value for v in self.at.info))
+        self.assert_english_interface()
+        self.show_cv()
+        self.at.button(key="match_cv").click().run()
+        self.assertTrue(any("Please enter" in v.value for v in self.at.warning))
+        self.assert_english_interface()
+        self.at.text_area(key="_cv_text").input("zzzzqqqqxxxx").run()
+        self.at.button(key="match_cv").click().run()
+        self.assertTrue(any("Not enough matching" in v.value for v in self.at.info))
+        self.assert_english_interface()
+        with patch("job_recommender.JobRecommenderSystem.match_cv_to_jobs", side_effect=RuntimeError("failure")):
+            self.at.button(key="sample_CV002").click().run()
+            self.at.button(key="match_cv").click().run()
+        self.assertTrue(any("Unable to process" in v.value for v in self.at.warning))
+        self.assert_english_interface()
+        with patch("job_recommender.SentenceTransformerVectorizer", side_effect=ImportError("missing model")):
+            self.at.radio(key="backend").set_value("sentence-transformers").run()
+        self.assertTrue(any("Unable to load" in v.value for v in self.at.error))
+        self.assert_english_interface()
+        self.at.radio(key="backend").set_value("tfidf").run()
+        real_read = Path.read_bytes
+        with patch.object(Path, "read_bytes", lambda path: (_ for _ in ()).throw(FileNotFoundError()) if path.name == "jobs.csv" else real_read(path)):
+            self.at.run()
+        self.assertTrue(any("Job data is missing" in v.value for v in self.at.error))
+        self.assert_english_interface()
+
+    def test_data_path_supports_csv_and_legacy_cvs(self):
+        from app import dataset_path
+        with patch.object(Path, "exists", return_value=True):
+            self.assertEqual(dataset_path("vi").name, "jobs_vie.csv")
+        with patch.object(Path, "exists", return_value=False):
+            self.assertEqual(dataset_path("vi").name, "jobs_vie.cvs")
+        self.assertEqual(dataset_path("en").name, "jobs.csv")
 
 
 if __name__ == "__main__":

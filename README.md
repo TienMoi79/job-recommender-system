@@ -36,8 +36,13 @@ triển khai thành website công khai. Nhấn `Ctrl+C` trong terminal để d�
   lọc lĩnh vực/kinh nghiệm yêu cầu, xóa bộ lọc, mở chi tiết và xem gợi ý tương tự.
 - **Tìm việc theo CV:** chọn một trong ba CV mẫu hoặc dán văn bản, chọn số kết quả,
   bấm tìm. Có thể mở chi tiết kết quả rồi quay lại mà không mất CV/kết quả.
-- Mặc định dùng `data/jobs_vie.cvs` và TF-IDF. Có thể chọn dữ liệu tiếng Anh ở
-  sidebar; CV mẫu đổi theo ngôn ngữ. Kết quả cũ được xóa khi đổi dữ liệu/backend.
+- Mặc định dùng dữ liệu tiếng Việt và TF-IDF. Mục **Ngôn ngữ / Language** ở
+  sidebar chuyển toàn bộ giao diện, tiêu đề tab, danh mục việc làm và CV mẫu giữa
+  tiếng Việt và tiếng Anh. Nhãn nút, bộ lọc, điểm số và thông báo lỗi cùng đổi
+  ngôn ngữ. Web ưu tiên `data/jobs_vie.csv` nếu có, nếu không dùng tên cũ
+  `data/jobs_vie.cvs`. Kết quả cũ được xóa khi đổi dữ liệu/backend.
+- Điều hướng chỉ gồm **Khám phá việc làm / Explore jobs** và **Tìm việc theo CV /
+  Match your CV**; mục **Về đồ án** đã được bỏ khỏi giao diện.
 - Trong **Cài đặt nâng cao**, có thể chọn Sentence Transformers sau khi cài
   `requirements-semantic.txt`. Lỗi tải mô hình hiển thị thông báo để quay lại TF-IDF;
   ứng dụng không âm thầm thay phương pháp hoặc tạo điểm giả.
@@ -144,6 +149,7 @@ demo.py                    # Chạy item-to-item và cả 3 CV, in/lưu kết qu
 app.py                     # Giao diện web Streamlit, quản lý phiên và cache engine
 ui_helper.py               # Phong cách giao diện và CV mẫu tiếng Việt
 web_support.py             # Tìm kiếm, lọc, hiển thị thẻ và chọn CV mẫu theo ngôn ngữ
+ui_text.py                 # Từ điển giao diện Việt/Anh và định dạng kinh nghiệm
 requirements-web.txt       # Thư viện chạy giao diện web
 .streamlit/config.toml     # Chủ đề sáng, màu sắc giao diện
 job_recommender_notebook.ipynb # Chạy từng bước bằng Jupyter Notebook
@@ -323,8 +329,10 @@ Recall@K, MRR hoặc NDCG của Giai đoạn 3.
 - Đã chạy demo TF-IDF cho truy vấn `J001` và cả 3 CV, lưu kết quả trong
   `outputs/tfidf/`. Top-1 của CV001/CV002/CV003 lần lượt là Data Analyst,
   Python Backend Developer và AI Engineer.
-- Đã chạy thành công 34 kiểm thử engine, tiện ích web và Streamlit AppTest trên
+- Đã chạy thành công 41 kiểm thử engine, tiện ích web và Streamlit AppTest trên
   Python 3.12.5/Streamlit 1.65.0. Nhánh web đã chạy với TF-IDF và hai bộ dữ liệu.
+  Kiểm thử đổi Việt → Anh → Việt, lọc theo giá trị số, điểm CV thực, điều hướng
+  và thông báo lỗi tiếng Anh; điều hướng chỉ còn hai trang.
 - Notebook gồm 21 ô (10 ô mã) đã được thực thi từ đầu đến cuối bằng kernel
   Jupyter với dữ liệu tiếng Việt và TF-IDF, không có ô lỗi. File `.ipynb` lưu sẵn
   kết quả; các bảng được xuất vào `outputs/notebook/vi/tfidf/`.

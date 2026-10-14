@@ -54,6 +54,12 @@ SAMPLE_RESUMES: Dict[str, Dict[str, str]] = {
 
 CUSTOM_CSS = """
 <style>
+/* Loại các nút quản trị của Streamlit và gợi ý bàn phím mặc định tiếng Anh
+   khỏi giao diện người dùng; phần điều khiển của ứng dụng đã được dịch riêng. */
+[data-testid="stToolbar"], [data-testid="InputInstructions"] {
+    display: none;
+}
+
 /* Font và định dạng nền chung */
 html, body, .stApp {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
