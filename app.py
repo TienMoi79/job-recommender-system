@@ -72,6 +72,12 @@ def set_cv(text: str) -> None:
     invalidate_cv()
 
 
+def use_keyword_matching() -> None:
+    """Nút phục hồi khi cách tìm theo ý nghĩa chưa sẵn sàng; không xóa CV."""
+    st.session_state.backend = "tfidf"
+    invalidate_cv()
+
+
 def reset_filters() -> None:
     st.session_state.filter_keyword = ""
     st.session_state.filter_domain = st.session_state.filter_exp = FILTER_ALL
@@ -242,26 +248,47 @@ def main() -> None:
         st.selectbox(tr(language, "language"), ["vi", "en"], key="dataset",
                      format_func=lambda value: tr(language, f"language_{value}"))
         path = dataset_path(language)
-        with st.expander(tr(language, "advanced")):
+        with st.expander(tr(language, "advanced"), expanded=True):
+            st.caption(tr(language, "method_intro"))
             backend = st.radio(tr(language, "method"), ["tfidf", "sentence-transformers"], key="backend",
                                format_func=lambda value: tr(language, "tfidf" if value == "tfidf" else "semantic"))
-            st.caption(tr(language, "semantic_help"))
+            st.caption(tr(language, "keyword_summary" if backend == "tfidf" else "semantic_summary"))
+            if backend == "sentence-transformers":
+                st.info(tr(language, "semantic_help"))
+            # Giải thích dài ở hộp riêng có nhiều chiều ngang hơn sidebar,
+            # giúp người dùng đọc ví dụ mà không phải cuộn qua một khối chữ dài.
+            with st.popover(tr(language, "method_guide"), use_container_width=True):
+                st.markdown(tr(language, "keyword_description"))
+                st.caption(tr(language, "keyword_example"))
+                st.markdown(tr(language, "semantic_description"))
+                st.caption(tr(language, "semantic_example"))
+                st.info(tr(language, "method_scope"))
+            st.caption(tr(language, "method_change"))
         st.info(tr(language, "demo"))
     try:
         csv_content = path.read_bytes()
         context = (language, backend, sha256(csv_content).hexdigest())
-        if st.session_state.get("data_context") != context:
+        previous_context = st.session_state.get("data_context")
+        if previous_context != context:
             reset_filters()
-            set_cv("")
+            # Đổi cách so sánh chỉ làm mất hiệu lực kết quả cũ, không buộc
+            # người dùng nhập lại CV. Đổi ngôn ngữ vẫn bắt đầu bằng CV trống.
+            if previous_context is None or previous_context[0] != language:
+                set_cv("")
+            else:
+                invalidate_cv()
             st.session_state.selected_job_id = None
             st.session_state.data_context = context
-        with st.spinner(tr(language, "loading")):
+        with st.spinner(tr(language, "loading_semantic" if backend == "sentence-transformers" else "loading")):
             engine = get_recommender_engine(csv_content, backend)
     except FileNotFoundError:
         st.error(tr(language, "missing_data"))
         return
     except Exception:
         st.error(tr(language, "load_error"))
+        if backend == "sentence-transformers":
+            st.button(tr(language, "keyword_recovery"), key="recover_keyword",
+                      on_click=use_keyword_matching, type="primary")
         return
 
     jobs = engine.jobs

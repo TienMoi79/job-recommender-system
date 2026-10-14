@@ -191,13 +191,20 @@ class StreamlitFlowTests(unittest.TestCase):
         self.assertTrue(any("Thiếu dữ liệu" in v.value for v in self.at.error))
 
     def test_semantic_load_failure_is_recoverable(self):
+        self.match_sample()
+        original_cv = self.at.session_state["cv_text"]
         with patch("job_recommender.SentenceTransformerVectorizer", side_effect=ImportError("missing model")):
             self.at.radio(key="backend").set_value("sentence-transformers").run()
         self.assertFalse(self.at.exception)
-        self.assertTrue(any("Không thể nạp" in v.value for v in self.at.error))
-        self.at.radio(key="backend").set_value("tfidf").run()
+        self.assertTrue(any("Chưa thể chuẩn bị" in v.value for v in self.at.error))
+        self.assertEqual(self.at.session_state["cv_text"], original_cv)
+        self.assertIsNone(self.at.session_state["cv_results"])
+        self.at.button(key="recover_keyword").click().run()
         self.assertFalse(self.at.exception)
-        self.assertTrue(any(b.key == "job_J001" for b in self.at.button))
+        self.assertEqual(self.at.radio(key="backend").value, "tfidf")
+        self.assertEqual(self.at.text_area(key="_cv_text").value, original_cv)
+        self.at.button(key="match_cv").click().run()
+        self.assertEqual(self.at.session_state["cv_results"].iloc[0]["Job_ID"], "J001")
 
     def test_cached_engine_refreshes_when_content_changes(self):
         from app import get_recommender_engine
@@ -283,7 +290,13 @@ class StreamlitFlowTests(unittest.TestCase):
             self.at.radio(key="backend").set_value("sentence-transformers").run()
         self.assertTrue(any("Unable to load" in v.value for v in self.at.error))
         self.assert_english_interface()
-        self.at.radio(key="backend").set_value("tfidf").run()
+        original_cv = sample_resumes("en")["CV002"]["text"]
+        self.assertEqual(self.at.session_state["cv_text"], original_cv)
+        self.at.button(key="recover_keyword").click().run()
+        self.assertEqual(self.at.radio(key="backend").value, "tfidf")
+        self.assertEqual(self.at.text_area(key="_cv_text").value, original_cv)
+        self.assertIsNone(self.at.session_state["cv_results"])
+        self.assert_english_interface()
         real_read = Path.read_bytes
         with patch.object(Path, "read_bytes", lambda path: (_ for _ in ()).throw(FileNotFoundError()) if path.name == "jobs.csv" else real_read(path)):
             self.at.run()

@@ -43,9 +43,17 @@ triển khai thành website công khai. Nhấn `Ctrl+C` trong terminal để d�
   `data/jobs_vie.cvs`. Kết quả cũ được xóa khi đổi dữ liệu/backend.
 - Điều hướng chỉ gồm **Khám phá việc làm / Explore jobs** và **Tìm việc theo CV /
   Match your CV**; mục **Về đồ án** đã được bỏ khỏi giao diện.
-- Trong **Cài đặt nâng cao**, có thể chọn Sentence Transformers sau khi cài
-  `requirements-semantic.txt`. Lỗi tải mô hình hiển thị thông báo để quay lại TF-IDF;
-  ứng dụng không âm thầm thay phương pháp hoặc tạo điểm giả.
+- Phần **Cách tìm việc phù hợp / How to find matching jobs** giải thích hai cách
+  bằng ngôn ngữ thông thường và ví dụ: **Theo từ khóa / By keywords** (TF-IDF,
+  mặc định) và **Theo ý nghĩa nội dung / By meaning** (Sentence Transformers).
+  Mô tả ngắn hiển thị ngay bên dưới lựa chọn; nút **Xem giải thích và ví dụ / See
+  explanations and examples** mở phần so sánh chi tiết trong hộp riêng.
+  Lựa chọn áp dụng cho gợi ý việc tương tự và ghép CV; ô tìm kiếm danh sách vẫn
+  dùng từ khóa. Đổi cách tìm giữ CV và xóa kết quả cũ để người dùng tìm lại.
+- Cách tìm theo ý nghĩa cần cài `requirements-semantic.txt` và tải mô hình lần
+  đầu. Khi chưa sẵn sàng, web có nút **Dùng cách tìm theo từ khóa / Use keyword
+  matching** để quay lại mà không mất CV. Ứng dụng không âm thầm thay phương pháp
+  hoặc tạo điểm giả; thông tin kỹ thuật dành cho cài đặt được giữ trong README.
 
 **Tích hợp:** Streamlit gọi trực tiếp `JobRecommenderSystem`, không cần API server
 riêng. `engine.jobs` trả bản sao danh mục để giao diện không sửa được dữ liệu của
