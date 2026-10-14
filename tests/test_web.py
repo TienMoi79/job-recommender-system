@@ -84,6 +84,19 @@ class WebSupportTests(unittest.TestCase):
 class StreamlitFlowTests(unittest.TestCase):
     def setUp(self):
         from streamlit.testing.v1 import AppTest
+        # Dữ liệu cố định 20 tin để kiểm thử luồng cũ không phụ thuộc snapshot
+        # công khai 500 tin thay đổi. Kiểm thử catalog thật nằm ở test_catalog.
+        generator = MockDataGenerator()
+        vi, en = generator.create_vietnamese_jobs(), generator.create_jobs()
+        self.fixture_jobs = vi
+        catalog = vi.copy()
+        for column in ("Title", "Skills", "Domain", "Job_Description"):
+            catalog[f"{column}_EN"] = en[column]
+        self.fixture_bytes = catalog.to_csv(index=False).encode("utf-8-sig")
+        real_read = Path.read_bytes
+        self.data_patch = patch.object(Path, "read_bytes", lambda path: self.fixture_bytes if path.name == "jobs_catalog.csv" else real_read(path))
+        self.data_patch.start()
+        self.addCleanup(self.data_patch.stop)
         self.at = AppTest.from_file(str(BASE_DIR / "app.py"), default_timeout=30).run()
         self.assertFalse(self.at.exception)
 
@@ -121,14 +134,17 @@ class StreamlitFlowTests(unittest.TestCase):
 
     def test_cv_real_engine_scores_and_open_detail_return(self):
         self.match_sample()
-        expected = JobRecommenderSystem.from_csv(VI_DATA_PATH, backend="tfidf").match_cv_to_jobs(sample_resumes("vi")["CV001"]["text"])
-        pd.testing.assert_frame_equal(self.at.session_state["cv_results"], expected)
+        expected = JobRecommenderSystem(self.fixture_jobs, backend="tfidf").match_cv_to_jobs(sample_resumes("vi")["CV001"]["text"])
+        # Catalog fixture có thêm cột dịch; so sánh các cột thuộc hợp đồng engine.
+        expected = expected.loc[:, self.at.session_state["cv_results"].columns.intersection(expected.columns)]
+        actual = self.at.session_state["cv_results"].loc[:, expected.columns]
+        pd.testing.assert_frame_equal(actual, expected)
         self.at.button(key="match_J001").click().run()
         self.assertEqual(self.at.radio(key="page").value, "explore")
         self.assertEqual(self.at.session_state["selected_job_id"], "J001")
         self.at.button(key="back_detail").click().run()
         self.assertEqual(self.at.radio(key="page").value, "match")
-        pd.testing.assert_frame_equal(self.at.session_state["cv_results"], expected)
+        pd.testing.assert_frame_equal(self.at.session_state["cv_results"].loc[:, expected.columns], expected)
         self.assertIn("match_J001", [b.key for b in self.at.button])
         self.assertEqual(self.at.text_area(key="_cv_text").value, sample_resumes("vi")["CV001"]["text"])
 
@@ -173,7 +189,7 @@ class StreamlitFlowTests(unittest.TestCase):
     def test_single_job_detail_does_not_create_invalid_top_n(self):
         single = MockDataGenerator().create_vietnamese_jobs().iloc[:1].to_csv(index=False).encode("utf-8-sig")
         real_read = Path.read_bytes
-        with patch.object(Path, "read_bytes", lambda path: single if path.name in ("jobs_vie.cvs", "jobs_vie.csv") else real_read(path)):
+        with patch.object(Path, "read_bytes", lambda path: single if path.name in ("jobs_vie.cvs", "jobs_vie.csv", "jobs_catalog.csv") else real_read(path)):
             self.at.run()
             self.at.button(key="job_J001").click().run()
         self.assertFalse(self.at.exception)
@@ -182,7 +198,7 @@ class StreamlitFlowTests(unittest.TestCase):
     def test_missing_data_is_visible_error(self):
         real_read = Path.read_bytes
         def read(path):
-            if path.name in ("jobs_vie.cvs", "jobs_vie.csv"):
+            if path.name in ("jobs_vie.cvs", "jobs_vie.csv", "jobs_catalog.csv"):
                 raise FileNotFoundError()
             return real_read(path)
         with patch.object(Path, "read_bytes", read):
@@ -260,7 +276,7 @@ class StreamlitFlowTests(unittest.TestCase):
         self.at.button(key="match_cv").click().run()
         self.assert_english_interface()
         expected = JobRecommenderSystem.from_csv(BASE_DIR / "data/jobs.csv", backend="tfidf").match_cv_to_jobs(sample_resumes("en")["CV002"]["text"])
-        pd.testing.assert_frame_equal(self.at.session_state["cv_results"], expected)
+        pd.testing.assert_frame_equal(self.at.session_state["cv_results"].loc[:, expected.columns], expected)
         self.at.button(key="match_J009").click().run()
         self.assertEqual(self.at.button(key="back_detail").label, "← Back to CV results")
         self.assert_english_interface()
@@ -298,7 +314,7 @@ class StreamlitFlowTests(unittest.TestCase):
         self.assertIsNone(self.at.session_state["cv_results"])
         self.assert_english_interface()
         real_read = Path.read_bytes
-        with patch.object(Path, "read_bytes", lambda path: (_ for _ in ()).throw(FileNotFoundError()) if path.name == "jobs.csv" else real_read(path)):
+        with patch.object(Path, "read_bytes", lambda path: (_ for _ in ()).throw(FileNotFoundError()) if path.name in ("jobs.csv", "jobs_catalog.csv") else real_read(path)):
             self.at.run()
         self.assertTrue(any("Job data is missing" in v.value for v in self.at.error))
         self.assert_english_interface()
@@ -306,10 +322,62 @@ class StreamlitFlowTests(unittest.TestCase):
     def test_data_path_supports_csv_and_legacy_cvs(self):
         from app import dataset_path
         with patch.object(Path, "exists", return_value=True):
+            self.assertEqual(dataset_path("vi").name, "jobs_catalog.csv")
+            self.assertEqual(dataset_path("en").name, "jobs_catalog.csv")
+        with patch.object(Path, "exists", lambda path: path.name == "jobs_vie.csv"):
             self.assertEqual(dataset_path("vi").name, "jobs_vie.csv")
         with patch.object(Path, "exists", return_value=False):
             self.assertEqual(dataset_path("vi").name, "jobs_vie.cvs")
-        self.assertEqual(dataset_path("en").name, "jobs.csv")
+            self.assertEqual(dataset_path("en").name, "jobs.csv")
+
+
+@unittest.skipUnless(HAS_STREAMLIT, "Cài requirements-web.txt để kiểm thử giao diện")
+class CatalogWebFlowTests(unittest.TestCase):
+    def setUp(self):
+        from streamlit.testing.v1 import AppTest
+        self.at = AppTest.from_file(str(BASE_DIR / "app.py"), default_timeout=45).run()
+        self.assertFalse(self.at.exception)
+
+    def test_500_jobs_are_paginated_and_location_filter_resets_page(self):
+        self.assertTrue(any("500 / 500" in value.value for value in self.at.caption))
+        self.assertEqual(len([b for b in self.at.button if str(b.key).startswith("job_")]), 20)
+        first = [b.key for b in self.at.button if str(b.key).startswith("job_")]
+        self.at.selectbox(key="_browse_page").set_value(2).run()
+        second = [b.key for b in self.at.button if str(b.key).startswith("job_")]
+        self.assertFalse(set(first) & set(second))
+        self.at.selectbox(key="_filter_location").set_value("khanh_hoa").run()
+        self.assertEqual(self.at.session_state["browse_page"], 1)
+        self.assertLessEqual(len([b for b in self.at.button if str(b.key).startswith("job_")]), 20)
+        self.assertFalse(self.at.exception)
+
+    def test_confirmed_region_is_enforced_and_changes_invalidate_results(self):
+        self.at.radio(key="page").set_value("match").run()
+        self.at.text_area(key="_cv_text").input("Vị trí ứng tuyển: Backend Python\nKỹ năng: Python, FastAPI, Django, SQL, PostgreSQL, Docker").run()
+        self.at.selectbox(key="_cv_location").set_value("ha_noi").run()
+        self.at.button(key="match_cv").click().run()
+        result = self.at.session_state["cv_results"]
+        self.assertEqual(len(result), 5)
+        self.assertTrue(result.Region_Codes.map(lambda value: "ha_noi" in value.split(";")).all())
+        self.at.selectbox(key="_cv_location").set_value("ho_chi_minh").run()
+        self.assertIsNone(self.at.session_state["cv_results"])
+        self.at.button(key="match_cv").click().run()
+        self.assertTrue(self.at.session_state["cv_results"].Region_Codes.map(lambda value: "ho_chi_minh" in value.split(";")).all())
+        self.at.selectbox(key="_cv_location").set_value("dak_lak").run()
+        self.at.button(key="match_cv").click().run()
+        self.assertTrue(any("Chưa có việc làm trong bộ dữ liệu" in value.value for value in self.at.info))
+        self.assertTrue(self.at.session_state["cv_results"].empty)
+
+    def test_read_requires_file_and_clear_cv_resets_profile_and_upload_widget(self):
+        self.at.radio(key="page").set_value("match").run()
+        self.assertTrue(self.at.button(key="read_cv").disabled)
+        self.at.button(key="sample_CV002").click().run()
+        self.assertIsNotNone(self.at.session_state["cv_profile"])
+        previous = self.at.session_state["cv_upload_generation"]
+        self.at.button(key="clear_cv").click().run()
+        self.assertGreater(self.at.session_state["cv_upload_generation"], previous)
+        self.assertEqual(self.at.session_state["cv_text"], "")
+        self.assertIsNone(self.at.session_state["cv_profile"])
+        self.assertEqual(self.at.selectbox(key="_cv_location").value, "__all__")
 
 
 if __name__ == "__main__":

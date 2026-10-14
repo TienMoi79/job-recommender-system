@@ -20,6 +20,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from generate_mock_data import JOB_COLUMNS
+from resume_profile import ResumeAnalyzer, ResumeProfile, extract_skills
+from locations import REGIONS
 
 
 DEFAULT_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -169,6 +171,14 @@ class JobRecommenderSystem:
         documents = [self._job_to_text(row) for _, row in self._jobs.iterrows()]
         # Tính vector một lần khi khởi tạo; các truy vấn sau tái sử dụng ma trận.
         self._job_vectors = self._encoder.fit_transform(documents)
+        # Tái sử dụng cùng không gian vector đã fit, không fit lại theo CV.
+        # Tách 4 trường để có thể giải thích vì sao một việc đứng cao hơn.
+        self._field_vectors = {
+            field: self._encoder.transform([
+                str(row[field]) + (" " + str(row.get("Requirements", "")) if field == "Job_Description" else "")
+                for _, row in self._jobs.iterrows()
+            ]) for field in ("Title", "Skills", "Domain", "Job_Description")
+        }
 
     @classmethod
     def from_csv(cls, path: str | Path, **kwargs) -> "JobRecommenderSystem":
@@ -191,7 +201,12 @@ class JobRecommenderSystem:
             raise ValueError(f"Thiếu cột: {', '.join(sorted(missing))}")
         if jobs.empty:
             raise ValueError("Dữ liệu việc làm không được rỗng.")
-        result = jobs.loc[:, JOB_COLUMNS].copy(deep=True).reset_index(drop=True)
+        # Giữ metadata công ty, địa điểm và nguồn; chỉ 6 cột gốc là bắt buộc
+        # để các notebook/dữ liệu mock cũ tiếp tục chạy.
+        result = jobs.copy(deep=True).reset_index(drop=True)
+        for column in result.select_dtypes(include="object"):
+            if column not in JOB_COLUMNS:
+                result[column] = result[column].fillna("")
         text_columns = [column for column in JOB_COLUMNS if column != "Experience_Years"]
         for column in text_columns:
             if not result[column].map(lambda value: isinstance(value, str) and bool(value.strip())).all():
@@ -214,7 +229,7 @@ class JobRecommenderSystem:
         return TextPreprocessor.normalize(
             f"{row['Title']}. Skills: {row['Skills']}. "
             f"Minimum experience: {row['Experience_Years']:g} years. "
-            f"Domain: {row['Domain']}. {row['Job_Description']}"
+            f"Domain: {row['Domain']}. {row['Job_Description']} {row.get('Requirements', '')}"
         )
 
     @staticmethod
@@ -222,10 +237,16 @@ class JobRecommenderSystem:
         if isinstance(top_n, bool) or not isinstance(top_n, Integral) or top_n <= 0:
             raise ValueError("top_n phải là số nguyên dương.")
 
-    def _rank(self, scores: np.ndarray, top_n: int, exclude_position: int | None = None) -> pd.DataFrame:
+    def _rank(self, scores: np.ndarray, top_n: int, exclude_position: int | None = None,
+              eligible_positions: list[int] | None = None, components: dict | None = None) -> pd.DataFrame:
         result = self._jobs.copy(deep=True)
         # Clip chỉ xử lý sai số dấu phẩy động (ví dụ 1.00000001).
         result["Similarity_Score"] = np.clip(scores, -1.0, 1.0)
+        if components:
+            for field, values in components.items():
+                result[f"Score_{field}"] = values
+        if eligible_positions is not None:
+            result = result.iloc[eligible_positions]
         if exclude_position is not None:
             result = result.drop(index=exclude_position)
         # Quy tắc phụ theo Job_ID giúp thứ tự ổn định khi hai điểm bằng nhau.
@@ -235,7 +256,17 @@ class JobRecommenderSystem:
         result["Rank"] = np.arange(1, len(result) + 1)
         return result
 
-    def recommend_similar_jobs(self, job_id: str, top_n: int = 5) -> pd.DataFrame:
+    def _eligible_positions(self, location: str | None) -> list[int]:
+        if location is None:
+            return list(range(len(self._jobs)))
+        if location not in REGIONS:
+            raise ValueError("Unknown work region")
+        if "Region_Codes" not in self._jobs:
+            raise ValueError("Dataset has no location metadata")
+        return [index for index, codes in enumerate(self._jobs["Region_Codes"])
+                if location in str(codes).split(";")]
+
+    def recommend_similar_jobs(self, job_id: str, top_n: int = 5, *, location: str | None = None) -> pd.DataFrame:
         """So một việc làm với tất cả việc làm khác, loại chính nó khỏi top-N.
 
         Raises:
@@ -252,25 +283,51 @@ class JobRecommenderSystem:
         # Chỉ tính vector 1 x N, tránh lưu ma trận N x N không cần thiết.
         query_vector = self._job_vectors[position:position + 1]
         scores = cosine_similarity(query_vector, self._job_vectors).ravel()
-        return self._rank(scores, top_n, exclude_position=position)
+        return self._rank(scores, top_n, exclude_position=position,
+                          eligible_positions=self._eligible_positions(location))
 
-    def match_cv_to_jobs(self, cv_text: str, top_n: int = 5) -> pd.DataFrame:
-        """Vector hóa toàn văn CV rồi xếp hạng độ tương đồng với mỗi tin.
+    def match_cv_to_jobs(self, cv_text: str, top_n: int = 5, *, location: str | None = None,
+                         profile: ResumeProfile | None = None) -> pd.DataFrame:
+        """Lọc vùng mong muốn, rồi xếp hạng bằng 4 điểm cosine có trọng số.
 
-        Không dùng regex để suy đoán số năm kinh nghiệm/thuộc tính cá nhân.
-        Đây là trích xuất đặc trưng văn bản, chưa phải trích xuất trường CV.
-        CV rỗng bị từ chối. Với TF-IDF, CV không có từ nào trong vocabulary
-        trả bảng rỗng kèm cảnh báo thay vì gợi ý tùy ý từ các điểm đều bằng 0.
+        Điểm tổng = 25% vị trí + 35% kỹ năng + 15% lĩnh vực + 25% mô tả.
+        Trọng số là lựa chọn baseline, chưa được tối ưu trên dữ liệu gán nhãn.
+        Địa chỉ không tự động trở thành điều kiện lọc: người dùng truyền vùng
+        đã chọn/xác nhận. Không dùng tuổi, giới tính, ảnh mặt hay tên để xếp hạng.
         """
         self._validate_top_n(top_n)
         if not isinstance(cv_text, str) or not cv_text.strip():
             raise ValueError("cv_text phải là chuỗi văn bản không rỗng.")
-        query_vector = self._encoder.transform([TextPreprocessor.normalize(cv_text)])
+        eligible = self._eligible_positions(location)
+        if not eligible:
+            return self._rank(np.zeros(len(self._jobs)), top_n, eligible_positions=[])
+        profile = profile or ResumeAnalyzer().analyze(cv_text)
+        if profile.text != cv_text:
+            raise ValueError("CV profile does not match current text")
+        matching_text = profile.matching_text
+        query_vector = self._encoder.transform([TextPreprocessor.normalize(matching_text)])
         if self.backend == "tfidf" and query_vector.nnz == 0:
             warnings.warn(
                 "CV không có từ thuộc vocabulary TF-IDF; không có đủ tín hiệu để gợi ý.",
                 UserWarning, stacklevel=2,
             )
             return self._rank(np.zeros(len(self._jobs)), top_n).iloc[:0].copy()
-        scores = cosine_similarity(query_vector, self._job_vectors).ravel()
-        return self._rank(scores, top_n)
+        queries = {
+            "Title": profile.title_text or matching_text,
+            "Skills": "; ".join(profile.skills) or matching_text,
+            "Domain": profile.domain_text or matching_text,
+            "Job_Description": matching_text,
+        }
+        weights = {"Title": 0.25, "Skills": 0.35, "Domain": 0.15, "Job_Description": 0.25}
+        components = {
+            field: cosine_similarity(self._encoder.transform([query]), self._field_vectors[field]).ravel()
+            for field, query in queries.items()
+        }
+        scores = sum(weights[field] * values for field, values in components.items())
+        # Không lấp đủ top-N bằng các việc hoàn toàn không có tín hiệu liên quan.
+        eligible = [index for index in eligible if scores[index] > 0]
+        result = self._rank(scores, top_n, eligible_positions=eligible, components=components)
+        cv_skills = set(profile.skills)
+        result["Matched_Skills"] = ["; ".join(skill for skill in extract_skills(row["Skills"]) if skill in cv_skills)
+                                    for _, row in result.iterrows()]
+        return result

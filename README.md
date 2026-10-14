@@ -5,6 +5,10 @@ Mã nguồn cho **Giai đoạn 1: Mock Data**, **Giai đoạn 2: AI Engine** và
 Python theo hướng đối tượng, có comment/docstring tiếng Việt. Evaluation metrics
 trên dữ liệu có nhãn (Giai đoạn 3) chưa triển khai.
 
+Web và notebook hiện ưu tiên **catalog 500 tin IT từ bộ dữ liệu công khai TiniX
+AI**, có công ty, lương, địa điểm, yêu cầu và thông tin nguồn. Tin được chọn/làm
+sạch, không nhân bản 20 dòng mock. Xem [nguồn, giấy phép và quy tắc chuẩn hóa](data/DATA_SOURCE.md).
+
 ## 1. Cài đặt và chạy
 
 Tải mã nguồn bằng Git:
@@ -33,14 +37,18 @@ máy đang chạy ứng dụng. Đây là địa chỉ cục bộ; đưa mã ngu
 triển khai thành website công khai. Nhấn `Ctrl+C` trong terminal để dừng server.
 
 - **Khám phá việc làm:** tìm theo chức danh, kỹ năng, mô tả (hỗ trợ không dấu),
-  lọc lĩnh vực/kinh nghiệm yêu cầu, xóa bộ lọc, mở chi tiết và xem gợi ý tương tự.
-- **Tìm việc theo CV:** chọn một trong ba CV mẫu hoặc dán văn bản, chọn số kết quả,
-  bấm tìm. Có thể mở chi tiết kết quả rồi quay lại mà không mất CV/kết quả.
+  lọc lĩnh vực/kinh nghiệm/địa điểm, phân trang 20 tin, mở chi tiết và xem việc tương tự.
+- **Tìm việc theo CV:** tải ảnh, PDF hoặc Word `.docx` → **Đọc CV** → kiểm tra
+  vị trí/kỹ năng và xác nhận nơi muốn làm → **Tìm việc phù hợp**. PDF scan/ảnh
+  được đọc bằng OCR. CV mẫu vẫn có trong phần mở rộng để thử nhanh; chỉnh sửa
+  văn bản là lựa chọn sửa lỗi OCR, không bắt buộc nhập CV bằng tay.
 - Mặc định dùng dữ liệu tiếng Việt và TF-IDF. Mục **Ngôn ngữ / Language** ở
   sidebar chuyển toàn bộ giao diện, tiêu đề tab, danh mục việc làm và CV mẫu giữa
   tiếng Việt và tiếng Anh. Nhãn nút, bộ lọc, điểm số và thông báo lỗi cùng đổi
-  ngôn ngữ. Web ưu tiên `data/jobs_vie.csv` nếu có, nếu không dùng tên cũ
-  `data/jobs_vie.cvs`. Kết quả cũ được xóa khi đổi dữ liệu/backend.
+  ngôn ngữ. Cả hai dùng cùng 500 tin trong `data/jobs_catalog.csv`; phần tiếng
+  Anh có thể là tóm tắt có cấu trúc từ tin gốc, không phải bản dịch đầy đủ.
+  Khi không có catalog, web nhận CSV 20 tin cũ. Đổi ngôn ngữ xóa CV cũ; đổi
+  cách tìm giữ CV nhưng yêu cầu tìm lại để cập nhật kết quả.
 - Điều hướng chỉ gồm **Khám phá việc làm / Explore jobs** và **Tìm việc theo CV /
   Match your CV**; mục **Về đồ án** đã được bỏ khỏi giao diện.
 - Phần **Cách tìm việc phù hợp / How to find matching jobs** giải thích hai cách
@@ -61,7 +69,23 @@ engine dùng chung. Cache engine theo nội dung file, backend và model: sửa 
 được nhận biết ở lần tương tác/rerun kế tiếp. CV/kết quả chỉ lưu trong bộ nhớ từng
 phiên, không vào cache dùng chung, file, hoặc log ứng dụng. Nút **Xóa CV** xóa cả hai.
 
-Điểm hiển thị là cosine nguyên gốc, không quy thành xác suất trúng tuyển. Bộ lọc
+CV và tệp upload chỉ ở bộ nhớ của phiên, không lưu file/cache truy vấn hoặc gọi
+dịch vụ OCR bên ngoài. Trọng số OCR công khai được tải vào `.cache/ocr_models`
+lần đầu; đây không phải nội dung CV. **Xóa CV** dọn cả tệp, văn bản và kết quả.
+
+Hỗ trợ PNG/JPG/JPEG/WEBP/TIFF, PDF có chữ/PDF scan và DOCX (đoạn văn, bảng,
+header, text box; ảnh nhúng khi tài liệu không có chữ). File tối đa 15 MB,
+ảnh/PDF tối đa 20 trang, văn bản tối đa 60.000 ký tự. Word `.doc` cũ phải lưu
+thành `.docx`; PDF có mật khẩu cần bỏ mật khẩu trước. OCR có thể sai dấu/chữ;
+luôn kiểm tra vùng và dùng phần **Xem và sửa nội dung đã đọc** khi cần.
+
+Địa điểm trong CV là gợi ý: ưu tiên dòng nơi muốn làm, rồi địa chỉ liên hệ.
+Người dùng có thể đổi vùng hoặc chọn tất cả. Vùng được lọc bắt buộc **trước**
+khi xếp hạng; không tự lấy việc ngoài vùng để lấp đầy top-N. Nhóm Nha Trang /
+Khánh Hòa bao gồm tin chỉ ghi cấp tỉnh, không khẳng định địa chỉ chính xác.
+
+Điểm gợi ý CV là tổng có trọng số của 4 cosine; điểm việc tương tự là cosine
+toàn văn. Cả hai không quy thành xác suất trúng tuyển. Bộ lọc
 kinh nghiệm trong danh sách là bộ lọc theo yêu cầu của tin; chức năng ghép CV chưa
 kiểm tra điều kiện kinh nghiệm bắt buộc.
 
@@ -75,11 +99,14 @@ Kiểm thử backend và các luồng giao diện bằng Streamlit AppTest:
 quay lại, tìm ký tự đặc biệt, đặt lại bộ lọc, đổi ngôn ngữ, CV rỗng/ngoài từ vựng,
 tách phiên, cache đổi theo dữ liệu, thiếu file và lỗi tải semantic. Khi chỉ cài
 requirements cơ bản, các test AppTest được bỏ qua với thông báo cần cài thư viện web.
+Các test đọc CV cần `requirements-web.txt`; `tests/test_catalog.py` kiểm tra
+500 bản ghi, provenance và checksum. Có kiểm thử vùng là bộ lọc bắt buộc, công
+thức điểm 4 thành phần, file hỏng, PDF khóa/quá nhiều trang và xóa CV.
 
 ### Chạy bằng Jupyter Notebook để trình bày đồ án
 
 Mở **[job_recommender_notebook.ipynb](job_recommender_notebook.ipynb)**. Notebook có
-giải thích tiếng Việt, đọc 20 tin từ `data/jobs_vie.cvs`, chuẩn bị 3 CV tiếng Việt,
+giải thích tiếng Việt, đọc catalog 500 tin, chuẩn bị 3 CV tiếng Việt,
 minh họa TF-IDF/cosine, chạy hai chức năng gợi ý và lưu kết quả. Mặc định dùng TF-IDF
 để không cần tải trọng số mô hình. Các lớp OOP được import từ module trong repo,
 vì vậy cần tải **toàn bộ repository**, không chỉ riêng file notebook.
@@ -159,12 +186,20 @@ ui_helper.py               # Phong cách giao diện và CV mẫu tiếng Việt
 web_support.py             # Tìm kiếm, lọc, hiển thị thẻ và chọn CV mẫu theo ngôn ngữ
 ui_text.py                 # Từ điển giao diện Việt/Anh và định dạng kinh nghiệm
 requirements-web.txt       # Thư viện chạy giao diện web
+cv_documents.py            # Đọc PDF/Word/ảnh, OCR cục bộ và giới hạn tài liệu
+resume_profile.py          # Trích xuất vị trí, kỹ năng, lĩnh vực từ CV
+locations.py               # Alias địa điểm, ưu tiên vùng mong muốn trong CV
+catalog_data.py            # Hai ngôn ngữ của cùng catalog
+build_job_catalog.py       # Tải snapshot nguồn, làm sạch và chọn đúng 500 tin
 .streamlit/config.toml     # Chủ đề sáng, màu sắc giao diện
 job_recommender_notebook.ipynb # Chạy từng bước bằng Jupyter Notebook
 requirements-notebook.txt  # Thư viện để mở và thực thi notebook
 requirements.txt           # Thư viện cho TF-IDF
 requirements-semantic.txt  # Thêm Sentence Transformers
 data/
+  jobs_catalog.csv         # 500 tin IT có metadata và provenance; catalog chính
+  catalog_manifest.json    # Nguồn, revision, phân bố, số công ty và checksum
+  DATA_SOURCE.md           # Giấy phép/ghi công và các trường được suy ra
   jobs.csv                 # 20 công việc giả lập
   jobs_vie.cvs             # 20 công việc tương ứng bằng tiếng Việt
   resumes.json             # 3 đoạn CV giả lập
@@ -238,6 +273,9 @@ dùng CV tiếng Việt khi truy vấn file tiếng Việt để so khớp từ 
 | `TfidfTextVectorizer` | Học vocabulary/IDF từ việc làm, vector hóa văn bản |
 | `SentenceTransformerVectorizer` | Encode bằng pretrained model, gộp đoạn cho CV dài |
 | `JobRecommenderSystem` | Kiểm tra dữ liệu, lưu vector, tính cosine và xếp hạng |
+| `ResumeDocumentReader` | Đọc tệp trong RAM; OCR ảnh và PDF scan |
+| `ResumeAnalyzer` | Nhận diện kỹ năng/vị trí/lĩnh vực và gợi ý vùng |
+| `PublicJobCatalogBuilder` | Tạo tập con 500 tin có nguồn và kiểm tra chất lượng |
 
 Mỗi tin được ghép thành: `Title + Skills + Experience_Years + Domain + Job_Description`.
 `Job_ID` không được vector hóa vì không mô tả nội dung nghề nghiệp.
@@ -261,11 +299,15 @@ cosine(q, j) = (q · j) / (||q||₂ × ||j||₂)
 
 - `recommend_similar_jobs(job_id, top_n=5)`: lấy vector tin đang xem, so với các
   tin, loại chính nó rồi xếp hạng giảm dần.
-- `match_cv_to_jobs(cv_text, top_n=5)`: encode toàn văn CV, so với vector việc làm
-  và xếp hạng giảm dần. Đây là trích xuất **đặc trưng văn bản**, chưa tách CV thành
-  các trường kỹ năng/số năm kinh nghiệm có cấu trúc.
-- Kết quả là DataFrame gồm 6 cột gốc, `Similarity_Score` và `Rank`. Đồng điểm
-  thì sắp theo `Job_ID`. `top_n` vượt số ứng viên trả về tất cả ứng viên hiện có.
+- `match_cv_to_jobs(cv_text, top_n=5, location=None, profile=None)`: nhận diện
+  nghề/kỹ năng/lĩnh vực bằng từ điển alias, bỏ dòng liên hệ có nhãn khỏi văn bản
+  so khớp, lọc vùng đã xác nhận và tính 4 cosine trong cùng không gian vector.
+  **Điểm = 0,25 × vị trí + 0,35 × kỹ năng + 0,15 × lĩnh vực + 0,25 × mô tả/yêu cầu.**
+  Đây là trọng số baseline do thiết kế, chưa được tối ưu bằng dữ liệu gán nhãn.
+- Kết quả giữ 6 cột gốc và metadata, thêm `Similarity_Score`, `Rank`; CV có
+  `Score_Title`, `Score_Skills`, `Score_Domain`, `Score_Job_Description` và
+  `Matched_Skills` để giải thích. Đồng điểm sắp theo `Job_ID`. Không lấp top-N
+  bằng việc có điểm bằng 0 hoặc việc nằm ngoài vùng người dùng chọn.
 - CV rỗng, dữ liệu sai schema, mã trùng hoặc kinh nghiệm âm được báo lỗi.
   TF-IDF gặp CV hoàn toàn ngoài vocabulary trả bảng rỗng kèm cảnh báo.
 - Ma trận vector được lưu trong bộ nhớ khi khởi tạo. Mỗi truy vấn chỉ tính
@@ -296,8 +338,8 @@ print(matched_jobs[["Title", "Similarity_Score"]])
 Điểm cao nghĩa là biểu diễn nội dung gần nhau hơn. Điểm TF-IDF nằm trong [0, 1];
 cosine của dense embedding nói chung thuộc [-1, 1]. Không diễn giải điểm 0.8 là
 "80% khả năng trúng tuyển" và không so sánh trực tiếp thang điểm giữa hai backend.
-Ngoại trừ CV TF-IDF có vector bằng 0, engine luôn lấy top-N dù độ phù hợp thấp;
-ngưỡng chấp nhận cần được xác lập trên dữ liệu đánh giá ở giai đoạn sau.
+Ghép CV chỉ trả điểm dương trong vùng đã chọn, nhưng một điểm dương thấp chưa
+chứng minh phù hợp. Ngưỡng chấp nhận cần xác lập trên dữ liệu đánh giá ở giai đoạn sau.
 
 **Số năm kinh nghiệm hiện là tín hiệu văn bản, chưa được tính chênh lệch số học
 hay lọc điều kiện bắt buộc.** Mô hình có thể gợi ý tin yêu cầu kinh nghiệm cao hơn
@@ -308,8 +350,10 @@ sau này có thể trích xuất kinh nghiệm có cấu trúc, thêm bộ lọc
 tin việc làm, chưa phải item-based collaborative filtering từ lịch sử tương tác.
 Không dùng thông tin cá nhân ngoài văn bản được truyền vào để xây hồ sơ người dùng.
 
-Dữ liệu giả lập nhỏ và CV cố ý có nhiều kỹ năng trùng tin tuyển dụng. Kết quả
-demo minh họa cách chạy thuật toán, chưa chứng minh chất lượng trên dữ liệu thực.
+Web dùng 500 tin từ nguồn công khai và notebook có CV mẫu. Tin là dữ liệu tham
+khảo lịch sử, chưa được xác nhận còn tuyển. Bản Anh có thể là tóm tắt; kỹ năng
+và vùng được suy ra bằng quy tắc, OCR có thể sai. Kết quả chạy thành công chưa
+chứng minh độ chính xác ghép CV trên dữ liệu gán nhãn.
 Unit tests kiểm tra tính đúng của phần mềm; **không thay thế** Precision@K,
 Recall@K, MRR hoặc NDCG của Giai đoạn 3.
 
@@ -337,12 +381,17 @@ Recall@K, MRR hoặc NDCG của Giai đoạn 3.
 - Đã chạy demo TF-IDF cho truy vấn `J001` và cả 3 CV, lưu kết quả trong
   `outputs/tfidf/`. Top-1 của CV001/CV002/CV003 lần lượt là Data Analyst,
   Python Backend Developer và AI Engineer.
-- Đã chạy thành công 41 kiểm thử engine, tiện ích web và Streamlit AppTest trên
+- Catalog bàn giao có đúng 500 tin không trùng nội dung, 387 công ty và 10 nhóm
+  khu vực; provenance và checksum nằm trong `data/catalog_manifest.json`.
+- Đã chạy thành công 56 kiểm thử engine, đọc tài liệu, catalog và Streamlit AppTest trên
   Python 3.12.5/Streamlit 1.65.0. Nhánh web đã chạy với TF-IDF và hai bộ dữ liệu.
   Kiểm thử đổi Việt → Anh → Việt, lọc theo giá trị số, điểm CV thực, điều hướng
   và thông báo lỗi tiếng Anh; điều hướng chỉ còn hai trang.
+- Đã thử bộ OCR thật trên CV mẫu tiếng Việt ở ảnh PNG và PDF scan, đồng thời
+  đọc Word DOCX và PDF có chữ. Các mẫu nhận diện được vùng Hà Nội và kỹ năng
+  Backend Python; OCR không bảo đảm giữ nguyên mọi dấu/chữ trong toàn văn CV.
 - Notebook gồm 21 ô (10 ô mã) đã được thực thi từ đầu đến cuối bằng kernel
-  Jupyter với dữ liệu tiếng Việt và TF-IDF, không có ô lỗi. File `.ipynb` lưu sẵn
+  Jupyter với catalog 500 tin tiếng Việt, TF-IDF và lọc vùng, không có ô lỗi. File `.ipynb` lưu sẵn
   kết quả; các bảng được xuất vào `outputs/notebook/vi/tfidf/`.
 - Đã cài Sentence Transformers, nhưng quá trình tải trọng số Hugging Face
   chưa hoàn tất trong lần kiểm tra. Đã dừng tiến trình tải thử; **chưa xác nhận
@@ -351,6 +400,8 @@ Recall@K, MRR hoặc NDCG của Giai đoạn 3.
 - Phiên bản môi trường kiểm tra: Python 3.12.5, pandas 2.2.3, NumPy 2.2.2,
   SciPy 1.15.2, scikit-learn 1.8.0. Nhánh semantic đã cài sentence-transformers
   5.7.0, transformers 5.18.0 và dùng torch 2.12.1 có sẵn.
+  Đọc CV dùng RapidOCR 3.10.0 (PP-OCRv6 small), pypdf 6.20.1,
+  pypdfium2 4.30.0 và python-docx 1.2.0.
 
 Các phiên bản trên ghi nhận môi trường đã dùng, không phải kết luận rằng mọi
 phiên bản trong khoảng `requirements` đều đã được kiểm thử.

@@ -62,7 +62,10 @@ class JobRecommenderTests(unittest.TestCase):
 
     def test_top_n_is_capped(self):
         self.assertEqual(len(self.engine.recommend_similar_jobs("J001", 100)), len(self.jobs) - 1)
-        self.assertEqual(len(self.engine.match_cv_to_jobs("Python", 100)), len(self.jobs))
+        matches = self.engine.match_cv_to_jobs("Python", 100)
+        self.assertLessEqual(len(matches), len(self.jobs))
+        self.assertEqual(len(matches), len(self.engine.match_cv_to_jobs("Python", len(self.jobs))))
+        self.assertTrue((matches["Similarity_Score"] > 0).all())
 
     def test_invalid_top_n_is_rejected_by_both_methods(self):
         for value in [0, -1, 1.5, True, "5", None]:

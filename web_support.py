@@ -8,6 +8,8 @@ import pandas as pd
 from generate_mock_data import MockDataGenerator
 from ui_helper import SAMPLE_RESUMES, parse_skills
 from ui_text import experience_text, tr
+from locations import region_label
+from urllib.parse import urlparse
 
 
 def search_text(value: str) -> str:
@@ -52,17 +54,38 @@ def job_card_html(row: pd.Series, *, detail: bool = False, language: str = "vi")
     if "Similarity_Score" in row:
         score = (
             f'<div class="recommendation-heading"><span class="rank-badge">#{int(row["Rank"])}</span>'
-            f'<span class="similarity-badge">{escape(tr(language, "similarity"))} '
+            f'<span class="similarity-badge">{escape(tr(language, "cv_similarity" if "Score_Title" in row else "similarity"))} '
             f'<strong>{float(row["Similarity_Score"]):.4f}</strong></span></div>'
         )
     description_class = "desc-full-text" if detail else "job-desc-snippet"
+    metadata = ""
+    if row.get("Company", ""):
+        metadata += f'<p><strong>{escape(tr(language, "company"))}:</strong> {escape(str(row["Company"]))}</p>'
+    if row.get("Region_Codes", ""):
+        regions = ", ".join(region_label(code, language) for code in str(row["Region_Codes"]).split(";"))
+        metadata += f'<p><strong>{escape(tr(language, "location"))}:</strong> {escape(regions)}</p>'
+    if row.get("Salary", ""):
+        metadata += f'<p><strong>{escape(tr(language, "salary"))}:</strong> {escape(str(row["Salary"]))}</p>'
+    requirements = ""
+    if detail and row.get("Requirements", ""):
+        requirements = f'<p><strong>{escape(tr(language, "requirements"))}:</strong> {escape(str(row["Requirements"]))}</p>'
+    matched = ""
+    if row.get("Matched_Skills", ""):
+        matched = f'<p><strong>{escape(tr(language, "matched_skills"))}:</strong> {escape(str(row["Matched_Skills"]))}</p>'
+    source = ""
+    url = str(row.get("Source_URL", ""))
+    if urlparse(url).scheme == "https" and urlparse(url).netloc == "huggingface.co":
+        source = f'<p><a href="{escape(url, quote=True)}" target="_blank" rel="noopener noreferrer">{escape(tr(language, "source"))}</a></p>'
+    known = row.get("Experience_Known", True)
+    exp_label = experience_text(language, float(row["Experience_Years"]), badge=True) if known else tr(language, "experience_unknown")
     # Không quy đổi điểm cosine thành %, vì đây không phải xác suất tuyển dụng.
     return (
         f'<div class="job-card {"detail-card" if detail else ""}">{score}'
         f'<div class="job-card-header"><h3 class="job-title">{value("Title")}</h3>'
         f'<span class="job-id-tag">{value("Job_ID")}</span></div>'
         f'<div class="meta-row"><span class="domain-pill">{value("Domain")}</span>'
-        f'<span class="exp-pill">{escape(experience_text(language, float(row["Experience_Years"]), badge=True))}</span></div>'
+        f'<span class="exp-pill">{escape(exp_label)}</span></div>'
+        f'<div class="job-metadata">{metadata}</div>'
         f'<div class="skills-wrapper">{skills}</div>'
-        f'<div class="{description_class}">{value("Job_Description")}</div></div>'
+        f'<div class="{description_class}">{value("Job_Description")}</div>{requirements}{matched}{source}</div>'
     )
