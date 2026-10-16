@@ -41,6 +41,14 @@ Khởi động lại sau khi cài dependency hoặc khắc phục model để th
 
 ## 2 Kinh nghiệm có cấu trúc
 
+Đầu vào tin tuyển dụng được chuẩn hóa bởi `job_experience.py`: dùng trường
+kinh nghiệm nguồn khi có số rõ; nếu thiếu thì đọc yêu cầu riêng, rồi phần yêu
+cầu trong JD gộp. Chuỗi `Không` không tự được hiểu là 0 năm. Bằng chứng và
+nguồn suy ra được giữ trong catalog; không lấy tuổi, năm học, phúc lợi hoặc
+thâm niên công ty làm kinh nghiệm ứng viên cần có. Bản sửa 16/10/2026 phục hồi
+67 tin thiếu số năm, giữ nguyên nội dung nguồn; đã chạy lại đánh giá trên dữ
+liệu chuẩn hóa mới với cùng CV/nhãn và trọng số.
+
 `extract_experience` nhận các câu nêu rõ số năm kinh nghiệm/thực hành và ưu tiên
 tổng kinh nghiệm được ghi rõ. Không cộng các dự án có thể trùng thời gian,
 không lấy tuổi/năm tốt nghiệp để suy ra kinh nghiệm. Nhiều con số mâu thuẫn

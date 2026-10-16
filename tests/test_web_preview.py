@@ -37,6 +37,14 @@ class WebPreviewTests(unittest.TestCase):
         self.assertTrue(all(job['id'] != 'VN0004' and 'ha_noi' in job['regions'] for job in detail['similar']))
         self.assertEqual(self.client.get('/api/jobs/missing').status_code, 404)
 
+    def test_experience_summary_matches_posted_requirement_in_both_languages(self):
+        for language in ('vi','en'):
+            with self.subTest(language=language):
+                job=self.client.get('/api/jobs/VN0002?language='+language).json()['job']
+                self.assertTrue(job['experience_known'])
+                self.assertEqual(job['experience'],2.)
+                self.assertIn('2 năm' if language=='vi' else '2 years',job['requirements'])
+
     def test_match_equals_existing_engine_and_filters_region(self):
         from web_preview import catalog
         text = 'Backend Developer. Python, Django, FastAPI, PostgreSQL, REST API, Docker. Preferred location: Hanoi.'

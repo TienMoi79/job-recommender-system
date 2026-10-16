@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "catalog_sha256": "916fa2133cd4abad9b41d6c0a9ab5d92110e68bb21945a385732d234aa699127",
+  "catalog_sha256": "ee22f67adaaff99135148799efb3656fc72d4ec99df5552ec71ea12d167142ad",
   "label_provenance": "assistant-curated pilot intent judgments on synthetic CVs; NOT independent human ground truth; sparse positive qrels, unjudged treated as 0 for conservative scoring",
   "grades": {
     "0": "not relevant or unjudged",
@@ -509,5 +509,11 @@
       "region": "quang_ninh",
       "relevance": {}
     }
-  ]
+  ],
+  "catalog_normalization_note": {
+    "at": "2026-10-16T15:04:54.671973+00:00",
+    "previous_catalog_sha256": "916fa2133cd4abad9b41d6c0a9ab5d92110e68bb21945a385732d234aa699127",
+    "queries_sha256_unchanged": "a6c6aab4b3ab663a1cbb043ed62017db1afb5e4e23dff3f519f1580102bcf4e9",
+    "reason": "Experience recovered from existing source requirements/JD; posting text, query texts and relevance grades unchanged. Rerun metrics."
+  }
 }

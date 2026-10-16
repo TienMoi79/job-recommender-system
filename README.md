@@ -462,10 +462,14 @@ báo cáo ghi rõ bản hybrid không ngữ nghĩa. Đừng chỉnh trọng số
   Python Backend Developer và AI Engineer.
 - Catalog bàn giao có đúng 500 tin không trùng tuyệt đối, 387 công ty và 10 nhóm
   khu vực; provenance và checksum nằm trong `data/catalog_manifest.json`.
-- Đã chạy thành công 78 kiểm thử engine, hybrid, metrics, API, đọc tài liệu, catalog và Streamlit AppTest trên
+- Đã chạy thành công 83 kiểm thử engine, hybrid, metrics, API, đọc tài liệu, catalog và Streamlit AppTest trên
   Python 3.12.5/Streamlit 1.65.0. Nhánh web đã chạy với TF-IDF và hai bộ dữ liệu.
   Kiểm thử đổi Việt → Anh → Việt, lọc theo giá trị số, điểm CV thực, điều hướng
   và thông báo lỗi tiếng Anh; điều hướng chỉ còn hai trang.
+- Bộ đọc kinh nghiệm tuyển dụng xét thêm yêu cầu/JD khi trường nguồn không rõ.
+  Đã phục hồi 67 tin, gồm VN0002 (Fullstack Java Developer: tối thiểu 2 năm),
+  cập nhật tóm tắt Việt/Anh, bộ lọc và đầu vào chấm điểm. Giữ nguyên văn bản
+  nguồn và 500 Job_ID; có nhật ký sửa ở `outputs/data_quality/experience_repairs.csv`.
 - Đã thử bộ OCR thật trên CV mẫu tiếng Việt ở ảnh PNG và PDF scan, đồng thời
   đọc Word DOCX và PDF có chữ. Các mẫu nhận diện được vùng Hà Nội và kỹ năng
   Backend Python; OCR không bảo đảm giữ nguyên mọi dấu/chữ trong toàn văn CV.

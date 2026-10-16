@@ -55,9 +55,19 @@
     "dba": 1
   },
   "company_count": 387,
-  "unknown_experience_count": 134,
-  "csv_sha256": "916fa2133cd4abad9b41d6c0a9ab5d92110e68bb21945a385732d234aa699127",
+  "unknown_experience_count": 67,
+  "csv_sha256": "ee22f67adaaff99135148799efb3656fc72d4ec99df5552ec71ea12d167142ad",
   "english_content": "Source English descriptions when available; otherwise rule-based structured summaries, not full translations.",
   "skills": "Dictionary-derived from source title, description and requirements; not exhaustive annotations.",
-  "vacancy_status": "Historical public dataset; no claim that listings are currently open."
+  "vacancy_status": "Historical public dataset; no claim that listings are currently open.",
+  "normalization_updates": [
+    {
+      "at": "2026-10-16T15:04:54.671973+00:00",
+      "rule": "job-experience-fallback-v1",
+      "recovered": 67,
+      "previous_csv_sha256": "916fa2133cd4abad9b41d6c0a9ab5d92110e68bb21945a385732d234aa699127",
+      "csv_sha256": "ee22f67adaaff99135148799efb3656fc72d4ec99df5552ec71ea12d167142ad",
+      "note": "Only missing numeric experience and derived English summaries repaired; original source text, Job_ID and qrels unchanged."
+    }
+  ]
 }

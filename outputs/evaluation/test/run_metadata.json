@@ -1,6 +1,6 @@
 {
-  "benchmark_sha256": "a43156155a3b4a1925f603743839f82ea9030c6b763ce756381f1d3fda411edc",
-  "catalog_sha256": "916fa2133cd4abad9b41d6c0a9ab5d92110e68bb21945a385732d234aa699127",
+  "benchmark_sha256": "9b1193a3b134510993ba8f9b9d6a13f50413268c26bbb5efa8cbed69468b755e",
+  "catalog_sha256": "ee22f67adaaff99135148799efb3656fc72d4ec99df5552ec71ea12d167142ad",
   "label_provenance": "assistant-curated pilot intent judgments on synthetic CVs; NOT independent human ground truth; sparse positive qrels, unjudged treated as 0 for conservative scoring",
   "split": "test",
   "weights": {
@@ -31,8 +31,8 @@
       "Mean_Near_Duplicate_Extras": 0.1,
       "Mean_Returned": 4.75,
       "JudgedCoverage@5": 0.7473684210526316,
-      "Median_Latency_ms": 11.678350012516603,
-      "Setup_seconds": 0.7951436000003014
+      "Median_Latency_ms": 35.61624999565538,
+      "Setup_seconds": 2.5968108999950346
     },
     {
       "model": "B_semantic",
@@ -50,8 +50,8 @@
       "Mean_Near_Duplicate_Extras": 0.1,
       "Mean_Returned": 4.75,
       "JudgedCoverage@5": 0.7052631578947368,
-      "Median_Latency_ms": 102.61924999940675,
-      "Setup_seconds": 151.6376092999999
+      "Median_Latency_ms": 258.62675000098534,
+      "Setup_seconds": 455.4623271000164
     },
     {
       "model": "C_hybrid",
@@ -60,8 +60,8 @@
       "positive_queries": 19,
       "Precision@5": 0.631578947368421,
       "StrictPrecision@5": 0.41052631578947374,
-      "Recall@5": 0.4797474455369192,
-      "NDCG@5": 0.7931866369200463,
+      "Recall@5": 0.4771158665895508,
+      "NDCG@5": 0.7918963293371972,
       "MRR@5": 0.9210526315789473,
       "Empty_Accuracy": 1.0,
       "Region_Violations": 0,
@@ -69,8 +69,8 @@
       "Mean_Near_Duplicate_Extras": 0.0,
       "Mean_Returned": 3.85,
       "JudgedCoverage@5": 0.768421052631579,
-      "Median_Latency_ms": 130.5210499849636,
-      "Setup_seconds": 4.758672099997057
+      "Median_Latency_ms": 288.772699990659,
+      "Setup_seconds": 12.243993500014767
     }
   ]
 }

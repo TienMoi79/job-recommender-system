@@ -9,21 +9,27 @@ sánh, không sinh từ điểm mô hình. Không thay nhãn hoặc chỉnh tr�
 nhận; qrels còn thưa. Tin chưa được gán nhãn bị chấm 0 dù có thể phù hợp. Các
 con số dưới đây là chẩn đoán pilot, không phải độ chính xác tuyển dụng thực tế.
 
+
+Đã chạy lại sau bản sửa trích xuất kinh nghiệm: phục hồi 67 tin từ yêu cầu/JD,
+còn 67 tin chưa xác định. Catalog giữ nguyên Job_ID và văn bản nguồn; không sửa
+CV, nhãn hay trọng số để nâng điểm. Checksum mới được ghi trong benchmark và
+metadata báo cáo; nhật ký ở `outputs/data_quality/experience_repairs.csv`.
+
 ## Kết quả test đã chạy với semantic thật
 
 | Chỉ số | A TF-IDF baseline | B Semantic baseline | C Hybrid phiên bản 2 |
 |---|---:|---:|---:|
 | Precision@5 | 0,7474 | 0,7053 | 0,6316 |
 | StrictPrecision@5, chỉ nhãn mức 2 | 0,4105 | 0,3789 | 0,4105 |
-| Recall@5 | 0,6083 | 0,5830 | 0,4797 |
-| NDCG@5 | 0,8456 | 0,7553 | 0,7932 |
+| Recall@5 | 0,6083 | 0,5830 | 0,4771 |
+| NDCG@5 | 0,8456 | 0,7553 | 0,7919 |
 | MRR@5 | 0,9386 | 0,9474 | 0,9211 |
 | Empty Accuracy, 1 truy vấn âm | 1/1 | 1/1 | 1/1 |
 | Tổng vi phạm vùng | 0 | 0 | 0 |
 | Số tin trả về trung bình | 4,75 | 4,75 | 3,85 |
 | Số công ty trung bình | 4,50 | 4,45 | 3,70 |
 | Số bản gần trùng dư trung bình | 0,10 | 0,10 | 0,00 |
-| Độ trễ trung vị khi đã sẵn sàng, ms | 11,68 | 102,62 | 130,52 |
+| Độ trễ trung vị khi đã sẵn sàng, ms | 35,62 | 258,63 | 288,77 |
 
 Precision, Recall, NDCG, MRR lấy trung bình trên 19 truy vấn có nhãn dương.
 Precision luôn chia cho 5, kể cả trả ít hơn 5 tin. Số tin/công ty/trùng và độ
@@ -33,7 +39,7 @@ tin có nhãn trên số tin đã trả để gọi thay cho Precision@5.
 Semantic dùng `paraphrase-multilingual-MiniLM-L12-v2` trên CPU, vector 384
 chiều, tối đa 4 luồng Torch. Model trong môi trường kiểm tra phân giải đến
 revision `e8f8c211226b894fcb81acc59f3b34ba3efd5f42`; hybrid ghim revision này.
-Thời gian chuẩn bị ở lần chạy cuối: A khoảng 0,80 giây, B 151,64 giây, C 4,76
+Thời gian chuẩn bị ở lần chạy cuối: A khoảng 2,60 giây, B 455,46 giây, C 12,24
 giây. C dùng cache embedding **tin công khai đã xây trước**, còn B tạo lại các
 ma trận đặc trưng baseline; đây không phải phép so sánh khởi động lạnh công bằng.
 Độ trễ phụ thuộc máy và tải CPU, không phải cam kết tốc độ triển khai.

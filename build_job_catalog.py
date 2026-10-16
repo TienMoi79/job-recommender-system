@@ -22,6 +22,7 @@ import requests
 
 from locations import find_regions, plain_text, region_label
 from resume_profile import extract_skills, identify_roles, ROLES
+from job_experience import metadata_experience, resolve_job_experience
 
 SOURCE = "tinixai/vietnamese-job-descriptions"
 REVISION = "679c3a17347ff6ce769d9bf510c122a087493cf6"
@@ -39,13 +40,8 @@ def clean(value) -> str:
 
 def experience_years(raw: str) -> tuple[float, bool]:
     """Không dùng 0 để khẳng định không cần kinh nghiệm nếu dữ liệu không rõ."""
-    norm = plain_text(raw)
-    if "khong yeu cau" in norm or "chua co kinh nghiem" in norm:
-        return 0.0, True
-    if "duoi 1" in norm:
-        return 0.0, True  # Cận dưới, vẫn giữ nguyên chuỗi nguồn trong Experience_Text.
-    match = re.search(r"(\d+(?:[.,]\d+)?)\s*(?:[-–]\s*\d+\s*)?(?:nam|years?|year|\+)", norm)
-    return (float(match.group(1).replace(",", ".")), True) if match else (0.0, False)
+    parsed=metadata_experience(raw)
+    return parsed.years,parsed.known
 
 
 def salary_english(raw: str) -> str:
@@ -104,7 +100,8 @@ class PublicJobCatalogBuilder:
             return None
         role = roles[0]
         company_en = company_english(company)
-        years, known = experience_years(clean(raw.get("experience_level")))
+        experience=resolve_job_experience(clean(raw.get("experience_level")),requirements,description)
+        years, known = experience.years,experience.known
         if years > 15:
             return None
         main_region = next((code for code in regions if code in QUOTAS), None)
@@ -128,6 +125,7 @@ class PublicJobCatalogBuilder:
             "Title": title, "Title_EN": en_title, "Skills": "; ".join(skills),
             "Experience_Years": years, "Experience_Known": known,
             "Experience_Text": clean(raw.get("experience_level")) or "Chưa rõ",
+            "Experience_Source":experience.source,"Experience_Evidence":experience.evidence,
             "Domain": role[3], "Domain_EN": role[4], "Role_Code": role[0],
             "Job_Description": description, "Job_Description_EN": en_description,
             "Requirements": requirements,

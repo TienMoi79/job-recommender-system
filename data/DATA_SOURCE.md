@@ -31,6 +31,13 @@ bất thường. Lấy mẫu tái lập với seed 42, xen kẽ nhóm nghề tro
   dùng 0 như giá trị kỹ thuật kèm `Experience_Known=False`; UI ghi “Kinh nghiệm
   chưa rõ”, không khẳng định tin không yêu cầu kinh nghiệm. `Experience_Text`
   giữ chuỗi gốc. Ghép CV chưa lọc cứng theo số năm kinh nghiệm.
+- Khi trường kinh nghiệm nguồn không rõ (ví dụ `Không`), bộ chuẩn hóa đọc tiếp
+  phần `Requirements`, rồi phần yêu cầu trong `Job_Description`. Chỉ nhận số
+  gắn với kinh nghiệm; hỗ trợ khoảng năm, số thập phân và tháng quy đổi ra năm.
+  Không lấy tuổi/năm học/thâm niên công ty hay số năm chỉ được ghi là ưu tiên.
+  `Experience_Source` và `Experience_Evidence` ghi nơi suy ra và đoạn bằng chứng
+  chuẩn hóa không dấu; toàn văn gốc vẫn giữ nguyên. Đây là quy tắc suy ra có giới
+  hạn, không phải nhãn đã được nhà tuyển dụng kiểm chứng.
 - Nhóm `khanh_hoa` được ghi **Nha Trang / Khánh Hòa**. Tin chỉ ghi tỉnh không
   bị trình bày như một địa chỉ chính xác ở trung tâm Nha Trang.
 - Khi một tin có nhiều vùng, bộ lọc chấp nhận từng vùng được ghi trong nguồn.
@@ -63,6 +70,13 @@ script lấy bù từ tin thật của vùng khác, không tạo thêm tin giả
 `catalog_manifest.json` là thống kê của bản bàn giao; kiểm tra bằng
 `tests/test_catalog.py`. Việc kiểm tra cấu trúc và xếp hạng đúng thứ tự chưa thay
 thế đánh giá độ chính xác gợi ý trên các cặp CV–việc làm được gán nhãn.
+
+Bản sửa 16/10/2026 phục hồi 67 tin từng thiếu số năm; số tin chưa xác định còn
+67/500. Giữ nguyên 500 Job_ID, công ty, địa điểm và văn bản nguồn, không lấy mẫu
+lại catalog. Bản ghi sửa ở `outputs/data_quality/experience_repairs.csv`; manifest
+có checksum trước/sau. `python repair_catalog_experience.py` chỉ xem trước;
+thêm `--apply` mới áp dụng và lưu bản cũ trong `.cache/experience-before-*`.
+Sau thay đổi dữ liệu cần khởi động lại web và chạy lại đánh giá/notebook.
 
 Trích dẫn do dataset card đề xuất: Le, Ngoc-Quang; Hoang, Duc Duong; Tran, Mai Vu;
 Vuong, Thi-Hai-Yen (2026). *CareerPathKG: Knowledge Graph Integrated Framework
