@@ -41,7 +41,8 @@ Mở **http://127.0.0.1:8000**. Nếu terminal đã hiện `(.venv)`, có thể 
   bốn thành phần điểm. CV chỉ ở RAM, không lưu file/cơ sở dữ liệu/localStorage.
 - Lưu việc yêu thích bằng Job_ID trong localStorage của trình duyệt này, không
   có đăng nhập hay đồng bộ tài khoản. Đổi Việt/Anh cập nhật giao diện và dữ liệu.
-- Tin là dữ liệu tham khảo có đường dẫn nguồn; nút xem nguồn không phải nộp hồ sơ.
+- Tin là dữ liệu tham khảo. Liên kết dataset chỉ giữ trong tài liệu và metadata
+  phục vụ báo cáo, không hiển thị trên giao diện tìm việc.
 - Font Be Vietnam Pro tải từ Google Fonts; khi offline dùng font hệ thống.
 - API tại `/api/docs`. Kiểm thử API: `python -m unittest discover -s tests -p test_web_preview.py -v`
   (cần thêm `python -m pip install httpx` trong môi trường kiểm thử).

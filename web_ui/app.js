@@ -18,9 +18,9 @@ const copy = {
     resultTitle:'Cơ hội dành cho bạn', resultSuffix:'việc làm phù hợp bộ lọc', relevance:'Theo độ phù hợp', original:'Thứ tự trong dữ liệu',
     savedTitle:'Những cơ hội bạn muốn giữ lại', savedSub:'Được lưu trên trình duyệt này để bạn dễ quay lại.',
     save:'Lưu công việc', unsave:'Bỏ lưu công việc', savedToast:'Đã lưu vào danh sách của bạn', removedToast:'Đã bỏ lưu công việc',
-    details:'Chi tiết công việc', description:'Mô tả công việc', requirements:'Yêu cầu ứng viên', skills:'Kỹ năng', source:'Xem tin gốc',
+    details:'Chi tiết công việc', description:'Mô tả công việc', requirements:'Yêu cầu ứng viên', skills:'Kỹ năng',
     similar:'Cơ hội tương tự', similarSub:'Gợi ý theo nội dung công việc', selectJob:'Chọn một công việc để xem chi tiết',
-    sourceNote:'Dữ liệu tham khảo từ bộ tin công khai. Chưa xác minh tin còn nhận hồ sơ.', sourceLink:'Nguồn dữ liệu',
+    sourceNote:'Dữ liệu tham khảo từ bộ tin công khai. Chưa xác minh tin còn nhận hồ sơ.',
     noJobs:'Chưa tìm thấy công việc phù hợp', noJobsSub:'Thử thay đổi từ khóa hoặc mở rộng địa điểm và bộ lọc.', noSaved:'Bạn chưa lưu công việc nào', noSavedSub:'Bấm biểu tượng đánh dấu trên công việc bạn quan tâm để lưu lại.',
     previous:'Trước', next:'Sau', page:'Trang', loading:'Đang tải cơ hội mới…', connection:'Chưa kết nối được máy chủ. Kiểm tra terminal và thử lại.', retry:'Thử lại',
     uploadStep:'Tải CV', confirmStep:'Xác nhận thông tin', resultsStep:'Khám phá cơ hội', uploadTitle:'Bắt đầu với CV của bạn',
@@ -56,9 +56,9 @@ const copy = {
     resultTitle:'Your next opportunity', resultSuffix:'jobs match your filters', relevance:'Best match first', original:'Dataset order',
     savedTitle:'Opportunities worth keeping', savedSub:'Saved in this browser so you can come back anytime.',
     save:'Save job', unsave:'Remove saved job', savedToast:'Added to your saved jobs', removedToast:'Removed from saved jobs',
-    details:'Job details', description:'Job description', requirements:'Requirements', skills:'Skills', source:'View original listing',
+    details:'Job details', description:'Job description', requirements:'Requirements', skills:'Skills',
     similar:'Similar opportunities', similarSub:'Recommended by job content', selectJob:'Select a job to see the details',
-    sourceNote:'Reference data from public listings. Current availability has not been verified.', sourceLink:'Dataset source',
+    sourceNote:'Reference data from public listings. Current availability has not been verified.',
     noJobs:'No matching opportunities yet', noJobsSub:'Try a different keyword or broaden your location and filters.', noSaved:'No saved jobs yet', noSavedSub:'Use the bookmark on any job that catches your eye.',
     previous:'Previous', next:'Next', page:'Page', loading:'Loading your next opportunity…', connection:'Unable to connect. Check the server terminal and try again.', retry:'Try again',
     uploadStep:'Upload CV', confirmStep:'Check details', resultsStep:'Explore matches', uploadTitle:'Start with your CV',
@@ -200,11 +200,10 @@ function detailPanel() {
   if(!state.detail||state.detail.job.id!==state.selected)return `<div class="detail-loading"><span class="loader"></span></div>`;
   if(state.detail.error)return `<div class="empty-state"><p>${t('connection')}</p><button class="secondary" data-job="${state.selected}">${t('retry')}</button></div>`;
   const job={...state.detail.job,...(state.matches?.find(j=>j.id===state.selected)||{})};
-  const source=/^https:\/\/huggingface\.co\//.test(job.source||'')?job.source:null;
   return `<div class="detail-topline"><span><i></i>${t('details')}</span><button class="mobile-close icon-button" id="close-detail" aria-label="${t('close')}">${icon('close')}</button>${saveButton(job)}</div>
     <div class="detail-company">${companyLogo(job)}<span>${escape(job.company)}</span></div><h2 class="detail-title">${escape(job.title)}</h2><p class="detail-location">${icon('pin')}${escape(job.location)}</p>
     <div class="detail-facts"><div><small>${state.lang==='vi'?'Mức lương':'Salary'}</small><strong>${escape(job.salary||t('salaryUnknown'))}</strong></div><div><small>${t('experience')}</small><strong>${experience(job)}</strong></div></div>
-    <div class="detail-actions">${source?`<a class="primary" href="${escape(source)}" target="_blank" rel="noopener noreferrer">${t('source')}${icon('external')}</a>`:''}<button class="secondary" data-save="${job.id}">${icon('bookmark')}${t(state.saved.has(job.id)?'unsave':'save')}</button></div>
+    <div class="detail-actions"><button class="secondary" data-save="${job.id}">${icon('bookmark')}${t(state.saved.has(job.id)?'unsave':'save')}</button></div>
     ${explanation(job)}<section class="detail-section"><h3>${t('skills')}</h3><div class="skill-tags">${job.skills.map(s=>`<span>${escape(s)}</span>`).join('')}</div></section>
     <section class="detail-section"><h3>${t('description')}</h3><p class="description">${escape(job.description)}</p></section>
     ${job.requirements?`<section class="detail-section"><h3>${t('requirements')}</h3><p class="description">${escape(job.requirements)}</p></section>`:''}
@@ -233,7 +232,7 @@ function render() {
   document.documentElement.lang=state.lang;document.title=t('pageTitle');
   $('.skip-link').textContent=state.lang==='vi'?'Đến nội dung':'Skip to content';
   $('#app').innerHTML=`${header()}<main id="main" class="shell">${state.view==='saved'?`<section class="saved-hero"><p class="section-kicker">${t('saved')}</p><h1>${t('savedTitle')}</h1><p>${t('savedSub')}</p></section>`:hero()}
-    ${state.loading?`<div class="initial-loading"><span class="loader"></span>${t('loading')}</div>`:state.error?`<div class="empty-state"><p>${t('connection')}</p><button class="primary" id="retry">${t('retry')}</button></div>`:state.view==='cv'?cvPage():searchBar()+workspace()}</main><footer class="footer"><div><strong>JobVista<span> / </span></strong>${t('footer')}</div><a href="https://huggingface.co/datasets/tinixai/vietnamese-job-descriptions" target="_blank" rel="noopener noreferrer">${t('sourceLink')}${icon('external')}</a></footer>`;
+    ${state.loading?`<div class="initial-loading"><span class="loader"></span>${t('loading')}</div>`:state.error?`<div class="empty-state"><p>${t('connection')}</p><button class="primary" id="retry">${t('retry')}</button></div>`:state.view==='cv'?cvPage():searchBar()+workspace()}</main><footer class="footer"><div><strong>JobVista<span> / </span></strong>${t('footer')}</div></footer>`;
   bind();
 }
 function updateResults() {

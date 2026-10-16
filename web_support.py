@@ -9,7 +9,6 @@ from generate_mock_data import MockDataGenerator
 from ui_helper import SAMPLE_RESUMES, parse_skills
 from ui_text import experience_text, tr
 from locations import region_label
-from urllib.parse import urlparse
 
 
 def search_text(value: str) -> str:
@@ -72,10 +71,6 @@ def job_card_html(row: pd.Series, *, detail: bool = False, language: str = "vi")
     matched = ""
     if row.get("Matched_Skills", ""):
         matched = f'<p><strong>{escape(tr(language, "matched_skills"))}:</strong> {escape(str(row["Matched_Skills"]))}</p>'
-    source = ""
-    url = str(row.get("Source_URL", ""))
-    if urlparse(url).scheme == "https" and urlparse(url).netloc == "huggingface.co":
-        source = f'<p><a href="{escape(url, quote=True)}" target="_blank" rel="noopener noreferrer">{escape(tr(language, "source"))}</a></p>'
     known = row.get("Experience_Known", True)
     exp_label = experience_text(language, float(row["Experience_Years"]), badge=True) if known else tr(language, "experience_unknown")
     # Không quy đổi điểm cosine thành %, vì đây không phải xác suất tuyển dụng.
@@ -87,5 +82,5 @@ def job_card_html(row: pd.Series, *, detail: bool = False, language: str = "vi")
         f'<span class="exp-pill">{escape(exp_label)}</span></div>'
         f'<div class="job-metadata">{metadata}</div>'
         f'<div class="skills-wrapper">{skills}</div>'
-        f'<div class="{description_class}">{value("Job_Description")}</div>{requirements}{matched}{source}</div>'
+        f'<div class="{description_class}">{value("Job_Description")}</div>{requirements}{matched}</div>'
     )
