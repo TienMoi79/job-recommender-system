@@ -156,10 +156,10 @@ function companyLogo(job, small=false) {
 function experience(job) { return job.experience_known?`${t('minExp')} ${job.experience} ${state.lang==='en'&&job.experience===1?'year':t('years')}`:t('expUnknown'); }
 function saveButton(job, extra='') {const saved=state.saved.has(job.id); return `<button class="save-button ${saved?'is-saved':''} ${extra}" data-save="${job.id}" aria-label="${t(saved?'unsave':'save')}" aria-pressed="${saved}" title="${t(saved?'unsave':'save')}">${icon('bookmark')}</button>`;}
 function jobCard(job) {
-  return `<article class="job-card ${state.selected===job.id?'selected':''}" data-card="${job.id}"><div class="card-main"><button class="job-open" data-job="${job.id}" aria-label="${escape(job.title)}">${companyLogo(job)}<span><span class="job-company">${escape(job.company)}</span><h3>${escape(job.title)}</h3></span></button>${saveButton(job)}</div>
+  return `<article class="job-card ${state.selected===job.id?'selected':''}" data-card="${job.id}"><div class="card-main"><button class="job-open" data-job="${job.id}" aria-label="${escape(job.title)}" aria-controls="job-detail" aria-expanded="${state.selected===job.id}">${companyLogo(job)}<span><span class="job-company">${escape(job.company)}</span><h3>${escape(job.title)}</h3></span></button>${saveButton(job)}</div>
     <div class="job-meta"><span>${icon('pin')}${escape(job.location)}</span><span>${icon('briefcase')}${experience(job)}</span></div>
     <div class="skill-tags">${job.skills.slice(0,4).map(s=>`<span class="${job.matched_skills?.includes(s)?'matched-skill':''}">${escape(s)}</span>`).join('')}${job.skills.length>4?`<span>+${job.skills.length-4}</span>`:''}</div>
-    <div class="job-card-bottom"><strong>${escape(job.salary||t('salaryUnknown'))}</strong>${job.score!==undefined?`<span class="match-score" title="${t('score')}">${icon('spark')}${job.score.toFixed(3)}</span>`:`<button class="card-arrow" data-job="${job.id}" aria-label="${t('details')}: ${escape(job.title)}">${icon('arrow')}</button>`}</div></article>`;
+    <div class="job-card-bottom"><strong>${escape(job.salary||t('salaryUnknown'))}</strong>${job.score!==undefined?`<span class="match-score" title="${t('score')}">${icon('spark')}${job.score.toFixed(3)}</span>`:`<button class="card-arrow" data-job="${job.id}" aria-controls="job-detail" aria-expanded="${state.selected===job.id}" aria-label="${t('details')}: ${escape(job.title)}">${icon('arrow')}</button>`}</div></article>`;
 }
 function filteredJobs() {
   let jobs=state.view==='cv'?(state.matches||[]):state.jobs;
@@ -195,12 +195,15 @@ function explanation(job) {
   return `<section class="explanation"><div class="explanation-title">${icon('spark')}<h3>${t('why')}</h3><strong>${job.score.toFixed(3)}</strong></div><p>${t('matchedSkills')}</p><div class="skill-tags">${job.matched_skills?.length?job.matched_skills.map(s=>`<span class="matched-skill">${escape(s)}</span>`).join(''):`<small>${t('noSkillMatch')}</small>`}</div>
     ${fields.map(([key,label,weight])=>`<div class="score-row"><span>${t(label)} <small>(${weight})</small></span><div><i style="width:${Math.max(0,Math.min(1,components[key]||0))*100}%"></i></div><b>${(components[key]||0).toFixed(3)}</b></div>`).join('')}<small class="score-note">${t('scoreNote')}</small></section>`;
 }
+function detailTopline(job=null) {
+  return `<div class="detail-topline"><span><i></i>${t('details')}</span><button class="detail-close icon-button" id="close-detail" aria-label="${t('close')}">${icon('close')}</button>${job?saveButton(job):''}</div>`;
+}
 function detailPanel() {
-  if(!state.selected)return `<div class="detail-placeholder">${icon('briefcase')}<h3>${t('selectJob')}</h3><p>${t('emptyDetail')}</p></div>`;
-  if(!state.detail||state.detail.job.id!==state.selected)return `<div class="detail-loading"><span class="loader"></span></div>`;
-  if(state.detail.error)return `<div class="empty-state"><p>${t('connection')}</p><button class="secondary" data-job="${state.selected}">${t('retry')}</button></div>`;
+  if(!state.selected)return '';
+  if(!state.detail||state.detail.job.id!==state.selected)return `${detailTopline()}<div class="detail-loading"><span class="loader"></span></div>`;
+  if(state.detail.error)return `${detailTopline()}<div class="empty-state"><p>${t('connection')}</p><button class="secondary" data-retry-job="${state.selected}">${t('retry')}</button></div>`;
   const job={...state.detail.job,...(state.matches?.find(j=>j.id===state.selected)||{})};
-  return `<div class="detail-topline"><span><i></i>${t('details')}</span><button class="mobile-close icon-button" id="close-detail" aria-label="${t('close')}">${icon('close')}</button>${saveButton(job)}</div>
+  return `${detailTopline(job)}
     <div class="detail-company">${companyLogo(job)}<span>${escape(job.company)}</span></div><h2 class="detail-title">${escape(job.title)}</h2><p class="detail-location">${icon('pin')}${escape(job.location)}</p>
     <div class="detail-facts"><div><small>${state.lang==='vi'?'Mức lương':'Salary'}</small><strong>${escape(job.salary||t('salaryUnknown'))}</strong></div><div><small>${t('experience')}</small><strong>${experience(job)}</strong></div></div>
     <div class="detail-actions"><button class="secondary" data-save="${job.id}">${icon('bookmark')}${t(state.saved.has(job.id)?'unsave':'save')}</button></div>
@@ -209,7 +212,7 @@ function detailPanel() {
     ${job.requirements?`<section class="detail-section"><h3>${t('requirements')}</h3><p class="description">${escape(job.requirements)}</p></section>`:''}
     <section class="detail-section similar-section"><h3>${t('similar')}</h3><p class="muted">${t('similarSub')}</p>${state.detail.similar.map(j=>`<button class="similar-job" data-job="${j.id}">${companyLogo(j,true)}<span><strong>${escape(j.title)}</strong><small>${escape(j.location)}</small></span>${icon('chevron')}</button>`).join('')}</section><p class="source-note">${t('sourceNote')}</p>`;
 }
-function workspace() { return `<section class="workspace" id="workspace">${state.view==='cv'?'':filters()}<div class="results" id="results">${results()}</div><aside class="job-detail" id="job-detail" aria-label="${t('details')}">${detailPanel()}</aside></section>`; }
+function workspace() { return `<section class="workspace ${state.selected?'has-detail':''}" id="workspace">${state.view==='cv'?'':filters()}<div class="results" id="results">${results()}</div><aside class="job-detail ${state.selected?'mobile-open':''}" id="job-detail" aria-label="${t('details')}" ${state.selected?'':'hidden'}>${detailPanel()}</aside></section>`; }
 function cvSteps() {
   const step=state.matches?3:state.profile?2:1;
   return `<ol class="cv-steps">${['uploadStep','confirmStep','resultsStep'].map((key,i)=>`<li class="${step>=i+1?'complete':''}"><span>${step>i+1?icon('check'):String(i+1).padStart(2,'0')}</span>${t(key)}</li>`).join('')}</ol>`;
@@ -236,28 +239,43 @@ function render() {
   bind();
 }
 function updateResults() {
-  $('#results').innerHTML=results();bindResults();
   const filtered=filteredJobs();
-  if(!filtered.some(j=>j.id===state.selected)) {
-    state.selected=filtered[0]?.id||null;state.detail=null;
-    $('#job-detail').innerHTML=detailPanel();if(state.selected)loadDetail(state.selected);
-  }
+  const pages=Math.max(1,Math.ceil(filtered.length/8));state.page=Math.min(state.page,pages);
+  // Lọc hoặc chuyển trang có thể loại tin đang xem. Đóng bảng thay vì tự mở tin khác.
+  if(state.selected&&!filtered.slice((state.page-1)*8,state.page*8).some(j=>j.id===state.selected))closeJobDetails();
+  $('#results').innerHTML=results();bindResults();
 }
 async function loadCatalog() {
   state.loading=true;state.error='';render();const language=state.lang;
   try { const data=await api(`/api/catalog?language=${language}`);if(language!==state.lang)return;
     state.data=data;state.jobs=data.jobs;state.loading=false;render();
-    if(state.view!=='cv'){state.selected=filteredJobs()[0]?.id||null;if(state.selected)loadDetail(state.selected);}
   } catch {if(language===state.lang){state.loading=false;state.error='connection';render();}}
 }
-async function loadDetail(id, openMobile=false) {
+async function loadDetail(id) {
   state.selected=id;state.detail=null;const version=++state.detailVersion;
   const panel=$('#job-detail');if(!panel)return;panel.innerHTML=detailPanel();
-  document.querySelectorAll('[data-card]').forEach(el=>el.classList.toggle('selected',el.dataset.card===id));
-  if(openMobile)panel.classList.add('mobile-open');
+  syncDetailVisibility();bindDetail();
   try {const data=await api(`/api/jobs/${encodeURIComponent(id)}?language=${state.lang}${state.view==='cv'&&state.cvRegion?'&location='+encodeURIComponent(state.cvRegion):''}`);
     if(version!==state.detailVersion)return;state.detail=data;panel.innerHTML=detailPanel();bindDetail();panel.scrollTop=0;
   } catch {if(version===state.detailVersion){state.detail={job:{id},error:true};panel.innerHTML=detailPanel();bindDetail();}}
+}
+function syncDetailVisibility() {
+  const open=state.selected!==null;
+  const panel=$('#job-detail');if(panel){panel.hidden=!open;panel.classList.toggle('mobile-open',open);}
+  $('#workspace')?.classList.toggle('has-detail',open);
+  document.querySelectorAll('[data-card]').forEach(el=>el.classList.toggle('selected',el.dataset.card===state.selected));
+  document.querySelectorAll('#results [data-job]').forEach(el=>el.setAttribute('aria-expanded',String(el.dataset.job===state.selected)));
+}
+function closeJobDetails(restoreFocus=false) {
+  const previous=state.selected;
+  // Tăng version để phản hồi đến chậm không thể mở lại bảng vừa đóng.
+  state.detailVersion++;state.selected=null;state.detail=null;
+  const panel=$('#job-detail');if(panel)panel.innerHTML='';syncDetailVisibility();
+  if(restoreFocus&&previous)document.querySelector(`#results [data-job="${previous}"]`)?.focus({preventScroll:true});
+}
+function toggleJobDetails(id) {
+  if(state.selected===id){closeJobDetails();return;}
+  loadDetail(id);
 }
 function toggleSave(id) {
   if(state.saved.has(id)){state.saved.delete(id);toast(t('removedToast'));}else{state.saved.add(id);toast(t('savedToast'));}
@@ -270,16 +288,18 @@ function resetFilters() {Object.assign(state,{q:'',region:'',domain:'',exp:'',ca
 function navigate(view) {
   state.view=view;state.page=1;state.detailVersion++;state.detail=null;state.selected=null;
   Object.assign(state,{q:'',region:'',domain:'',exp:'',category:'all'});render();
-  if(view!=='cv'||state.matches){state.selected=filteredJobs()[0]?.id||null;if(state.selected)loadDetail(state.selected);}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function bindDetail() {
   $('#job-detail')?.querySelectorAll('[data-save]').forEach(el=>el.onclick=()=>toggleSave(el.dataset.save));
-  $('#job-detail')?.querySelectorAll('[data-job]').forEach(el=>el.onclick=()=>loadDetail(el.dataset.job,true));
-  if($('#close-detail'))$('#close-detail').onclick=()=>$('#job-detail').classList.remove('mobile-open');
+  $('#job-detail')?.querySelectorAll('[data-job]').forEach(el=>el.onclick=()=>toggleJobDetails(el.dataset.job));
+  $('#job-detail')?.querySelectorAll('[data-retry-job]').forEach(el=>el.onclick=()=>loadDetail(el.dataset.retryJob));
+  if($('#close-detail'))$('#close-detail').onclick=()=>closeJobDetails(true);
 }
 function bindResults() {
-  $('#results')?.querySelectorAll('[data-job]').forEach(el=>el.onclick=()=>loadDetail(el.dataset.job,true));
+  // Nhấp bất kỳ vùng nào trên thẻ cũng bật/tắt; nút lưu hoạt động độc lập.
+  $('#results')?.querySelectorAll('[data-card]').forEach(el=>el.onclick=event=>{if(!event.target.closest('button,a,input,select,textarea'))toggleJobDetails(el.dataset.card);});
+  $('#results')?.querySelectorAll('[data-job]').forEach(el=>el.onclick=()=>toggleJobDetails(el.dataset.job));
   $('#results')?.querySelectorAll('[data-save]').forEach(el=>el.onclick=()=>toggleSave(el.dataset.save));
   $('#results')?.querySelectorAll('[data-category]').forEach(el=>el.onclick=()=>{state.category=el.dataset.category;state.page=1;updateResults();});
   $('#results')?.querySelectorAll('[data-page]').forEach(el=>el.onclick=()=>{state.page=+el.dataset.page;updateResults();$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});});
@@ -323,7 +343,7 @@ async function useSample(index) {
 async function findMatches() {
   if(!state.cvText.trim()){toast(t('emptyCv'));return;}state.matching=true;const version=++state.cvVersion;render();
   try {const data=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:state.cvText,location:state.cvRegion||null,language:state.lang,top_n:24})});
-    if(version!==state.cvVersion)return;Object.assign(state,{matches:data.jobs,profile:data.profile,matching:false,page:1,q:'',region:'',domain:'',exp:'',category:'all',selected:data.jobs[0]?.id||null,detail:null});render();if(state.selected)loadDetail(state.selected);$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});
+    if(version!==state.cvVersion)return;state.detailVersion++;Object.assign(state,{matches:data.jobs,profile:data.profile,matching:false,page:1,q:'',region:'',domain:'',exp:'',category:'all',selected:null,detail:null});render();$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});
   }catch(error){if(version===state.cvVersion){state.matching=false;render();toast(error.message);}}
 }
 function bindCv() {
@@ -344,5 +364,5 @@ function invalidateCvInputs() {
   state.cvVersion++;state.matches=null;state.matching=false;
   if(wasMatching&&$('#match-cv')){$('#match-cv').disabled=false;$('#match-cv').innerHTML=`${icon('spark')}${t('find')}${icon('arrow')}`;}
 }
-document.addEventListener('keydown',event=>{if(event.key==='Escape')$('#job-detail')?.classList.remove('mobile-open');});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.selected)closeJobDetails(true);});
 loadCatalog();
