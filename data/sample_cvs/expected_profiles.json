@@ -1,0 +1,342 @@
+[
+  {
+    "code": "CV01",
+    "slug": "data_analyst_ha_noi",
+    "name": "Nguyễn Minh Anh",
+    "title": "Data Analyst",
+    "domain": "Phân tích dữ liệu",
+    "address": "Hà Nội",
+    "preferred": "Hà Nội",
+    "region": "ha_noi",
+    "years": 1,
+    "skills": [
+      "Python",
+      "SQL",
+      "Pandas",
+      "Excel",
+      "Power BI",
+      "Statistics"
+    ],
+    "summary": "Tôi muốn ứng tuyển vị trí phân tích dữ liệu, chuyển số liệu kinh doanh thành báo cáo và đề xuất có thể thực hiện. Tôi có 1 năm thực hành làm sạch dữ liệu, xây dựng dashboard và theo dõi chỉ số bán hàng.",
+    "activities": [
+      "Làm sạch dữ liệu đơn hàng bằng Python và Pandas; kiểm tra giá trị thiếu và bản ghi trùng.",
+      "Viết truy vấn SQL để tổng hợp doanh thu, phân nhóm khách hàng và đối chiếu số liệu.",
+      "Thiết kế dashboard Power BI và báo cáo Excel theo tháng; giải thích biến động chỉ số."
+    ],
+    "project": "Dashboard bán lẻ giả lập: từ dữ liệu CSV đến báo cáo doanh thu, tồn kho và hiệu quả bán hàng.",
+    "test_note": "Ưu tiên các việc phân tích dữ liệu hoặc BI tại Hà Nội.",
+    "english": false,
+    "files": {
+      "word": "word/CV01_data_analyst_ha_noi.docx",
+      "pdf": "pdf/CV01_data_analyst_ha_noi.pdf",
+      "image": "images/CV01_data_analyst_ha_noi.png"
+    }
+  },
+  {
+    "code": "CV02",
+    "slug": "backend_python_uu_tien_ha_noi",
+    "name": "Trần Quốc Bảo",
+    "title": "Backend Developer Python",
+    "domain": "Phát triển phần mềm",
+    "address": "TP. Hồ Chí Minh",
+    "preferred": "Hà Nội",
+    "region": "ha_noi",
+    "years": 2,
+    "skills": [
+      "Python",
+      "FastAPI",
+      "Django",
+      "SQL",
+      "PostgreSQL",
+      "REST API",
+      "Docker",
+      "Git"
+    ],
+    "summary": "Tôi có 2 năm thực hành phát triển dịch vụ web bằng Python. Tôi muốn làm Backend Developer, thiết kế API, xây dựng cơ sở dữ liệu và triển khai ứng dụng. Hiện ở miền Nam nhưng sẵn sàng chuyển nơi làm theo nguyện vọng đã ghi.",
+    "activities": [
+      "Xây dựng REST API bằng FastAPI và Django, xử lý phân quyền và xác thực người dùng.",
+      "Thiết kế PostgreSQL, tối ưu truy vấn SQL và viết kiểm thử cho chức năng đặt lịch.",
+      "Đóng gói dịch vụ bằng Docker và phối hợp nhóm qua Git, kiểm tra mã trước khi tích hợp."
+    ],
+    "project": "Hệ thống đặt lịch giả lập: quản lý người dùng, lịch hẹn, phân quyền và API cho giao diện web.",
+    "test_note": "Ca ưu tiên nguyện vọng: địa chỉ TP. Hồ Chí Minh nhưng phải gợi ý Hà Nội trước.",
+    "english": false,
+    "files": {
+      "word": "word/CV02_backend_python_uu_tien_ha_noi.docx",
+      "pdf": "pdf/CV02_backend_python_uu_tien_ha_noi.pdf",
+      "image": "images/CV02_backend_python_uu_tien_ha_noi.png"
+    }
+  },
+  {
+    "code": "CV03",
+    "slug": "frontend_react_sai_gon",
+    "name": "Lê Hoàng Nam",
+    "title": "Frontend Developer React",
+    "domain": "Phát triển phần mềm",
+    "address": "Sài Gòn",
+    "preferred": "Sài Gòn",
+    "region": "ho_chi_minh",
+    "years": 2,
+    "skills": [
+      "JavaScript",
+      "TypeScript",
+      "React",
+      "HTML",
+      "CSS",
+      "REST API",
+      "Git",
+      "Figma"
+    ],
+    "summary": "Tôi ứng tuyển Frontend Developer và có 2 năm xây dựng giao diện web tương tác. Tôi quan tâm khả năng sử dụng trên điện thoại, hiệu năng tải trang và cách phối hợp giữa thiết kế với lập trình.",
+    "activities": [
+      "Phát triển giao diện React và TypeScript cho trang tìm kiếm, danh sách và chi tiết sản phẩm.",
+      "Kết nối REST API, xử lý trạng thái đang tải, lỗi kết nối và phân trang dữ liệu.",
+      "Chuyển thiết kế Figma thành HTML và CSS, kiểm tra bố cục trên nhiều màn hình."
+    ],
+    "project": "Cổng đặt vé giả lập: tìm kiếm, chọn lịch, giỏ vé và giao diện thích ứng cho điện thoại.",
+    "test_note": "Chuẩn hóa tên Sài Gòn thành vùng Hồ Chí Minh, ưu tiên công việc Frontend/React.",
+    "english": false,
+    "files": {
+      "word": "word/CV03_frontend_react_sai_gon.docx",
+      "pdf": "pdf/CV03_frontend_react_sai_gon.pdf",
+      "image": "images/CV03_frontend_react_sai_gon.png"
+    }
+  },
+  {
+    "code": "CV04",
+    "slug": "ai_engineer_da_nang",
+    "name": "Phạm Thu Hà",
+    "title": "AI Engineer",
+    "domain": "Trí tuệ nhân tạo",
+    "address": "Đà Nẵng",
+    "preferred": "Đà Nẵng",
+    "region": "da_nang",
+    "years": 3,
+    "skills": [
+      "Python",
+      "PyTorch",
+      "TensorFlow",
+      "Machine Learning",
+      "NLP",
+      "Transformers",
+      "FastAPI",
+      "Docker"
+    ],
+    "summary": "Tôi có 3 năm thực hành học máy và xử lý ngôn ngữ. Tôi muốn xây dựng hệ thống AI có khả năng phục vụ người dùng, từ chuẩn bị dữ liệu đến đánh giá mô hình và triển khai dịch vụ suy luận.",
+    "activities": [
+      "Chuẩn bị dữ liệu văn bản, huấn luyện và đánh giá mô hình phân loại bằng PyTorch.",
+      "Thực hiện dự án NLP với Transformers, biểu diễn ngữ nghĩa và tìm kiếm văn bản.",
+      "Triển khai API suy luận bằng FastAPI, đóng gói Docker và theo dõi thời gian phản hồi."
+    ],
+    "project": "Tìm kiếm tài liệu giả lập: embedding văn bản, truy hồi nội dung và đánh giá kết quả trên bộ câu hỏi thử.",
+    "test_note": "Ưu tiên nhóm AI/Machine Learning tại Đà Nẵng, không trả việc ngoài vùng đã chọn.",
+    "english": false,
+    "files": {
+      "word": "word/CV04_ai_engineer_da_nang.docx",
+      "pdf": "pdf/CV04_ai_engineer_da_nang.pdf",
+      "image": "images/CV04_ai_engineer_da_nang.png"
+    }
+  },
+  {
+    "code": "CV05",
+    "slug": "data_engineer_ho_chi_minh",
+    "name": "Võ Gia Huy",
+    "title": "Data Engineer",
+    "domain": "Kỹ thuật dữ liệu",
+    "address": "TP. Hồ Chí Minh",
+    "preferred": "TP. Hồ Chí Minh",
+    "region": "ho_chi_minh",
+    "years": 3,
+    "skills": [
+      "Python",
+      "SQL",
+      "Spark",
+      "Airflow",
+      "ETL",
+      "PostgreSQL",
+      "AWS",
+      "dbt"
+    ],
+    "summary": "Tôi có 3 năm thực hành xây dựng nền tảng dữ liệu. Tôi muốn làm Data Engineer, phát triển luồng thu thập và biến đổi dữ liệu đáng tin cậy để phục vụ báo cáo và phân tích.",
+    "activities": [
+      "Thiết kế pipeline ETL bằng Python và Airflow, xử lý lỗi và chạy lại tác vụ an toàn.",
+      "Tối ưu SQL và dùng Spark để tổng hợp dữ liệu sự kiện theo ngày.",
+      "Chuẩn hóa mô hình dữ liệu với dbt, kiểm tra chất lượng và lưu trữ trên PostgreSQL/AWS."
+    ],
+    "project": "Kho dữ liệu thương mại điện tử giả lập: lịch chạy dữ liệu, bảng tổng hợp và kiểm tra dữ liệu đầu vào.",
+    "test_note": "Phân biệt Data Engineer với Data Analyst, dù cùng có Python và SQL.",
+    "english": false,
+    "files": {
+      "word": "word/CV05_data_engineer_ho_chi_minh.docx",
+      "pdf": "pdf/CV05_data_engineer_ho_chi_minh.pdf",
+      "image": "images/CV05_data_engineer_ho_chi_minh.png"
+    }
+  },
+  {
+    "code": "CV06",
+    "slug": "tester_nha_trang",
+    "name": "Đặng Ngọc Linh",
+    "title": "Tester QA Engineer",
+    "domain": "Đảm bảo chất lượng phần mềm",
+    "address": "Nha Trang, Khánh Hòa",
+    "preferred": "Nha Trang",
+    "region": "khanh_hoa",
+    "years": 2,
+    "skills": [
+      "Python",
+      "SQL",
+      "Selenium",
+      "Postman",
+      "Jira",
+      "Git",
+      "Agile"
+    ],
+    "summary": "Tôi ứng tuyển kiểm thử phần mềm với 2 năm thực hành kiểm thử web và API. Tôi muốn làm tại khu vực ghi trong nguyện vọng, tập trung phát hiện lỗi và xác nhận chất lượng trước khi phát hành.",
+    "activities": [
+      "Phân tích yêu cầu, viết test case và ghi nhận lỗi có bước tái hiện trên Jira.",
+      "Kiểm thử REST API bằng Postman, đối chiếu dữ liệu bằng SQL.",
+      "Viết kịch bản kiểm thử giao diện bằng Python và Selenium; tham gia quy trình Agile."
+    ],
+    "project": "Kiểm thử trang đặt phòng giả lập: đăng ký, tìm phòng, đặt phòng và kiểm thử hồi quy.",
+    "test_note": "Nhận diện Nha Trang là nhóm Nha Trang/Khánh Hòa; ưu tiên Tester/QC trong vùng.",
+    "english": false,
+    "files": {
+      "word": "word/CV06_tester_nha_trang.docx",
+      "pdf": "pdf/CV06_tester_nha_trang.pdf",
+      "image": "images/CV06_tester_nha_trang.png"
+    }
+  },
+  {
+    "code": "CV07",
+    "slug": "devops_can_tho",
+    "name": "Bùi Đức Thành",
+    "title": "DevOps Engineer",
+    "domain": "Hạ tầng điện toán đám mây",
+    "address": "Cần Thơ",
+    "preferred": "Cần Thơ",
+    "region": "can_tho",
+    "years": 3,
+    "skills": [
+      "Linux",
+      "Docker",
+      "Kubernetes",
+      "CI/CD",
+      "AWS",
+      "Terraform",
+      "Python",
+      "Git"
+    ],
+    "summary": "Tôi có 3 năm thực hành vận hành hệ thống Linux và tự động hóa triển khai. Tôi mong muốn làm DevOps Engineer, giúp nhóm phát triển đưa ứng dụng lên môi trường chạy ổn định và dễ khôi phục.",
+    "activities": [
+      "Xây dựng pipeline CI/CD để chạy kiểm thử, tạo image Docker và triển khai ứng dụng.",
+      "Cấu hình Kubernetes và tài nguyên AWS bằng Terraform cho môi trường thử nghiệm.",
+      "Viết script Python, theo dõi log và lập quy trình xử lý sự cố hệ thống Linux."
+    ],
+    "project": "Hạ tầng web giả lập: tự động triển khai, kiểm tra sức khỏe dịch vụ và khôi phục phiên bản trước.",
+    "test_note": "Ưu tiên DevOps/Cloud tại Cần Thơ, đối chiếu kỹ năng hạ tầng thay vì chỉ Python.",
+    "english": false,
+    "files": {
+      "word": "word/CV07_devops_can_tho.docx",
+      "pdf": "pdf/CV07_devops_can_tho.pdf",
+      "image": "images/CV07_devops_can_tho.png"
+    }
+  },
+  {
+    "code": "CV08",
+    "slug": "embedded_hai_phong",
+    "name": "Đỗ Hải Đăng",
+    "title": "Embedded Software Engineer",
+    "domain": "Phát triển phần mềm nhúng",
+    "address": "Hải Phòng",
+    "preferred": "Hải Phòng",
+    "region": "hai_phong",
+    "years": 3,
+    "skills": [
+      "C++",
+      "Linux",
+      "Embedded",
+      "Git",
+      "Networking"
+    ],
+    "summary": "Tôi ứng tuyển kỹ sư phần mềm nhúng với 3 năm thực hành lập trình C/C++ trên Linux. Tôi quan tâm thiết bị kết nối mạng, tối ưu bộ nhớ và kiểm tra độ ổn định của phần mềm thiết bị.",
+    "activities": [
+      "Phát triển module C/C++ cho thiết bị mô phỏng, xử lý giao tiếp và dữ liệu cảm biến.",
+      "Gỡ lỗi chương trình Linux, theo dõi bộ nhớ và kiểm tra lỗi truy cập tài nguyên.",
+      "Làm việc với Git và kiến thức Networking để kiểm tra kết nối giữa các thiết bị."
+    ],
+    "project": "Thiết bị giám sát giả lập: thu thập cảm biến, truyền dữ liệu và thử nghiệm khi mất kết nối.",
+    "test_note": "Ưu tiên Embedded/C++ tại Hải Phòng; kiểm tra C++ không bị đồng nhất với C hay C#.",
+    "english": false,
+    "files": {
+      "word": "word/CV08_embedded_hai_phong.docx",
+      "pdf": "pdf/CV08_embedded_hai_phong.pdf",
+      "image": "images/CV08_embedded_hai_phong.png"
+    }
+  },
+  {
+    "code": "CV09",
+    "slug": "uiux_english_nha_trang",
+    "name": "Mai Anh Nguyen",
+    "title": "UI/UX Designer",
+    "domain": "Product Design",
+    "address": "Da Nang",
+    "preferred": "Nha Trang",
+    "region": "khanh_hoa",
+    "years": 2,
+    "skills": [
+      "Figma",
+      "UX",
+      "UI",
+      "HTML",
+      "CSS",
+      "Agile"
+    ],
+    "summary": "I am a UI/UX Designer with 2 years of practice in user research, interface design and interactive prototypes. I want to design clear digital products and work closely with development teams.",
+    "activities": [
+      "Created user journeys, wireframes and high-fidelity interfaces in Figma.",
+      "Planned usability sessions, summarized feedback and improved navigation flows.",
+      "Collaborated in an Agile team and used HTML/CSS knowledge for implementation handoff."
+    ],
+    "project": "Simulated travel booking app: customer research, mobile screens, clickable prototype and usability findings.",
+    "test_note": "CV tiếng Anh: ưu tiên Preferred location Nha Trang thay vì Address Da Nang; nhận diện UI/UX.",
+    "english": true,
+    "files": {
+      "word": "word/CV09_uiux_english_nha_trang.docx",
+      "pdf": "pdf/CV09_uiux_english_nha_trang.pdf",
+      "image": "images/CV09_uiux_english_nha_trang.png"
+    }
+  },
+  {
+    "code": "CV10",
+    "slug": "cybersecurity_quang_ninh_khong_co_tin",
+    "name": "Hoàng Tuấn Kiệt",
+    "title": "Cybersecurity Specialist",
+    "domain": "An ninh mạng",
+    "address": "Quảng Ninh",
+    "preferred": "Quảng Ninh",
+    "region": "quang_ninh",
+    "years": 2,
+    "skills": [
+      "Linux",
+      "Networking",
+      "Security",
+      "Python",
+      "SQL",
+      "Docker"
+    ],
+    "summary": "Tôi có 2 năm thực hành giám sát an ninh và kiểm tra cấu hình hệ thống. Tôi ứng tuyển chuyên viên an ninh mạng, tập trung phát hiện bất thường, phân tích log và cải thiện bảo mật dịch vụ.",
+    "activities": [
+      "Phân tích log Linux và Networking để xác định dấu hiệu truy cập bất thường.",
+      "Viết công cụ Python phục vụ tổng hợp sự kiện và kiểm tra cấu hình Security.",
+      "Rà soát quyền truy cập SQL, kiểm tra cấu hình Docker và viết hướng dẫn khắc phục."
+    ],
+    "project": "Phòng lab an ninh giả lập: thu thập log, phân loại cảnh báo và ghi nhận hướng xử lý.",
+    "test_note": "Ca không có tin: catalog 500 tin hiện không có vùng Quảng Ninh. Chọn vùng này phải trả rỗng, không tự chuyển vùng.",
+    "english": false,
+    "files": {
+      "word": "word/CV10_cybersecurity_quang_ninh_khong_co_tin.docx",
+      "pdf": "pdf/CV10_cybersecurity_quang_ninh_khong_co_tin.pdf",
+      "image": "images/CV10_cybersecurity_quang_ninh_khong_co_tin.png"
+    }
+  }
+]

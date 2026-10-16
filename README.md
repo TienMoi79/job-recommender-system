@@ -51,6 +51,20 @@ Mở **http://127.0.0.1:8000**. Nếu terminal đã hiện `(.venv)`, có thể 
 - API tại `/api/docs`. Kiểm thử API: `python -m unittest discover -s tests -p test_web_preview.py -v`
   (cần thêm `python -m pip install httpx` trong môi trường kiểm thử).
 
+### Bộ 10 CV mẫu để thử tải tệp
+
+Thư mục `data/sample_cvs/` có **10 hồ sơ giả lập**, mỗi hồ sơ gồm Word `.docx`,
+PDF có chữ và ảnh PNG (30 tệp). Tải trọn bộ tại `outputs/10_cv_mau_jobvista.zip`,
+giải nén rồi chọn một tệp trong chức năng **Tìm việc với CV**.
+
+Xem bảng ca thử và kết quả mong đợi tại [hướng dẫn bộ CV](data/sample_cvs/README.md).
+CV02 kiểm tra ưu tiên Hà Nội dù địa chỉ ở TP. Hồ Chí Minh; CV09 kiểm tra CV
+tiếng Anh; CV10 cố ý chọn Quảng Ninh để thử kết quả rỗng khi catalog chưa có tin.
+Đây là dữ liệu kiểm thử chức năng, không phải CV thật hoặc ground truth đánh giá mô hình.
+
+Tạo lại bộ mẫu trên Windows: cài `requirements-sample-cvs.txt`, chạy
+`python generate_sample_cvs.py`. Script cần font Arial tại `C:/Windows/Fonts`.
+
 ### Chạy giao diện web Streamlit hiện có
 
 Sau khi tải repo, mở terminal tại thư mục dự án:
