@@ -15,6 +15,7 @@ import pandas as pd
 import streamlit as st
 
 from job_recommender import DEFAULT_MODEL, JobRecommenderSystem
+from hybrid_recommender import HybridJobRecommenderSystem
 from ui_helper import CUSTOM_CSS
 from web_support import filter_jobs, job_card_html, sample_resumes
 from ui_text import experience_text, tr
@@ -48,7 +49,10 @@ def get_recommender_engine(csv_content: bytes, backend: str,
     Không cache truy vấn hay CV của người dùng trong cache dùng chung.
     """
     jobs = pd.read_csv(BytesIO(csv_content), encoding="utf-8-sig", dtype={"Job_ID": str})
-    return JobRecommenderSystem(localize_jobs(jobs, language), backend=backend, model_name=model_name)
+    localized=localize_jobs(jobs, language)
+    if backend=='hybrid':
+        return HybridJobRecommenderSystem(localized,model_name=model_name)
+    return JobRecommenderSystem(localized, backend=backend, model_name=model_name)
 
 
 def initialize_state() -> None:
@@ -147,8 +151,18 @@ def render_cards(jobs: pd.DataFrame, prefix: str, origin: str, language: str) ->
                     if "Score_Title" in row:
                         with st.expander(tr(language, "score_breakdown")):
                             for field, key in (("Title", "score_title"), ("Skills", "score_skills"),
-                                               ("Domain", "score_domain"), ("Job_Description", "score_description")):
-                                st.write(f"{tr(language, key)}: {row[f'Score_{field}']:.4f}")
+                                               ("Domain", "score_domain"), ("Job_Description", "score_description"),
+                                               ("Lexical","score_lexical"),("Semantic","score_semantic"),("Experience","score_experience")):
+                                if f'Score_{field}' in row:
+                                    weights=row.get('Component_Weights')
+                                    weight=weights.get(field,0.) if isinstance(weights,dict) else None
+                                    value=f"{row[f'Score_{field}']:.4f}" if weight is None or weight>0 else '—'
+                                    label=tr(language,key)+(f' ({weight:.1%})' if weight is not None else '')
+                                    st.write(f"{label}: {value}")
+                            if isinstance(row.get('Component_Weights'),dict):
+                                st.caption(tr(language,'hybrid_score_note'))
+                            if row.get('Not_Mentioned_Skills',''):
+                                st.caption(tr(language,'not_mentioned_skills')+': '+row['Not_Mentioned_Skills'])
 
 
 def top_n_widget(label: str, key: str, count: int, *, reset_cv: bool = False) -> int:
@@ -298,6 +312,8 @@ def render_cv(engine: JobRecommenderSystem, jobs: pd.DataFrame, language: str) -
         roles = [role[1 if language == "vi" else 2] for role in ROLES if role[0] in profile.role_codes]
         st.write(f"**{tr(language, 'cv_role')}:** " + (", ".join(roles) or tr(language, "cv_not_identified")))
         st.write(f"**{tr(language, 'cv_skills')}:** " + (", ".join(profile.skills) or tr(language, "cv_not_identified")))
+        if profile.experience_years is not None:
+            st.caption(tr(language,'cv_experience_detected',years=f'{profile.experience_years:g}'))
         if profile.location_candidates:
             st.info(tr(language, "cv_location_hint", locations=", ".join(region_label(code, language) for code in profile.location_candidates)))
         else:
@@ -339,6 +355,8 @@ def render_cv(engine: JobRecommenderSystem, jobs: pd.DataFrame, language: str) -
         st.warning(tr(language, st.session_state.cv_notice))
     results = st.session_state.cv_results
     if results is not None:
+        if isinstance(engine,HybridJobRecommenderSystem) and engine.semantic_status=='unavailable':
+            st.info(tr(language,'hybrid_fallback'))
         if results.empty:
             region = st.session_state.cv_location
             no_region_jobs = region != FILTER_ALL and "Region_Codes" in jobs and not jobs["Region_Codes"].map(lambda codes: region in str(codes).split(";")).any()
@@ -359,7 +377,7 @@ def main() -> None:
         current_page = MATCH
     st.session_state.page = current_page if current_page in (EXPLORE, MATCH) else EXPLORE
     current_backend = st.session_state.get("backend")
-    st.session_state.backend = current_backend if current_backend in ("tfidf", "sentence-transformers") else "tfidf"
+    st.session_state.backend = current_backend if current_backend in ("tfidf", "sentence-transformers", "hybrid") else "tfidf"
     language = st.session_state.dataset
     st.set_page_config(page_title=tr(language, "page_title"), page_icon="💼", layout="wide")
     st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
@@ -372,9 +390,9 @@ def main() -> None:
         path = dataset_path(language)
         with st.expander(tr(language, "advanced"), expanded=True):
             st.caption(tr(language, "method_intro"))
-            backend = st.radio(tr(language, "method"), ["tfidf", "sentence-transformers"], key="backend",
-                               format_func=lambda value: tr(language, "tfidf" if value == "tfidf" else "semantic"))
-            st.caption(tr(language, "keyword_summary" if backend == "tfidf" else "semantic_summary"))
+            backend = st.radio(tr(language, "method"), ["tfidf", "sentence-transformers","hybrid"], key="backend",
+                               format_func=lambda value: tr(language, {"tfidf":"tfidf","sentence-transformers":"semantic","hybrid":"hybrid"}[value]))
+            st.caption(tr(language, {"tfidf":"keyword_summary","sentence-transformers":"semantic_summary","hybrid":"hybrid_summary"}[backend]))
             if backend == "sentence-transformers":
                 st.info(tr(language, "semantic_help"))
             # Giải thích dài ở hộp riêng có nhiều chiều ngang hơn sidebar,
@@ -384,6 +402,8 @@ def main() -> None:
                 st.caption(tr(language, "keyword_example"))
                 st.markdown(tr(language, "semantic_description"))
                 st.caption(tr(language, "semantic_example"))
+                st.markdown('**'+tr(language,'hybrid')+'**')
+                st.caption(tr(language,'hybrid_summary'))
                 st.info(tr(language, "method_scope"))
             st.caption(tr(language, "method_change"))
         is_catalog = path.name == "jobs_catalog.csv"
@@ -404,6 +424,8 @@ def main() -> None:
             st.session_state.data_context = context
         with st.spinner(tr(language, "loading_semantic" if backend == "sentence-transformers" else "loading")):
             engine = get_recommender_engine(csv_content, backend, language=language)
+        if backend=='hybrid' and engine.semantic_status=='unavailable':
+            st.info(tr(language,'hybrid_fallback'))
     except FileNotFoundError:
         st.error(tr(language, "missing_data"))
         return

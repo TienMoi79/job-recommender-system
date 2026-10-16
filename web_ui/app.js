@@ -35,11 +35,19 @@ const copy = {
     ocrNote:'CV được đọc bằng OCR. Hãy kiểm tra lại địa điểm và nội dung nếu ảnh bị mờ hoặc nhiều cột.',
     cvReady:'Đã đọc nội dung CV', matched:'Kết quả từ CV của bạn', matchedSub:'Lọc theo nơi bạn muốn làm, ưu tiên nội dung gần với CV.',
     score:'Điểm phù hợp', why:'Vì sao công việc này phù hợp?', matchedSkills:'Kỹ năng trùng với CV', noSkillMatch:'Chưa tìm thấy kỹ năng trùng trực tiếp.',
-    scoreNote:'Điểm tương đồng nội dung, không phải xác suất trúng tuyển. Trọng số hiện tại là cấu hình thử nghiệm.',
+    scoreNote:'Điểm kết hợp nội dung, kỹ năng, vị trí và kinh nghiệm; không phải xác suất trúng tuyển. Thành phần chưa rõ được bỏ qua và các trọng số còn lại được chuẩn hóa lại.',
     titleScore:'Vị trí', skillScore:'Kỹ năng', domainScore:'Lĩnh vực', descScore:'Nội dung CV', adjust:'Chỉnh sửa CV',
     changed:'Thông tin đã thay đổi. Bấm tìm lại để cập nhật kết quả.', invalidFile:'Vui lòng chọn PDF, Word .docx hoặc ảnh được hỗ trợ, tối đa 15 MB.',
     emptyCv:'Hãy tải CV hoặc chọn một hồ sơ mẫu trước.', publicData:'500 tin IT · Nguồn công khai · Dùng cho đồ án',
     emptyDetail:'Chi tiết sẽ xuất hiện ở đây', close:'Đóng chi tiết', selected:'Đang xem', footer:'Từ kỹ năng đến cơ hội mới.', newFile:'Chọn CV khác',
+    lexicalScore:'Từ khóa', semanticScore:'Ý nghĩa nội dung', expScore:'Kinh nghiệm', notUsed:'Chưa sử dụng',
+    cvExperience:'Tổng số năm kinh nghiệm', cvExperienceHint:'Kiểm tra số năm đã đọc. Có thể sửa hoặc để trống nếu chưa xác định; không rõ sẽ không bị coi là 0 năm.',
+    experienceUnknown:'Chưa xác định', notMentioned:'Chưa thấy trong CV', missingRequired:'Kỹ năng bắt buộc chưa thấy trong CV',
+    matchedCount:'kỹ năng trong tin đã thấy trong CV', expMeets:'Kinh nghiệm đạt mức tối thiểu được ghi trong tin.',
+    expBelow:'Kinh nghiệm thấp hơn mức tối thiểu trong tin; hệ thống giảm điểm mềm, không tự loại.',
+    expFitUnknown:'Chưa đủ thông tin kinh nghiệm; thành phần này không được tính điểm.',
+    semanticFallback:'Phần hiểu ý nghĩa chưa sẵn sàng. Kết quả hiện dùng từ khóa, kỹ năng, vị trí và kinh nghiệm.',
+    invalidExperience:'Số năm kinh nghiệm phải từ 0 đến 60, hoặc để trống nếu chưa xác định.',
   },
   en: {
     pageTitle:'JobVista — Find your next opportunity', tagline:'MAKE YOUR NEXT MOVE', explore:'Explore jobs', cv:'Match your CV', saved:'Saved jobs',
@@ -73,11 +81,19 @@ const copy = {
     ocrNote:'This CV was read using OCR. Review the location and content if the image is blurry or has multiple columns.',
     cvReady:'CV content extracted', matched:'Matched to your CV', matchedSub:'Filtered by your preferred location, then ranked by CV content.',
     score:'Match score', why:'Why this opportunity?', matchedSkills:'Skills shared with your CV', noSkillMatch:'No direct skill overlap detected.',
-    scoreNote:'Content similarity, not a hiring probability. The current weights are an experimental baseline.',
+    scoreNote:'A combined content, skills, role and experience score, not a hiring probability. Unknown components are omitted and the remaining weights are renormalized.',
     titleScore:'Position', skillScore:'Skills', domainScore:'Field', descScore:'CV content', adjust:'Edit CV',
     changed:'Your information changed. Find matches again to refresh the results.', invalidFile:'Choose a supported PDF, Word .docx or image file, up to 15 MB.',
     emptyCv:'Upload a CV or choose a sample profile first.', publicData:'500 IT listings · Public data · Academic project',
     emptyDetail:'Job details will appear here', close:'Close details', selected:'Selected', footer:'From your skills to your next opportunity.', newFile:'Choose another CV',
+    lexicalScore:'Keywords', semanticScore:'Meaning', expScore:'Experience', notUsed:'Not used',
+    cvExperience:'Total years of experience', cvExperienceHint:'Check the extracted years. Correct them or leave blank if unknown; unknown is not treated as zero.',
+    experienceUnknown:'Not identified', notMentioned:'Not mentioned in your CV', missingRequired:'Required skills not mentioned in your CV',
+    matchedCount:'skills in the listing found in your CV', expMeets:'Your experience meets the stated minimum.',
+    expBelow:'Your experience is below the stated minimum; a soft score reduction applies, without automatic rejection.',
+    expFitUnknown:'Not enough experience information; this component is not scored.',
+    semanticFallback:'Meaning-based matching is unavailable. These results use keywords, skills, role and experience.',
+    invalidExperience:'Experience must be between 0 and 60 years, or left blank if unknown.',
   }
 };
 const icons = {
@@ -103,7 +119,7 @@ let stored = [];
 try { stored = JSON.parse(localStorage.getItem('jobvista-saved') || '[]'); } catch {}
 const state = {lang:'vi',view:'explore',data:null,jobs:[],saved:new Set(Array.isArray(stored)?stored.filter(x=>typeof x==='string'):[]),
   q:'',region:'',domain:'',exp:'',category:'all',page:1,selected:null,detail:null,detailVersion:0,
-  file:null,cvText:'',profile:null,ocr:false,cvRegion:'',matches:null,reading:false,matching:false,cvVersion:0,loading:true,error:''};
+  file:null,cvText:'',profile:null,ocr:false,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,matches:null,reading:false,matching:false,cvVersion:0,loading:true,error:''};
 const t = key => copy[state.lang][key];
 let toastTimer, searchTimer;
 function toast(message) { const el=$('#toast'); el.textContent=message; el.classList.add('visible'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('visible'),3400); }
@@ -191,9 +207,14 @@ function results() {
 function explanation(job) {
   if(job.score===undefined) return '';
   const components=job.components||{};
-  const fields=[['Title','titleScore','25%'],['Skills','skillScore','35%'],['Domain','domainScore','15%'],['Job_Description','descScore','25%']];
+  const weights=job.component_weights||{};
+  const fields=[['Lexical','lexicalScore'],['Semantic','semanticScore'],['Title','titleScore'],['Skills','skillScore'],['Domain','domainScore'],['Experience','expScore']];
   return `<section class="explanation"><div class="explanation-title">${icon('spark')}<h3>${t('why')}</h3><strong>${job.score.toFixed(3)}</strong></div><p>${t('matchedSkills')}</p><div class="skill-tags">${job.matched_skills?.length?job.matched_skills.map(s=>`<span class="matched-skill">${escape(s)}</span>`).join(''):`<small>${t('noSkillMatch')}</small>`}</div>
-    ${fields.map(([key,label,weight])=>`<div class="score-row"><span>${t(label)} <small>(${weight})</small></span><div><i style="width:${Math.max(0,Math.min(1,components[key]||0))*100}%"></i></div><b>${(components[key]||0).toFixed(3)}</b></div>`).join('')}<small class="score-note">${t('scoreNote')}</small></section>`;
+    <p class="skill-coverage">${job.matched_skills?.length||0}/${job.job_skills_count||job.skills.length} ${t('matchedCount')}</p>
+    ${job.not_mentioned_skills?.length?`<p>${t('notMentioned')}</p><div class="skill-tags missing-tags">${job.not_mentioned_skills.map(skill=>`<span>${escape(skill)}</span>`).join('')}</div>`:''}
+    ${job.missing_required_skills?.length?`<p class="required-note">${t('missingRequired')}: ${job.missing_required_skills.map(escape).join(', ')}</p>`:''}
+    <p class="experience-note">${t(job.experience_status==='meets_minimum'?'expMeets':job.experience_status==='below_minimum'?'expBelow':'expFitUnknown')}${job.candidate_experience!==null&&job.candidate_experience!==undefined?` (${job.candidate_experience} ${t('years')})`:''}</p>
+    ${fields.map(([key,label])=>`<div class="score-row"><span>${t(label)} <small>(${Math.round((weights[key]||0)*100)}%)</small></span><div><i style="width:${Math.max(0,Math.min(1,components[key]||0))*100}%"></i></div><b title="${weights[key]>0?'':t('notUsed')}">${weights[key]>0?(components[key]||0).toFixed(3):'—'}</b></div>`).join('')}<small class="score-note">${t('scoreNote')}</small></section>`;
 }
 function detailTopline(job=null) {
   return `<div class="detail-topline"><span><i></i>${t('details')}</span><button class="detail-close icon-button" id="close-detail" aria-label="${t('close')}">${icon('close')}</button>${job?saveButton(job):''}</div>`;
@@ -224,11 +245,12 @@ function cvInput() {
       <button class="primary full-width" id="read-cv" ${!state.file||state.reading?'disabled':''}>${state.reading?'<span class="loader light"></span>':icon('spark')}${t(state.reading?'reading':'read')}</button>`}
     ${state.profile?`<div class="cv-profile"><h3>${t('detected')}<span>${state.profile.skills.length}</span></h3><div class="skill-tags">${state.profile.skills.map(s=>`<span class="matched-skill">${escape(s)}</span>`).join('')||`<p class="muted">${t('noSkills')}</p>`}</div>${state.ocr?`<p class="ocr-note">${t('ocrNote')}</p>`:''}
       <label class="field-label" for="cv-region">${t('preferred')}</label><select id="cv-region">${regionOptions(state.cvRegion,true,true)}</select><p class="field-hint">${t('preferredHint')}</p>
+      <label class="field-label" for="cv-experience">${t('cvExperience')}</label><input id="cv-experience" class="experience-input" type="number" min="0" max="60" step="0.5" value="${escape(state.cvExperience)}" placeholder="${t('experienceUnknown')}"><p class="field-hint">${t('cvExperienceHint')}</p>
       <details class="cv-text"><summary>${t('review')}</summary><label for="cv-text" class="sr-only">${t('textLabel')}</label><textarea id="cv-text" maxlength="60000">${escape(state.cvText)}</textarea></details><button id="match-cv" class="primary full-width" ${state.matching?'disabled':''}>${state.matching?'<span class="loader light"></span>':icon('spark')}${t(state.matching?'matching':'find')}${icon('arrow')}</button></div>`:''}
     <p class="privacy-note">${icon('lock')}<span>${t('privacy')}</span></p>${!state.reading?`<div class="sample-area"><p>${t('sample')}</p><div>${['sampleData','sampleBackend','sampleAI'].map((key,i)=>`<button data-sample="${i}">${t(key)}${icon('arrow')}</button>`).join('')}</div></div>`:''}</section>`;
 }
 function cvPage() {
-  if(state.matches)return `${cvSteps()}<div class="cv-results-banner"><span class="success-symbol">${icon('check')}</span><div><h2>${t('matched')}</h2><p>${t('matchedSub')}${state.cvRegion?' · '+escape(state.data.all_regions.find(r=>r.id===state.cvRegion)?.label||''):''}</p></div><button class="secondary" id="edit-cv">${t('adjust')}${icon('arrow')}</button></div>${workspace()}`;
+  if(state.matches)return `${cvSteps()}<div class="cv-results-banner"><span class="success-symbol">${icon('check')}</span><div><h2>${t('matched')}</h2><p>${t('matchedSub')}${state.cvRegion?' · '+escape(state.data.all_regions.find(r=>r.id===state.cvRegion)?.label||''):''}</p></div><button class="secondary" id="edit-cv">${t('adjust')}${icon('arrow')}</button></div>${state.matchMethod?.mode==='hybrid-lexical'?`<p class="algorithm-notice">${t('semanticFallback')}</p>`:''}${workspace()}`;
   return `${cvSteps()}<div class="cv-layout">${cvInput()}<aside class="cv-guide"><span class="guide-illustration">${icon('file')}<b>${icon('spark')}</b></span><p class="section-kicker">JOBVISTA</p><h2>${t('how')}</h2><p>${t('howSub')}</p><ol>${[1,2,3].map(i=>`<li><span>0${i}</span><div><h3>${t('how'+i)}</h3><p>${t('how'+i+'Sub')}</p></div></li>`).join('')}</ol><div class="guide-note">${icon('check')}<span>${t('scoreNote')}</span></div></aside></div>`;
 }
 function render() {
@@ -322,13 +344,13 @@ function bind() {
 function chooseFile(file) {
   if(!file)return;
   if(file.size>15*1024*1024||!(/\.(pdf|docx|png|jpe?g|webp|tiff?)$/i.test(file.name))){toast(t('invalidFile'));return;}
-  state.cvVersion++;Object.assign(state,{file,cvText:'',profile:null,ocr:false,matches:null,cvRegion:''});render();
+  state.cvVersion++;Object.assign(state,{file,cvText:'',profile:null,ocr:false,matches:null,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null});render();
 }
-function clearCv() {state.cvVersion++;Object.assign(state,{file:null,cvText:'',profile:null,ocr:false,matches:null,cvRegion:'',reading:false,matching:false});render();}
+function clearCv() {state.cvVersion++;Object.assign(state,{file:null,cvText:'',profile:null,ocr:false,matches:null,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,reading:false,matching:false});render();}
 async function readCv() {
   if(!state.file||state.reading)return;state.reading=true;const version=++state.cvVersion;const file=state.file;render();
   try {const data=await api(`/api/cv/read?language=${state.lang}`,{method:'POST',headers:{'Content-Type':'application/octet-stream','X-CV-Filename':encodeURIComponent(file.name)},body:file});
-    if(version!==state.cvVersion)return;Object.assign(state,{cvText:data.text,profile:data.profile,ocr:data.ocr,cvRegion:data.profile.locations.find(code=>state.data.all_regions.some(r=>r.id===code))||'',reading:false});render();
+    if(version!==state.cvVersion)return;Object.assign(state,{cvText:data.text,profile:data.profile,ocr:data.ocr,cvRegion:data.profile.locations.find(code=>state.data.all_regions.some(r=>r.id===code))||'',cvExperience:data.profile.experience_years??'',cvExperienceEdited:false,reading:false});render();
   }catch(error){if(version===state.cvVersion){state.reading=false;render();toast(error.message);}}
 }
 async function useSample(index) {
@@ -337,13 +359,15 @@ async function useSample(index) {
     const text=samples[index].CV_Text;Object.assign(state,{file:null,cvText:text,ocr:false,profile:{skills:[],locations:[],title:''},matches:null,cvRegion:'',reading:false,matching:false});
     // Phân tích bằng cùng engine thật; hồ sơ mẫu không có thành phố nên không tự gán vùng.
     const result=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,language:state.lang,top_n:1})});
-    if(version!==state.cvVersion)return;state.profile=result.profile;render();
+    if(version!==state.cvVersion)return;state.profile=result.profile;state.cvExperience=result.profile.experience_years??'';state.cvExperienceEdited=false;render();
   }catch(error){if(version===state.cvVersion)toast(error.message);}
 }
 async function findMatches() {
-  if(!state.cvText.trim()){toast(t('emptyCv'));return;}state.matching=true;const version=++state.cvVersion;render();
-  try {const data=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:state.cvText,location:state.cvRegion||null,language:state.lang,top_n:24})});
-    if(version!==state.cvVersion)return;state.detailVersion++;Object.assign(state,{matches:data.jobs,profile:data.profile,matching:false,page:1,q:'',region:'',domain:'',exp:'',category:'all',selected:null,detail:null});render();$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});
+  if(!state.cvText.trim()){toast(t('emptyCv'));return;}
+  if(state.cvExperience!==''&&(!Number.isFinite(Number(state.cvExperience))||Number(state.cvExperience)<0||Number(state.cvExperience)>60)){toast(t('invalidExperience'));return;}
+  state.matching=true;const version=++state.cvVersion;render();
+  try {const data=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:state.cvText,location:state.cvRegion||null,language:state.lang,top_n:24,experience_override:state.cvExperienceEdited,experience_years:state.cvExperience===''?null:Number(state.cvExperience)})});
+    if(version!==state.cvVersion)return;state.detailVersion++;Object.assign(state,{matches:data.jobs,profile:data.profile,matchMethod:data.algorithm,matching:false,page:1,q:'',region:'',domain:'',exp:'',category:'all',selected:null,detail:null});if(!state.cvExperienceEdited)state.cvExperience=data.profile.experience_years??'';render();$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});
   }catch(error){if(version===state.cvVersion){state.matching=false;render();toast(error.message);}}
 }
 function bindCv() {
@@ -353,6 +377,7 @@ function bindCv() {
   if($('#read-cv'))$('#read-cv').onclick=readCv;
   if($('#clear-cv'))$('#clear-cv').onclick=clearCv;
   if($('#cv-region'))$('#cv-region').onchange=e=>{state.cvRegion=e.target.value;invalidateCvInputs();};
+  if($('#cv-experience'))$('#cv-experience').oninput=e=>{state.cvExperience=e.target.value;state.cvExperienceEdited=true;invalidateCvInputs();};
   if($('#cv-text'))$('#cv-text').oninput=e=>{state.cvText=e.target.value;invalidateCvInputs();};
   if($('#match-cv'))$('#match-cv').onclick=findMatches;
   if($('#edit-cv'))$('#edit-cv').onclick=()=>{state.matches=null;state.detailVersion++;state.selected=null;state.detail=null;render();};

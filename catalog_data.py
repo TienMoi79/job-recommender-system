@@ -9,6 +9,11 @@ from locations import region_label
 
 def localize_jobs(jobs: pd.DataFrame, language: str) -> pd.DataFrame:
     localized = jobs.copy(deep=True)
+    # Giữ văn bản gốc cho bộ hybrid: đổi ngôn ngữ hiển thị không thay đổi
+    # tài liệu được so khớp. Không cần sửa hoặc nhân đôi catalog CSV trên đĩa.
+    for field in ("Title", "Domain", "Job_Description", "Requirements", "Company"):
+        if field in jobs and f"Original_{field}" not in localized:
+            localized[f"Original_{field}"] = jobs[field]
     if language == "en":
         for column in ("Title", "Skills", "Domain", "Job_Description", "Salary", "Requirements", "Company"):
             english = f"{column}_EN"

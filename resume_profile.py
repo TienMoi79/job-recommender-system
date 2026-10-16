@@ -119,6 +119,10 @@ class ResumeProfile:
     title_text: str
     domain_text: str
     location_candidates: tuple[str, ...]
+    experience_years: float | None = None
+    experience_status: str = "unknown"
+    target_skills: tuple[str, ...] = ()
+    role_explicit: bool = False
 
 
 class ResumeAnalyzer:
@@ -130,6 +134,7 @@ class ResumeAnalyzer:
         title_lines = [line for line in lines if re.search(
             r"vi tri ung tuyen|vi tri mong muon|desired role|target role|job title|career objective", plain_text(line))]
         roles = identify_roles(" ".join(title_lines)) if title_lines else []
+        role_explicit = bool(roles)
         if not roles:
             roles = identify_roles("\n".join(lines[:12])[:1500])
         if not roles:
@@ -140,10 +145,15 @@ class ResumeAnalyzer:
             r"^(?:dia chi|address|noi o|noi muon lam(?: viec)?|dia diem mong muon|preferred location|desired location|ho ten|full name|name|email|e-mail|dien thoai|phone|ngay sinh|date of birth|gioi tinh|gender)\s*[:：]", plain_text(line))]
         matching_text = "\n".join(professional_lines)
         matching_text = re.sub(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}", " ", matching_text)
+        from experience_matching import extract_experience
+        experience = extract_experience(text)
         return ResumeProfile(
             text=text, matching_text=matching_text, skills=tuple(extract_skills(matching_text)),
             role_codes=tuple(role[0] for role in roles),
             title_text="; ".join(role[1] + " " + role[2] for role in roles),
             domain_text="; ".join(dict.fromkeys(role[3] + " " + role[4] for role in roles)),
             location_candidates=tuple(cv_location_candidates(text, tolerant=ocr)),
+            experience_years=experience.years, experience_status=experience.status,
+            target_skills=tuple(extract_skills(" ".join(title_lines) if title_lines else "\n".join(lines[:2]))),
+            role_explicit=role_explicit,
         )

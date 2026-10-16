@@ -7,10 +7,14 @@ Bản Streamlit cũ và notebook tiếp tục chạy độc lập.
 from __future__ import annotations
 
 from functools import lru_cache
+from contextlib import asynccontextmanager
+from dataclasses import replace
 from pathlib import Path
 from typing import Literal
 from urllib.parse import unquote
 import json
+import os
+import threading
 
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query, Request
@@ -22,6 +26,7 @@ from starlette.concurrency import run_in_threadpool
 from catalog_data import localize_jobs
 from cv_documents import CVReadError, MAX_FILE_BYTES, MAX_TEXT_CHARS, ResumeDocumentReader
 from job_recommender import JobRecommenderSystem
+from hybrid_recommender import HybridJobRecommenderSystem
 from locations import REGIONS, region_label
 from resume_profile import ResumeAnalyzer
 from ui_text import TEXT
@@ -38,7 +43,7 @@ class CatalogService:
         original = pd.read_csv(ROOT / "data/jobs_catalog.csv", encoding="utf-8-sig").fillna("")
         self.company_count = int(original["Company"].nunique())
         self.jobs = localize_jobs(original, language)
-        self.engine = JobRecommenderSystem(self.jobs, backend="tfidf")
+        self.engine = HybridJobRecommenderSystem(self.jobs, use_semantic=os.environ.get('JOBVISTA_SEMANTIC','1')!='0')
 
     def serialize(self, row, *, detail=False):
         codes = [code for code in str(row.get("Region_Codes", "")).split(";") if code in REGIONS]
@@ -58,8 +63,17 @@ class CatalogService:
             result["score"] = round(float(row["Similarity_Score"]), 4)
             result["matched_skills"] = [s.strip() for s in str(row.get("Matched_Skills", "")).split(";") if s.strip()]
             result["components"] = {field: round(float(row[f"Score_{field}"]), 4)
-                                    for field in ("Title", "Skills", "Domain", "Job_Description")
+                                    for field in ("Lexical", "Semantic", "Title", "Skills", "Domain", "Experience")
                                     if f"Score_{field}" in row}
+            result['component_weights'] = row.get('Component_Weights',{})
+            result['not_mentioned_skills'] = [s for s in str(row.get('Not_Mentioned_Skills','')).split('; ') if s]
+            result['missing_required_skills'] = [s for s in str(row.get('Missing_Required_Skills','')).split('; ') if s]
+            result['required_skills'] = [s for s in str(row.get('Required_Skills','')).split('; ') if s]
+            result['preferred_skills'] = [s for s in str(row.get('Preferred_Skills','')).split('; ') if s]
+            result['job_skills_count'] = int(row.get('Job_Skills_Count',len(result['skills'])))
+            candidate = row.get('Candidate_Experience_Years',None)
+            result['candidate_experience'] = None if candidate is None or pd.isna(candidate) else float(candidate)
+            result['experience_status'] = str(row.get('Experience_Status','unknown'))
         return result
 
     def records(self, frame):
@@ -74,10 +88,21 @@ def catalog(language: str) -> CatalogService:
 def profile_data(text: str, *, ocr=False):
     profile = ResumeAnalyzer().analyze(text, ocr=ocr)
     return {"skills": list(profile.skills), "title": profile.title_text,
-            "locations": list(profile.location_candidates)}
+            "locations": list(profile.location_candidates),
+            'experience_years':profile.experience_years,'experience_status':profile.experience_status}
 
 
-app = FastAPI(title="JobVista · Job recommendation preview", docs_url="/api/docs")
+@asynccontextmanager
+async def lifespan(app):
+    # Chỉ làm nóng index tin công khai ở luồng nền, để trang danh sách không
+    # phải chờ model. CV đầu tiên chờ nếu model chưa sẵn sàng; UI có trạng thái tải.
+    service=await run_in_threadpool(catalog,'vi')
+    if service.engine.use_semantic:
+        threading.Thread(target=service.engine._semantic_scores,args=('Public job catalog warm-up',),daemon=True).start()
+    yield
+
+
+app = FastAPI(title="JobVista · Job recommendation preview", docs_url="/api/docs",lifespan=lifespan)
 
 
 @app.middleware("http")
@@ -143,6 +168,8 @@ class MatchRequest(BaseModel):
     location: str | None = None
     top_n: int = Field(default=12, ge=1, le=50)
     language: Language = "vi"
+    experience_years: float | None = Field(default=None,ge=0,le=60,allow_inf_nan=False)
+    experience_override: bool = False
 
 
 @app.post("/api/cv/match")
@@ -152,8 +179,16 @@ def match_cv(payload: MatchRequest):
     if payload.location is not None and payload.location not in REGIONS:
         raise HTTPException(422, "invalid_location")
     service = catalog(payload.language)
-    result = service.engine.match_cv_to_jobs(payload.text, payload.top_n, location=payload.location)
-    return {"jobs": service.records(result), "profile": profile_data(payload.text)}
+    profile=ResumeAnalyzer().analyze(payload.text)
+    if payload.experience_override:
+        profile=replace(profile,experience_years=payload.experience_years,
+                        experience_status='confirmed' if payload.experience_years is not None else 'unknown')
+    result = service.engine.match_cv_to_jobs(payload.text,payload.top_n,location=payload.location,profile=profile)
+    details=profile_data(payload.text)
+    details.update(experience_years=profile.experience_years,experience_status=profile.experience_status)
+    return {"jobs":service.records(result),"profile":details,
+            "algorithm":{"mode":'hybrid' if service.engine.semantic_status=='ready' else 'hybrid-lexical',
+                         "semantic_status":service.engine.semantic_status,"diversify":service.engine.diversify}}
 
 
 app.mount("/assets", StaticFiles(directory=ROOT / "web_ui"), name="assets")

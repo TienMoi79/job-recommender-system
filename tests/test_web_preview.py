@@ -3,6 +3,7 @@ from io import BytesIO
 import importlib.util
 import unittest
 from urllib.parse import quote
+from unittest.mock import patch
 
 HAS_PREVIEW = all(importlib.util.find_spec(name) for name in ("fastapi", "httpx"))
 
@@ -12,7 +13,11 @@ class WebPreviewTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from fastapi.testclient import TestClient
-        from web_preview import app
+        from web_preview import app, catalog
+        cls.settings=patch.dict('os.environ',{'JOBVISTA_SEMANTIC':'0'})
+        cls.settings.start();catalog.cache_clear()
+        cls.addClassCleanup(cls.settings.stop)
+        cls.addClassCleanup(catalog.cache_clear)
         cls.client = TestClient(app)
 
     def test_bilingual_catalog_has_same_500_records(self):
@@ -42,8 +47,11 @@ class WebPreviewTests(unittest.TestCase):
         self.assertEqual([job['id'] for job in jobs], list(expected['Job_ID']))
         self.assertTrue(all('ha_noi' in job['regions'] for job in jobs))
         self.assertEqual(jobs[0]['score'], round(float(expected.iloc[0]['Similarity_Score']), 4))
-        self.assertEqual(len(jobs[0]['components']), 4)
+        self.assertEqual(len(jobs[0]['components']), 6)
+        self.assertAlmostEqual(sum(jobs[0]['component_weights'].values()),1.)
         self.assertEqual(response.headers['cache-control'], 'no-store')
+        self.assertIn('not_mentioned_skills',jobs[0])
+        self.assertEqual(response.json()['algorithm']['mode'],'hybrid-lexical')
         empty = self.client.post('/api/cv/match', json={'text': text, 'location': 'quang_ninh'}).json()
         self.assertEqual(empty['jobs'], [])
 
@@ -62,6 +70,8 @@ class WebPreviewTests(unittest.TestCase):
         self.assertEqual(data['profile']['locations'], ['ha_noi'])
         self.assertFalse(data['ocr'])
         self.assertIn('Django', data['text'])
+        confirmed=self.client.post('/api/cv/match',json={'text':data['text'],'experience_override':True,'experience_years':3}).json()
+        self.assertEqual(confirmed['profile']['experience_years'],3)
 
     def test_invalid_input_and_size_limit(self):
         response = self.client.post('/api/cv/read?language=en', content=b'bad', headers={'X-CV-Filename': 'x.exe'})

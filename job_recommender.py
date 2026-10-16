@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import unicodedata
 import warnings
+import os
 
 import numpy as np
 import pandas as pd
@@ -91,7 +92,7 @@ class TfidfTextVectorizer(TextVectorizer):
 class SentenceTransformerVectorizer(TextVectorizer):
     """Dùng mô hình pretrained để biểu diễn ý nghĩa của câu/đoạn văn."""
 
-    def __init__(self, model_name: str = DEFAULT_MODEL, device: str = "cpu") -> None:
+    def __init__(self, model_name: str = DEFAULT_MODEL, device: str = "cpu", revision: str | None = None) -> None:
         # Lazy import: người chỉ dùng TF-IDF không cần cài PyTorch/transformers.
         try:
             from sentence_transformers import SentenceTransformer
@@ -100,7 +101,9 @@ class SentenceTransformerVectorizer(TextVectorizer):
                 "Backend semantic cần: python -m pip install -r requirements-semantic.txt. "
                 "Hoặc chọn backend='tfidf' để chạy nhẹ."
             ) from exc
-        self._model = SentenceTransformer(model_name, device=device)
+        import torch
+        torch.set_num_threads(min(4, os.cpu_count() or 1))
+        self._model = SentenceTransformer(model_name, device=device, revision=revision)
 
     def fit_transform(self, texts: list[str]) -> np.ndarray:
         # Mô hình đã được huấn luyện trước; đồ án này chỉ chạy suy luận,
@@ -116,7 +119,7 @@ class SentenceTransformerVectorizer(TextVectorizer):
             raise ValueError("Mô hình có giới hạn token không hợp lệ.")
         chunks, groups = [], []
         for text in texts:
-            tokens = tokenizer.encode(text, add_special_tokens=False)
+            tokens = tokenizer.encode(text, add_special_tokens=False, verbose=False)
             start = len(chunks)
             for offset in range(0, len(tokens), chunk_size):
                 chunks.append(tokenizer.decode(tokens[offset:offset + chunk_size]))

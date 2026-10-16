@@ -1,0 +1,1068 @@
+[
+  {
+    "model": "A_tfidf",
+    "query_id": "T01",
+    "region": "ha_noi",
+    "ids": [
+      "VN0047",
+      "VN0410",
+      "VN0032",
+      "VN0150",
+      "VN0075"
+    ],
+    "grades": [
+      2,
+      0,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T02",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0328",
+      "VN0275",
+      "VN0261",
+      "VN0229",
+      "VN0195"
+    ],
+    "grades": [
+      2,
+      1,
+      2,
+      1,
+      2
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T03",
+    "region": "da_nang",
+    "ids": [
+      "VN0394",
+      "VN0410",
+      "VN0403",
+      "VN0370",
+      "VN0383"
+    ],
+    "grades": [
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T04",
+    "region": "can_tho",
+    "ids": [
+      "VN0435",
+      "VN0425",
+      "VN0442",
+      "VN0438",
+      "VN0429"
+    ],
+    "grades": [
+      1,
+      2,
+      2,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T05",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0188",
+      "VN0328",
+      "VN0195",
+      "VN0275",
+      "VN0261"
+    ],
+    "grades": [
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T06",
+    "region": "ha_noi",
+    "ids": [
+      "VN0021",
+      "VN0091",
+      "VN0117",
+      "VN0104",
+      "VN0065"
+    ],
+    "grades": [
+      2,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T07",
+    "region": "ha_noi",
+    "ids": [
+      "VN0091",
+      "VN0051",
+      "VN0078",
+      "VN0116",
+      "VN0165"
+    ],
+    "grades": [
+      2,
+      2,
+      2,
+      0,
+      2
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T08",
+    "region": "ha_noi",
+    "ids": [
+      "VN0036",
+      "VN0091",
+      "VN0021",
+      "VN0129",
+      "VN0065"
+    ],
+    "grades": [
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T09",
+    "region": "ha_noi",
+    "ids": [
+      "VN0364",
+      "VN0053",
+      "VN0130",
+      "VN0023",
+      "VN0103"
+    ],
+    "grades": [
+      0,
+      1,
+      1,
+      1,
+      0
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T10",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0287",
+      "VN0211",
+      "VN0227",
+      "VN0259",
+      "VN0326"
+    ],
+    "grades": [
+      2,
+      2,
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T11",
+    "region": "ha_noi",
+    "ids": [
+      "VN0053",
+      "VN0142",
+      "VN0023",
+      "VN0130",
+      "VN0128"
+    ],
+    "grades": [
+      2,
+      2,
+      1,
+      1,
+      0
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T12",
+    "region": "ha_noi",
+    "ids": [
+      "VN0058",
+      "VN0043",
+      "VN0011",
+      "VN0028",
+      "VN0072"
+    ],
+    "grades": [
+      2,
+      2,
+      2,
+      2,
+      0
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T13",
+    "region": "da_nang",
+    "ids": [
+      "VN0404",
+      "VN0385",
+      "VN0373",
+      "VN0396",
+      "VN0341"
+    ],
+    "grades": [
+      2,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T14",
+    "region": "ha_noi",
+    "ids": [
+      "VN0122",
+      "VN0134",
+      "VN0042",
+      "VN0010",
+      "VN0158"
+    ],
+    "grades": [
+      0,
+      0,
+      2,
+      2,
+      0
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T15",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0177",
+      "VN0290",
+      "VN0499",
+      "VN0214",
+      "VN0196"
+    ],
+    "grades": [
+      2,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T16",
+    "region": "khanh_hoa",
+    "ids": [
+      "VN0413",
+      "VN0415",
+      "VN0417",
+      "VN0420",
+      "VN0419"
+    ],
+    "grades": [
+      2,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T17",
+    "region": "khanh_hoa",
+    "ids": [
+      "VN0422",
+      "VN0421",
+      "VN0411",
+      "VN0416",
+      "VN0412"
+    ],
+    "grades": [
+      2,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T18",
+    "region": "can_tho",
+    "ids": [
+      "VN0437",
+      "VN0428",
+      "VN0440",
+      "VN0434",
+      "VN0430"
+    ],
+    "grades": [
+      2,
+      2,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T19",
+    "region": "hai_phong",
+    "ids": [
+      "VN0446",
+      "VN0449",
+      "VN0452",
+      "VN0461",
+      "VN0457"
+    ],
+    "grades": [
+      2,
+      2,
+      2,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "A_tfidf",
+    "query_id": "T20",
+    "region": "quang_ninh",
+    "ids": [],
+    "grades": []
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T01",
+    "region": "ha_noi",
+    "ids": [
+      "VN0410",
+      "VN0088",
+      "VN0138",
+      "VN0075",
+      "VN0047"
+    ],
+    "grades": [
+      0,
+      1,
+      2,
+      1,
+      2
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T02",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0315",
+      "VN0498",
+      "VN0302",
+      "VN0245",
+      "VN0303"
+    ],
+    "grades": [
+      1,
+      1,
+      1,
+      1,
+      0
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T03",
+    "region": "da_nang",
+    "ids": [
+      "VN0394",
+      "VN0403",
+      "VN0410",
+      "VN0370",
+      "VN0383"
+    ],
+    "grades": [
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T04",
+    "region": "can_tho",
+    "ids": [
+      "VN0435",
+      "VN0425",
+      "VN0442",
+      "VN0438",
+      "VN0429"
+    ],
+    "grades": [
+      1,
+      2,
+      2,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T05",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0188",
+      "VN0195",
+      "VN0498",
+      "VN0275",
+      "VN0229"
+    ],
+    "grades": [
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T06",
+    "region": "ha_noi",
+    "ids": [
+      "VN0104",
+      "VN0153",
+      "VN0021",
+      "VN0065",
+      "VN0117"
+    ],
+    "grades": [
+      1,
+      1,
+      2,
+      1,
+      2
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T07",
+    "region": "ha_noi",
+    "ids": [
+      "VN0165",
+      "VN0051",
+      "VN0023",
+      "VN0078",
+      "VN0065"
+    ],
+    "grades": [
+      2,
+      2,
+      0,
+      2,
+      1
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T08",
+    "region": "ha_noi",
+    "ids": [
+      "VN0036",
+      "VN0078",
+      "VN0080",
+      "VN0104",
+      "VN0165"
+    ],
+    "grades": [
+      2,
+      1,
+      0,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T09",
+    "region": "ha_noi",
+    "ids": [
+      "VN0130",
+      "VN0364",
+      "VN0103",
+      "VN0166",
+      "VN0038"
+    ],
+    "grades": [
+      1,
+      0,
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T10",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0287",
+      "VN0227",
+      "VN0193",
+      "VN0211",
+      "VN0326"
+    ],
+    "grades": [
+      2,
+      1,
+      2,
+      2,
+      2
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T11",
+    "region": "ha_noi",
+    "ids": [
+      "VN0130",
+      "VN0142",
+      "VN0053",
+      "VN0364",
+      "VN0103"
+    ],
+    "grades": [
+      1,
+      2,
+      2,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T12",
+    "region": "ha_noi",
+    "ids": [
+      "VN0111",
+      "VN0028",
+      "VN0058",
+      "VN0123",
+      "VN0011"
+    ],
+    "grades": [
+      0,
+      2,
+      2,
+      0,
+      2
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T13",
+    "region": "da_nang",
+    "ids": [
+      "VN0404",
+      "VN0341",
+      "VN0396",
+      "VN0385",
+      "VN0373"
+    ],
+    "grades": [
+      2,
+      1,
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T14",
+    "region": "ha_noi",
+    "ids": [
+      "VN0042",
+      "VN0122",
+      "VN0071",
+      "VN0158",
+      "VN0010"
+    ],
+    "grades": [
+      2,
+      0,
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T15",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0196",
+      "VN0276",
+      "VN0230",
+      "VN0177",
+      "VN0499"
+    ],
+    "grades": [
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T16",
+    "region": "khanh_hoa",
+    "ids": [
+      "VN0413",
+      "VN0415",
+      "VN0418",
+      "VN0419",
+      "VN0417"
+    ],
+    "grades": [
+      2,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T17",
+    "region": "khanh_hoa",
+    "ids": [
+      "VN0422",
+      "VN0421",
+      "VN0411",
+      "VN0420",
+      "VN0412"
+    ],
+    "grades": [
+      2,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T18",
+    "region": "can_tho",
+    "ids": [
+      "VN0428",
+      "VN0437",
+      "VN0440",
+      "VN0434",
+      "VN0430"
+    ],
+    "grades": [
+      2,
+      2,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T19",
+    "region": "hai_phong",
+    "ids": [
+      "VN0449",
+      "VN0452",
+      "VN0446",
+      "VN0461",
+      "VN0458"
+    ],
+    "grades": [
+      2,
+      2,
+      2,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "B_semantic",
+    "query_id": "T20",
+    "region": "quang_ninh",
+    "ids": [],
+    "grades": []
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T01",
+    "region": "ha_noi",
+    "ids": [
+      "VN0138",
+      "VN0047",
+      "VN0088",
+      "VN0075",
+      "VN0150"
+    ],
+    "grades": [
+      2,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T02",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0328",
+      "VN0261",
+      "VN0229",
+      "VN0498",
+      "VN0188"
+    ],
+    "grades": [
+      2,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T03",
+    "region": "da_nang",
+    "ids": [
+      "VN0394",
+      "VN0352",
+      "VN0403",
+      "VN0370",
+      "VN0383"
+    ],
+    "grades": [
+      2,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T04",
+    "region": "can_tho",
+    "ids": [
+      "VN0425",
+      "VN0442",
+      "VN0435"
+    ],
+    "grades": [
+      2,
+      2,
+      1
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T05",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0188",
+      "VN0261",
+      "VN0229",
+      "VN0195",
+      "VN0275"
+    ],
+    "grades": [
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T06",
+    "region": "ha_noi",
+    "ids": [
+      "VN0117",
+      "VN0021",
+      "VN0104",
+      "VN0152",
+      "VN0128"
+    ],
+    "grades": [
+      2,
+      2,
+      1,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T07",
+    "region": "ha_noi",
+    "ids": [
+      "VN0051",
+      "VN0116",
+      "VN0165",
+      "VN0078",
+      "VN0090"
+    ],
+    "grades": [
+      2,
+      0,
+      2,
+      2,
+      0
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T08",
+    "region": "ha_noi",
+    "ids": [
+      "VN0036",
+      "VN0495",
+      "VN0141",
+      "VN0063",
+      "VN0128"
+    ],
+    "grades": [
+      2,
+      0,
+      2,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T09",
+    "region": "ha_noi",
+    "ids": [
+      "VN0364",
+      "VN0038",
+      "VN0166",
+      "VN0103",
+      "VN0130"
+    ],
+    "grades": [
+      0,
+      2,
+      2,
+      0,
+      1
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T10",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0326",
+      "VN0287",
+      "VN0364",
+      "VN0193",
+      "VN0259"
+    ],
+    "grades": [
+      2,
+      2,
+      0,
+      2,
+      2
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T11",
+    "region": "ha_noi",
+    "ids": [
+      "VN0142",
+      "VN0053",
+      "VN0130",
+      "VN0062",
+      "VN0103"
+    ],
+    "grades": [
+      2,
+      2,
+      1,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T12",
+    "region": "ha_noi",
+    "ids": [
+      "VN0043",
+      "VN0058",
+      "VN0111",
+      "VN0072",
+      "VN0028"
+    ],
+    "grades": [
+      2,
+      2,
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T13",
+    "region": "da_nang",
+    "ids": [
+      "VN0404",
+      "VN0373",
+      "VN0385",
+      "VN0396",
+      "VN0341"
+    ],
+    "grades": [
+      2,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T14",
+    "region": "ha_noi",
+    "ids": [
+      "VN0042",
+      "VN0027",
+      "VN0158",
+      "VN0122",
+      "VN0071"
+    ],
+    "grades": [
+      2,
+      2,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T15",
+    "region": "ho_chi_minh",
+    "ids": [
+      "VN0177",
+      "VN0499",
+      "VN0196",
+      "VN0290",
+      "VN0303"
+    ],
+    "grades": [
+      2,
+      1,
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T16",
+    "region": "khanh_hoa",
+    "ids": [
+      "VN0413"
+    ],
+    "grades": [
+      2
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T17",
+    "region": "khanh_hoa",
+    "ids": [],
+    "grades": []
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T18",
+    "region": "can_tho",
+    "ids": [
+      "VN0437",
+      "VN0428"
+    ],
+    "grades": [
+      2,
+      2
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T19",
+    "region": "hai_phong",
+    "ids": [
+      "VN0452"
+    ],
+    "grades": [
+      2
+    ]
+  },
+  {
+    "model": "C_hybrid",
+    "query_id": "T20",
+    "region": "quang_ninh",
+    "ids": [],
+    "grades": []
+  }
+]

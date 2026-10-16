@@ -1,0 +1,513 @@
+{
+  "schema_version": 1,
+  "catalog_sha256": "916fa2133cd4abad9b41d6c0a9ab5d92110e68bb21945a385732d234aa699127",
+  "label_provenance": "assistant-curated pilot intent judgments on synthetic CVs; NOT independent human ground truth; sparse positive qrels, unjudged treated as 0 for conservative scoring",
+  "grades": {
+    "0": "not relevant or unjudged",
+    "1": "related role; some requirements need review",
+    "2": "strong fit for stated intent and skills"
+  },
+  "frozen_before_model_comparison": true,
+  "queries": [
+    {
+      "id": "D01",
+      "profile_group": "D01",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: Data Analyst\nKỹ năng: SQL Power BI Excel Tableau\nKinh nghiệm: 2 năm\nTôi tổng hợp số liệu kinh doanh, tạo dashboard và giải thích biến động doanh thu.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0016": 1,
+        "VN0032": 1,
+        "VN0047": 2,
+        "VN0061": 1,
+        "VN0075": 2,
+        "VN0088": 2,
+        "VN0101": 1,
+        "VN0114": 1,
+        "VN0126": 1,
+        "VN0138": 1,
+        "VN0150": 2,
+        "VN0162": 1
+      }
+    },
+    {
+      "id": "D02",
+      "profile_group": "D02",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: Backend Developer Python\nKỹ năng: Python Django FastAPI PostgreSQL REST API Docker\nKinh nghiệm: 3 năm\nTôi xây dựng dịch vụ web, tối ưu truy vấn và kiểm thử API bằng Python.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0004": 1,
+        "VN0021": 2,
+        "VN0036": 1,
+        "VN0051": 1,
+        "VN0065": 1,
+        "VN0078": 1,
+        "VN0091": 1,
+        "VN0104": 2,
+        "VN0117": 2,
+        "VN0129": 1,
+        "VN0141": 1,
+        "VN0153": 1,
+        "VN0165": 1
+      }
+    },
+    {
+      "id": "D03",
+      "profile_group": "D03",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: Frontend Developer React\nKỹ năng: JavaScript TypeScript React HTML CSS Git\nKinh nghiệm: 2 năm\nTôi làm giao diện website tương tác và kết nối API cho ứng dụng bán hàng.\nNơi muốn làm việc: Sài Gòn",
+      "region": "ho_chi_minh",
+      "relevance": {
+        "VN0174": 1,
+        "VN0193": 2,
+        "VN0211": 2,
+        "VN0227": 1,
+        "VN0243": 1,
+        "VN0259": 1,
+        "VN0273": 1,
+        "VN0287": 2,
+        "VN0300": 1,
+        "VN0313": 1,
+        "VN0326": 2,
+        "VN0339": 1,
+        "VN0492": 1,
+        "VN0500": 1
+      }
+    },
+    {
+      "id": "D04",
+      "profile_group": "D04",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: AI Engineer\nKỹ năng: Python PyTorch TensorFlow NLP Docker\nKinh nghiệm: 3 năm\nTôi triển khai mô hình phân loại văn bản và dịch vụ xử lý ngôn ngữ.\nNơi muốn làm việc: Đà Nẵng",
+      "region": "da_nang",
+      "relevance": {
+        "VN0341": 1,
+        "VN0359": 1,
+        "VN0373": 2,
+        "VN0385": 2,
+        "VN0396": 2,
+        "VN0404": 2
+      }
+    },
+    {
+      "id": "D05",
+      "profile_group": "D05",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: DevOps Engineer\nKỹ năng: Linux Kubernetes CI/CD AWS Terraform\nKinh nghiệm: 1 năm\nTôi tự động hóa kiểm thử, triển khai và cấu hình hạ tầng ứng dụng.\nNơi muốn làm việc: Cần Thơ",
+      "region": "can_tho",
+      "relevance": {
+        "VN0428": 1,
+        "VN0437": 2
+      }
+    },
+    {
+      "id": "D06",
+      "profile_group": "D06",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: UI/UX Designer\nKỹ năng: Figma UX UI\nKinh nghiệm: 1 năm\nTôi nghiên cứu người dùng, dựng wireframe và thử nghiệm prototype cho ứng dụng di động.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0013": 2,
+        "VN0029": 1,
+        "VN0044": 2,
+        "VN0059": 2
+      }
+    },
+    {
+      "id": "D07",
+      "profile_group": "D07",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: Tester QA Engineer\nKỹ năng: SQL Postman API Testing Android iOS Agile\nKinh nghiệm: 5 năm\nTôi kiểm thử chức năng, đối chiếu dữ liệu và ghi nhận lỗi ứng dụng đặt phòng.\nNơi muốn làm việc: Nha Trang",
+      "region": "khanh_hoa",
+      "relevance": {
+        "VN0413": 2
+      }
+    },
+    {
+      "id": "D08",
+      "profile_group": "D08",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: Data Engineer\nKỹ năng: Python SQL Spark Airflow ETL AWS\nKinh nghiệm: 4 năm\nTôi phát triển pipeline dữ liệu, kiểm tra chất lượng và thiết kế kho dữ liệu.\nNơi muốn làm việc: Sài Gòn",
+      "region": "ho_chi_minh",
+      "relevance": {
+        "VN0177": 2,
+        "VN0196": 2,
+        "VN0214": 1,
+        "VN0230": 1,
+        "VN0246": 1,
+        "VN0262": 1,
+        "VN0276": 2,
+        "VN0290": 1,
+        "VN0303": 1,
+        "VN0316": 1,
+        "VN0329": 1,
+        "VN0499": 2
+      }
+    },
+    {
+      "id": "D09",
+      "profile_group": "D09",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: Mobile Developer Flutter\nKỹ năng: Dart Flutter REST API Firebase Git iOS\nKinh nghiệm: 2 năm\nTôi phát triển ứng dụng Flutter, xử lý trạng thái và kết nối dịch vụ web.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0008": 1,
+        "VN0025": 2,
+        "VN0040": 2,
+        "VN0055": 1
+      }
+    },
+    {
+      "id": "D10",
+      "profile_group": "D10",
+      "split": "dev",
+      "text": "Vị trí ứng tuyển: Embedded Software Engineer\nKỹ năng: C++ Embedded Linux\nKinh nghiệm: 4 năm\nTôi lập trình firmware, kiểm tra bộ nhớ và gỡ lỗi phần mềm thiết bị.\nNơi muốn làm việc: Hải Phòng",
+      "region": "hai_phong",
+      "relevance": {
+        "VN0446": 2,
+        "VN0449": 2,
+        "VN0452": 2
+      }
+    },
+    {
+      "id": "T01",
+      "profile_group": "T01",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Data Analyst\nKỹ năng: SQL Power BI Excel Statistics\nKinh nghiệm: 1 năm\nTôi chuyển dữ liệu bán hàng thành báo cáo theo tháng và chỉ số theo dõi vận hành.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0016": 1,
+        "VN0032": 1,
+        "VN0047": 2,
+        "VN0061": 1,
+        "VN0075": 1,
+        "VN0088": 1,
+        "VN0101": 1,
+        "VN0114": 1,
+        "VN0126": 1,
+        "VN0138": 2,
+        "VN0150": 1,
+        "VN0162": 1
+      }
+    },
+    {
+      "id": "T02",
+      "profile_group": "T02",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Data Analyst\nKỹ năng: Python SQL Excel Power BI\nKinh nghiệm: 2 năm\nI build reporting dashboards, reconcile sales figures and explain business performance to stakeholders.\nNơi muốn làm việc: Sài Gòn",
+      "region": "ho_chi_minh",
+      "relevance": {
+        "VN0176": 1,
+        "VN0188": 1,
+        "VN0195": 2,
+        "VN0213": 1,
+        "VN0229": 1,
+        "VN0245": 1,
+        "VN0261": 2,
+        "VN0275": 1,
+        "VN0289": 1,
+        "VN0302": 1,
+        "VN0315": 1,
+        "VN0328": 2,
+        "VN0498": 1
+      }
+    },
+    {
+      "id": "T03",
+      "profile_group": "T03",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Data Analyst\nKỹ năng: Python SQL Power BI Tableau\nKinh nghiệm: 3 năm\nTôi làm sạch dữ liệu, theo dõi KPI và xây dựng báo cáo trực quan cho nhóm kinh doanh.\nNơi muốn làm việc: Đà Nẵng",
+      "region": "da_nang",
+      "relevance": {
+        "VN0352": 2,
+        "VN0370": 1,
+        "VN0383": 1,
+        "VN0394": 2,
+        "VN0403": 1,
+        "VN0410": 1
+      }
+    },
+    {
+      "id": "T04",
+      "profile_group": "T04",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Data Analyst\nKỹ năng: SQL Excel Power BI Tableau Statistics\nKinh nghiệm: 3 năm\nTôi phân tích dữ liệu nhân sự, kiểm tra số liệu và lập dashboard theo bộ phận.\nNơi muốn làm việc: Cần Thơ",
+      "region": "can_tho",
+      "relevance": {
+        "VN0425": 2,
+        "VN0435": 1,
+        "VN0442": 2
+      }
+    },
+    {
+      "id": "T05",
+      "profile_group": "T05",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Business Intelligence Analyst\nKỹ năng: Excel Power BI Tableau\nKinh nghiệm: 1 năm\nI prepare management dashboards, track business indicators and turn spreadsheet data into visual reports.\nNơi muốn làm việc: Sài Gòn",
+      "region": "ho_chi_minh",
+      "relevance": {
+        "VN0176": 1,
+        "VN0188": 2,
+        "VN0195": 1,
+        "VN0213": 1,
+        "VN0229": 1,
+        "VN0245": 1,
+        "VN0261": 1,
+        "VN0275": 1,
+        "VN0289": 1,
+        "VN0302": 1,
+        "VN0315": 1,
+        "VN0328": 1,
+        "VN0498": 1
+      }
+    },
+    {
+      "id": "T06",
+      "profile_group": "T06",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Backend Developer Python\nKỹ năng: Python FastAPI Django SQL PostgreSQL Docker\nKinh nghiệm: 2 năm\nI build server-side APIs, write database migrations and package web services for deployment.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0004": 1,
+        "VN0021": 2,
+        "VN0036": 1,
+        "VN0051": 1,
+        "VN0065": 1,
+        "VN0078": 1,
+        "VN0091": 1,
+        "VN0104": 1,
+        "VN0117": 2,
+        "VN0129": 1,
+        "VN0141": 1,
+        "VN0153": 1,
+        "VN0165": 1
+      }
+    },
+    {
+      "id": "T07",
+      "profile_group": "T07",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Backend Developer Java\nKỹ năng: Java Spring Boot Spring SQL Kafka Docker\nKinh nghiệm: 4 năm\nTôi phát triển dịch vụ backend bằng Java và Spring Boot, xử lý dữ liệu và hàng đợi sự kiện.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0004": 1,
+        "VN0021": 1,
+        "VN0036": 1,
+        "VN0051": 2,
+        "VN0065": 1,
+        "VN0078": 2,
+        "VN0091": 2,
+        "VN0104": 1,
+        "VN0117": 1,
+        "VN0129": 1,
+        "VN0141": 1,
+        "VN0153": 1,
+        "VN0165": 2
+      }
+    },
+    {
+      "id": "T08",
+      "profile_group": "T08",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Backend Developer Node.js\nKỹ năng: JavaScript TypeScript Node.js Express SQL Docker\nKinh nghiệm: 1 năm\nTôi viết API Node.js, xác thực người dùng và truy vấn cơ sở dữ liệu cho website.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0004": 2,
+        "VN0021": 1,
+        "VN0036": 2,
+        "VN0051": 1,
+        "VN0065": 1,
+        "VN0078": 1,
+        "VN0091": 1,
+        "VN0104": 1,
+        "VN0117": 1,
+        "VN0129": 1,
+        "VN0141": 2,
+        "VN0153": 1,
+        "VN0165": 1
+      }
+    },
+    {
+      "id": "T09",
+      "profile_group": "T09",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Frontend Developer React\nKỹ năng: JavaScript React Next.js HTML CSS REST API\nKinh nghiệm: 1 năm\nI implement responsive pages, connect APIs and maintain reusable UI components.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0006": 2,
+        "VN0023": 1,
+        "VN0038": 2,
+        "VN0053": 1,
+        "VN0067": 1,
+        "VN0080": 1,
+        "VN0093": 1,
+        "VN0106": 1,
+        "VN0118": 1,
+        "VN0130": 1,
+        "VN0142": 1,
+        "VN0154": 1,
+        "VN0166": 2
+      }
+    },
+    {
+      "id": "T10",
+      "profile_group": "T10",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Frontend Developer React\nKỹ năng: JavaScript TypeScript React HTML CSS Git\nTôi phát triển giao diện web thích ứng, xử lý trạng thái tải dữ liệu và cải thiện khả năng truy cập. Tôi chưa ghi tổng thời gian kinh nghiệm trong hồ sơ.\nNơi muốn làm việc: Sài Gòn",
+      "region": "ho_chi_minh",
+      "relevance": {
+        "VN0174": 1,
+        "VN0193": 2,
+        "VN0211": 2,
+        "VN0227": 1,
+        "VN0243": 1,
+        "VN0259": 2,
+        "VN0273": 1,
+        "VN0287": 2,
+        "VN0300": 1,
+        "VN0313": 1,
+        "VN0326": 2,
+        "VN0339": 1,
+        "VN0492": 1,
+        "VN0500": 2
+      }
+    },
+    {
+      "id": "T11",
+      "profile_group": "T11",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Frontend Developer Angular\nKỹ năng: TypeScript Angular HTML CSS REST API Git\nKinh nghiệm: 3 năm\nTôi phát triển ứng dụng Angular, quản lý form và tích hợp API cho trang quản trị.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0006": 1,
+        "VN0023": 1,
+        "VN0038": 1,
+        "VN0053": 2,
+        "VN0067": 1,
+        "VN0080": 1,
+        "VN0093": 1,
+        "VN0106": 1,
+        "VN0118": 1,
+        "VN0130": 1,
+        "VN0142": 2,
+        "VN0154": 1,
+        "VN0166": 1
+      }
+    },
+    {
+      "id": "T12",
+      "profile_group": "T12",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: AI Engineer\nKỹ năng: Python PyTorch Transformers NLP FastAPI\nKinh nghiệm: 2 năm\nTôi xây dựng mô hình xử lý ngôn ngữ, biểu diễn văn bản và phục vụ suy luận qua API.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0011": 2,
+        "VN0028": 2,
+        "VN0043": 2,
+        "VN0058": 2
+      }
+    },
+    {
+      "id": "T13",
+      "profile_group": "T13",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: AI Engineer NLP\nKỹ năng: Python PyTorch TensorFlow NLP Docker\nKinh nghiệm: 4 năm\nI develop language processing models, assess text classification quality and deploy inference services.\nNơi muốn làm việc: Đà Nẵng",
+      "region": "da_nang",
+      "relevance": {
+        "VN0341": 1,
+        "VN0359": 1,
+        "VN0373": 2,
+        "VN0385": 2,
+        "VN0396": 1,
+        "VN0404": 2
+      }
+    },
+    {
+      "id": "T14",
+      "profile_group": "T14",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Data Engineer\nKỹ năng: Python SQL Spark ETL AWS Airflow\nKinh nghiệm: 4 năm\nTôi xây dựng pipeline thu thập dữ liệu và quản lý lịch xử lý dữ liệu lớn cho kho dữ liệu.\nNơi muốn làm việc: Hà Nội",
+      "region": "ha_noi",
+      "relevance": {
+        "VN0010": 2,
+        "VN0027": 2,
+        "VN0042": 2,
+        "VN0057": 2,
+        "VN0493": 1
+      }
+    },
+    {
+      "id": "T15",
+      "profile_group": "T15",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Data Engineer\nKỹ năng: SQL Azure Spark Airflow Python\nKinh nghiệm: 3 năm\nI build cloud data pipelines, maintain warehouse tables and validate incoming data on Azure.\nNơi muốn làm việc: Sài Gòn",
+      "region": "ho_chi_minh",
+      "relevance": {
+        "VN0177": 2,
+        "VN0196": 1,
+        "VN0214": 1,
+        "VN0230": 1,
+        "VN0246": 1,
+        "VN0262": 1,
+        "VN0276": 1,
+        "VN0290": 2,
+        "VN0303": 2,
+        "VN0316": 1,
+        "VN0329": 1,
+        "VN0499": 1
+      }
+    },
+    {
+      "id": "T16",
+      "profile_group": "T16",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Tester QA Engineer\nKỹ năng: SQL Postman API Testing Android iOS\nKinh nghiệm: 5 năm\nTôi kiểm thử ứng dụng di động và API, ghi nhận lỗi có bước tái hiện và đối chiếu dữ liệu SQL.\nNơi muốn làm việc: Nha Trang",
+      "region": "khanh_hoa",
+      "relevance": {
+        "VN0413": 2
+      }
+    },
+    {
+      "id": "T17",
+      "profile_group": "T17",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: UI/UX Designer\nKỹ năng: Figma UX UI\nKinh nghiệm: 2 năm\nI create user journeys, wireframes and interactive prototypes, then refine designs from usability feedback.\nNơi muốn làm việc: Nha Trang",
+      "region": "khanh_hoa",
+      "relevance": {
+        "VN0422": 2
+      }
+    },
+    {
+      "id": "T18",
+      "profile_group": "T18",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: DevOps Engineer\nKỹ năng: Python Linux Docker Kubernetes CI/CD Terraform AWS\nKinh nghiệm: 3 năm\nI automate deployment, manage infrastructure and diagnose failures using application and system logs.\nNơi muốn làm việc: Cần Thơ",
+      "region": "can_tho",
+      "relevance": {
+        "VN0428": 2,
+        "VN0437": 2
+      }
+    },
+    {
+      "id": "T19",
+      "profile_group": "T19",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Embedded Software Engineer\nKỹ năng: C++ Linux Embedded\nKinh nghiệm: 4 năm\nTôi lập trình phần mềm nhúng, gỡ lỗi bộ nhớ và kiểm tra giao tiếp giữa thiết bị với hệ thống.\nNơi muốn làm việc: Hải Phòng",
+      "region": "hai_phong",
+      "relevance": {
+        "VN0446": 2,
+        "VN0449": 2,
+        "VN0452": 2
+      }
+    },
+    {
+      "id": "T20",
+      "profile_group": "T20",
+      "split": "test",
+      "text": "Vị trí ứng tuyển: Cybersecurity Specialist\nKỹ năng: Python Linux Security Networking\nKinh nghiệm: 2 năm\nTôi phân tích log và kiểm tra cấu hình an toàn; chỉ tìm công việc ở Quảng Ninh.\nNơi muốn làm việc: Quảng Ninh",
+      "region": "quang_ninh",
+      "relevance": {}
+    }
+  ]
+}
