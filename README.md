@@ -21,7 +21,32 @@ cd job-recommender-system
 Nếu không dùng Git, mở [repository trên GitHub](https://github.com/TienMoi79/job-recommender-system),
 chọn **Code → Download ZIP**, giải nén rồi mở terminal trong thư mục vừa giải nén.
 
-### Chạy giao diện web Streamlit
+### Xem thử giao diện mới JobVista
+
+Giao diện mới chạy bằng một lệnh Python, dùng FastAPI cùng HTML/CSS/JavaScript.
+Không cần cài Node, không cần chạy hai terminal. Dùng chính catalog 500 tin,
+`ResumeDocumentReader` và `JobRecommenderSystem` hiện có; bản xem thử dùng TF-IDF.
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-preview.txt
+.\.venv\Scripts\python.exe web_preview.py
+```
+
+Mở **http://127.0.0.1:8000**. Nếu terminal đã hiện `(.venv)`, có thể chạy ngắn:
+`python web_preview.py`. Dừng bằng `Ctrl+C`.
+
+- Bố cục ba cột trên máy tính: bộ lọc, danh sách, chi tiết; màn hình nhỏ mở chi
+  tiết trong bảng riêng. Tìm kiếm/lọc/phân trang cập nhật ngay, không tải lại trang.
+- Tải CV ảnh/PDF/Word → kiểm tra kỹ năng và khu vực → xem kết quả có giải thích
+  bốn thành phần điểm. CV chỉ ở RAM, không lưu file/cơ sở dữ liệu/localStorage.
+- Lưu việc yêu thích bằng Job_ID trong localStorage của trình duyệt này, không
+  có đăng nhập hay đồng bộ tài khoản. Đổi Việt/Anh cập nhật giao diện và dữ liệu.
+- Tin là dữ liệu tham khảo có đường dẫn nguồn; nút xem nguồn không phải nộp hồ sơ.
+- Font Be Vietnam Pro tải từ Google Fonts; khi offline dùng font hệ thống.
+- API tại `/api/docs`. Kiểm thử API: `python -m unittest discover -s tests -p test_web_preview.py -v`
+  (cần thêm `python -m pip install httpx` trong môi trường kiểm thử).
+
+### Chạy giao diện web Streamlit hiện có
 
 Sau khi tải repo, mở terminal tại thư mục dự án:
 
