@@ -31,3 +31,30 @@
 }
 @media(min-width:1550px){.workspace:not(.has-detail){grid-template-columns:225px minmax(0,1fr)}}
 @media(min-width:901px) and (max-width:1130px){.workspace:not(.has-detail){grid-template-columns:175px minmax(0,1fr)}}
+
+/* Dùng phần chiều ngang còn lại cho nhiều tin thay vì kéo dài một thẻ. */
+@media(min-width:901px){
+  .workspace:not(.has-detail) .jobs-list{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:16px;
+    align-items:stretch;
+  }
+  .workspace:not(.has-detail) .job-card{
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    min-height:245px;
+  }
+  .workspace:not(.has-detail) .skill-tags{margin-bottom:16px}
+  .workspace:not(.has-detail) .job-card-bottom{margin-top:auto}
+  .workspace:not(.has-detail) .empty-state{grid-column:1/-1}
+}
+@media(min-width:1280px){
+  .workspace:not(.has-detail) .jobs-list{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .workspace:not(.has-detail) .job-card{padding:16px}
+  .workspace:not(.has-detail) .card-main{gap:6px}
+  .workspace:not(.has-detail) .job-open{gap:9px;align-items:flex-start}
+  .workspace:not(.has-detail) .company-logo{width:36px;height:36px;font-size:12px}
+  .workspace:not(.has-detail) .job-open h3{font-size:13px;line-height:1.6}
+}

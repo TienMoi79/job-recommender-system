@@ -38,6 +38,8 @@ Mở **http://127.0.0.1:8000**. Nếu terminal đã hiện `(.venv)`, có thể 
 - Bố cục ba cột trên máy tính: bộ lọc, danh sách, chi tiết; màn hình nhỏ mở chi
   tiết trong bảng riêng. Bảng chi tiết mặc định ẩn; nhấp một tin để mở, nhấp lại
   tin đó để đóng, hoặc nhấp tin khác để đổi nội dung. Có thể đóng bằng nút X/ESC.
+  Khi đóng chi tiết, danh sách hiện 4 thẻ mỗi hàng trên màn hình rộng, 2 thẻ
+  trên màn hình vừa và 1 thẻ trên màn hình nhỏ; mỗi trang vẫn có 8 tin.
   Tìm kiếm/lọc/phân trang cập nhật ngay, không tải lại trang.
 - Tải CV ảnh/PDF/Word → kiểm tra kỹ năng và khu vực → xem kết quả có giải thích
   bốn thành phần điểm. CV chỉ ở RAM, không lưu file/cơ sở dữ liệu/localStorage.
