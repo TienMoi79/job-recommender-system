@@ -3,8 +3,8 @@
 ## Phạm vi
 
 JobVista dùng `HybridJobRecommenderSystem` trên catalog 500 tin. Phiên bản cũ
-`JobRecommenderSystem` vẫn giữ nguyên cách xếp hạng làm baseline A/B. Streamlit
-có thêm lựa chọn kết hợp; notebook có ví dụ và bảng đánh giá. Không dùng dịch vụ
+`JobRecommenderSystem` vẫn giữ nguyên cách xếp hạng làm baseline A/B.
+Notebook có ví dụ và bảng đánh giá; JobVista là giao diện web duy nhất. Không dùng dịch vụ
 LLM/OCR trả phí, không lưu CV người dùng vào index hay tập huấn luyện.
 
 ```mermaid

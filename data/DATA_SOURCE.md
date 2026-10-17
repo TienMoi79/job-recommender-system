@@ -56,9 +56,10 @@ còn trong CSV. Lương và số năm chưa rõ được ghi rõ, không bổ su
 
 ## Tái tạo và kiểm tra
 
-Sau khi cài `requirements-web.txt`, chạy:
+Để tạo lại catalog, cài thư viện riêng cho công cụ xử lý nguồn rồi chạy:
 
 ```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-catalog.txt
 .\.venv\Scripts\python.exe build_job_catalog.py
 ```
 

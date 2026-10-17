@@ -14,26 +14,36 @@ sạch, không nhân bản 20 dòng mock. Xem [nguồn, giấy phép và quy t�
 
 ## 1. Cài đặt và chạy
 
+**Giao diện web duy nhất hiện tại là JobVista, chạy bằng `python web_preview.py`
+tại http://127.0.0.1:8000.** Bản Streamlit cũ ở cổng 8501 đã được gỡ bỏ.
+Notebook vẫn dùng để học và trình bày thuật toán.
+
 Tải mã nguồn bằng Git:
 
 ```powershell
-git clone https://github.com/TienMoi79/job-recommender-system.git
+git clone --branch main https://github.com/TienMoi79/job-recommender-system.git
 cd job-recommender-system
 ```
 
 Nếu không dùng Git, mở [repository trên GitHub](https://github.com/TienMoi79/job-recommender-system),
 chọn **Code → Download ZIP**, giải nén rồi mở terminal trong thư mục vừa giải nén.
 
-### Xem thử giao diện mới JobVista
+### Chạy JobVista trên máy mới — cổng 8000
 
 Giao diện mới chạy bằng một lệnh Python, dùng FastAPI cùng HTML/CSS/JavaScript.
 Không cần cài Node, không cần chạy hai terminal. Dùng chính catalog 500 tin,
-`ResumeDocumentReader` và `HybridJobRecommenderSystem`; baseline cũ vẫn được giữ.
+`ResumeDocumentReader` và `HybridJobRecommenderSystem`; hai thuật toán baseline vẫn được giữ để đánh giá.
+
+Cần Python 3.10 trở lên. Trong terminal của thư mục vừa clone, chạy:
 
 ```powershell
+python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-preview.txt -r requirements-semantic.txt
 .\.venv\Scripts\python.exe web_preview.py
 ```
+
+Nếu đã có `.venv`, bỏ qua lệnh tạo môi trường. Lệnh trên gọi đúng Python trong
+môi trường dự án, không cần kích hoạt PowerShell hoặc đổi Execution Policy.
 
 Mở **http://127.0.0.1:8000**. Nếu terminal đã hiện `(.venv)`, có thể chạy ngắn:
 `python web_preview.py`. Dừng bằng `Ctrl+C`.
@@ -77,56 +87,23 @@ tiếng Anh; CV10 cố ý chọn Quảng Ninh để thử kết quả rỗng khi
 Tạo lại bộ mẫu trên Windows: cài `requirements-sample-cvs.txt`, chạy
 `python generate_sample_cvs.py`. Script cần font Arial tại `C:/Windows/Fonts`.
 
-### Chạy giao diện web Streamlit hiện có
+### Đã clone từ trước: cập nhật rồi chạy đúng giao diện
 
-Sau khi tải repo, mở terminal tại thư mục dự án:
+Dừng tiến trình cũ bằng `Ctrl+C` trong terminal đang chạy nó. Mở terminal tại
+đúng thư mục repo, rồi chạy:
 
 ```powershell
-$env:PYTHONIOENCODING='utf-8'
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements-web.txt
-.\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1
+git switch main
+git pull --ff-only origin main
+.\.venv\Scripts\python.exe -m pip install -r requirements-preview.txt -r requirements-semantic.txt
+.\.venv\Scripts\python.exe web_preview.py
 ```
 
-Nếu đã có `.venv`, bỏ qua lệnh tạo môi trường. Mở **http://127.0.0.1:8501** trên
-máy đang chạy ứng dụng. Đây là địa chỉ cục bộ; đưa mã nguồn lên GitHub không tự
-triển khai thành website công khai. Nhấn `Ctrl+C` trong terminal để dừng server.
+Mở **http://127.0.0.1:8000/** và nhấn `Ctrl+F5` để tải lại. Có thể kiểm tra phiên
+bản bằng `git log -1 --oneline`. Nếu Git báo thay đổi cục bộ, hãy lưu/commit các
+thay đổi cần giữ trước khi cập nhật; không dùng lệnh xóa sạch thay đổi.
 
-- **Khám phá việc làm:** tìm theo chức danh, kỹ năng, mô tả (hỗ trợ không dấu),
-  lọc lĩnh vực/kinh nghiệm/địa điểm, phân trang 20 tin, mở chi tiết và xem việc tương tự.
-- **Tìm việc theo CV:** tải ảnh, PDF hoặc Word `.docx` → **Đọc CV** → kiểm tra
-  vị trí/kỹ năng và xác nhận nơi muốn làm → **Tìm việc phù hợp**. PDF scan/ảnh
-  được đọc bằng OCR. CV mẫu vẫn có trong phần mở rộng để thử nhanh; chỉnh sửa
-  văn bản là lựa chọn sửa lỗi OCR, không bắt buộc nhập CV bằng tay.
-- Mặc định dùng dữ liệu tiếng Việt và TF-IDF. Mục **Ngôn ngữ / Language** ở
-  sidebar chuyển toàn bộ giao diện, tiêu đề tab, danh mục việc làm và CV mẫu giữa
-  tiếng Việt và tiếng Anh. Nhãn nút, bộ lọc, điểm số và thông báo lỗi cùng đổi
-  ngôn ngữ. Cả hai dùng cùng 500 tin trong `data/jobs_catalog.csv`; phần tiếng
-  Anh có thể là tóm tắt có cấu trúc từ tin gốc, không phải bản dịch đầy đủ.
-  Tin có mô tả gốc tiếng Anh được tóm tắt bằng tiếng Việt khi chọn giao diện Việt;
-  toàn văn nguồn vẫn giữ trong CSV và có đường dẫn đối chiếu.
-  Khi không có catalog, web nhận CSV 20 tin cũ. Đổi ngôn ngữ xóa CV cũ; đổi
-  cách tìm giữ CV nhưng yêu cầu tìm lại để cập nhật kết quả.
-- Điều hướng chỉ gồm **Khám phá việc làm / Explore jobs** và **Tìm việc theo CV /
-  Match your CV**; mục **Về đồ án** đã được bỏ khỏi giao diện.
-- Phần **Cách tìm việc phù hợp / How to find matching jobs** giải thích các cách
-  bằng ngôn ngữ thông thường và ví dụ: **Theo từ khóa / By keywords** (TF-IDF,
-  mặc định), **Theo ý nghĩa nội dung / By meaning** (Sentence Transformers) và
-  **Kết hợp kỹ năng, nội dung và kinh nghiệm / Combine skills, content and experience** (hybrid phiên bản 2).
-  Mô tả ngắn hiển thị ngay bên dưới lựa chọn; nút **Xem giải thích và ví dụ / See
-  explanations and examples** mở phần so sánh chi tiết trong hộp riêng.
-  Lựa chọn áp dụng cho gợi ý việc tương tự và ghép CV; ô tìm kiếm danh sách vẫn
-  dùng từ khóa. Đổi cách tìm giữ CV và xóa kết quả cũ để người dùng tìm lại.
-- Cách tìm theo ý nghĩa cần cài `requirements-semantic.txt` và tải mô hình lần
-  đầu. Khi chưa sẵn sàng, web có nút **Dùng cách tìm theo từ khóa / Use keyword
-  matching** để quay lại mà không mất CV. Ứng dụng không âm thầm thay phương pháp
-  hoặc tạo điểm giả; thông tin kỹ thuật dành cho cài đặt được giữ trong README.
-
-**Tích hợp:** Streamlit gọi trực tiếp `JobRecommenderSystem`, không cần API server
-riêng. `engine.jobs` trả bản sao danh mục để giao diện không sửa được dữ liệu của
-engine dùng chung. Cache engine theo nội dung file, backend và model: sửa CSV sẽ
-được nhận biết ở lần tương tác/rerun kế tiếp. CV/kết quả chỉ lưu trong bộ nhớ từng
-phiên, không vào cache dùng chung, file, hoặc log ứng dụng. Nút **Xóa CV** xóa cả hai.
+### Đọc CV và kiểm thử
 
 CV và tệp upload chỉ ở bộ nhớ của phiên, không lưu file/cache truy vấn hoặc gọi
 dịch vụ OCR bên ngoài. Trọng số OCR công khai được tải vào `.cache/ocr_models`
@@ -148,19 +125,17 @@ nghiệm giảm mềm khi thiếu năm, không tự loại cứng hoặc suy ra 
 Tin/CV thiếu thông tin kinh nghiệm được bỏ thành phần này và chuẩn hóa trọng số.
 Không diễn giải điểm là xác suất trúng tuyển hay xác nhận đủ mọi điều kiện.
 
-Kiểm thử backend và các luồng giao diện bằng Streamlit AppTest:
+Kiểm thử API, đọc CV và AI Engine:
 
 ```powershell
+.\.venv\Scripts\python.exe -m pip install httpx
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-`tests/test_web.py` kiểm tra điểm UI khớp engine thật, điều hướng CV → chi tiết →
-quay lại, tìm ký tự đặc biệt, đặt lại bộ lọc, đổi ngôn ngữ, CV rỗng/ngoài từ vựng,
-tách phiên, cache đổi theo dữ liệu, thiếu file và lỗi tải semantic. Khi chỉ cài
-requirements cơ bản, các test AppTest được bỏ qua với thông báo cần cài thư viện web.
-Các test đọc CV cần `requirements-web.txt`; `tests/test_catalog.py` kiểm tra
-500 bản ghi, provenance và checksum. Có kiểm thử vùng là bộ lọc bắt buộc, công
-thức điểm 4 thành phần, file hỏng, PDF khóa/quá nhiều trang và xóa CV.
+`tests/test_web_preview.py` kiểm tra catalog 500 tin, API Việt/Anh, chi tiết,
+việc tương tự, ghép CV có điểm thật, lọc vùng, đọc Word, giới hạn upload và lỗi
+đầu vào. Bộ test dùng cấu hình nhẹ để không tải model; semantic thật được đánh
+giá riêng bằng `evaluation.py`. Các test cho giao diện cũ đã được gỡ theo mã cũ.
 
 ### Chạy bằng Jupyter Notebook để trình bày đồ án
 
@@ -243,17 +218,17 @@ khi chưa có cả hai file. Demo lưu lại kết quả của lần chạy gầ
 generate_mock_data.py       # MockDataGenerator: tạo và lưu dữ liệu
 job_recommender.py          # Tiền xử lý, hai vectorizer, JobRecommenderSystem
 demo.py                    # Chạy item-to-item và cả 3 CV, in/lưu kết quả
-app.py                     # Giao diện web Streamlit, quản lý phiên và cache engine
-ui_helper.py               # Phong cách giao diện và CV mẫu tiếng Việt
-web_support.py             # Tìm kiếm, lọc, hiển thị thẻ và chọn CV mẫu theo ngôn ngữ
-ui_text.py                 # Từ điển giao diện Việt/Anh và định dạng kinh nghiệm
-requirements-web.txt       # Thư viện chạy giao diện web
+web_preview.py             # Khởi động giao diện JobVista và API ở cổng 8000
+web_ui/                    # HTML/CSS/JavaScript, giao diện Việt/Anh
+ui_text.py                 # Thông báo lỗi đọc CV Việt/Anh cho API
+requirements-preview.txt   # Thư viện chạy web JobVista
+requirements-web.txt       # Thư viện đọc ảnh/PDF/Word và OCR
+requirements-catalog.txt   # Thư viện tùy chọn để tạo lại catalog nguồn
 cv_documents.py            # Đọc PDF/Word/ảnh, OCR cục bộ và giới hạn tài liệu
 resume_profile.py          # Trích xuất vị trí, kỹ năng, lĩnh vực từ CV
 locations.py               # Alias địa điểm, ưu tiên vùng mong muốn trong CV
 catalog_data.py            # Hai ngôn ngữ của cùng catalog
 build_job_catalog.py       # Tải snapshot nguồn, làm sạch và chọn đúng 500 tin
-.streamlit/config.toml     # Chủ đề sáng, màu sắc giao diện
 job_recommender_notebook.ipynb # Chạy từng bước bằng Jupyter Notebook
 requirements-notebook.txt  # Thư viện để mở và thực thi notebook
 requirements.txt           # Thư viện cho TF-IDF
@@ -269,7 +244,7 @@ outputs/<backend>/
   similar_jobs.csv          # Kết quả truy vấn việc làm gần nhất
   cv_matches.csv            # Kết quả các CV trong lần chạy gần nhất
 tests/test_recommender.py   # Kiểm thử chức năng phần mềm
-tests/test_web.py           # Kiểm thử tích hợp thật và luồng giao diện
+tests/test_web_preview.py   # Kiểm thử API JobVista và tích hợp AI thật
 ```
 
 ## 3. Giai đoạn 1 — dữ liệu
@@ -443,7 +418,7 @@ báo cáo ghi rõ bản hybrid không ngữ nghĩa. Đừng chỉnh trọng số
 | Giai đoạn 1 | Sinh ít nhất 15 tin với đủ 6 cột và 3 CV; có file đọc lại được |
 | Giai đoạn 2 | Hai hàm trả top-N theo cosine; có OOP, comment, demo, kiểm tra đầu vào |
 | Giai đoạn 3 — pilot | Qrels đóng băng, chia dev/test theo hồ sơ, metrics và so sánh A/B/C; cần bổ sung nhãn độc lập |
-| Giai đoạn 4 — đã triển khai | Streamlit hiển thị/lọc tin, nhập CV, mở chi tiết và xem gợi ý thật |
+| Giai đoạn 4 — đã triển khai | JobVista hiển thị/lọc tin, tải CV, mở chi tiết và xem gợi ý thật |
 
 ## 8. Tài liệu thuật toán và API
 
@@ -451,8 +426,6 @@ báo cáo ghi rõ bản hybrid không ngữ nghĩa. Đừng chỉnh trọng số
 - [Model card của mô hình mặc định](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2)
 - [scikit-learn: TfidfVectorizer](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html)
 - [scikit-learn: cosine_similarity](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html)
-- [Streamlit: Session State](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state)
-- [Streamlit: AppTest](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest)
 
 ## 9. Trạng thái kiểm chứng khi bàn giao
 
@@ -462,10 +435,10 @@ báo cáo ghi rõ bản hybrid không ngữ nghĩa. Đừng chỉnh trọng số
   Python Backend Developer và AI Engineer.
 - Catalog bàn giao có đúng 500 tin không trùng tuyệt đối, 387 công ty và 10 nhóm
   khu vực; provenance và checksum nằm trong `data/catalog_manifest.json`.
-- Đã chạy thành công 83 kiểm thử engine, hybrid, metrics, API, đọc tài liệu, catalog và Streamlit AppTest trên
-  Python 3.12.5/Streamlit 1.65.0. Nhánh web đã chạy với TF-IDF và hai bộ dữ liệu.
-  Kiểm thử đổi Việt → Anh → Việt, lọc theo giá trị số, điểm CV thực, điều hướng
-  và thông báo lỗi tiếng Anh; điều hướng chỉ còn hai trang.
+- Giao diện hiện tại chỉ còn JobVista ở cổng 8000. Đã gỡ bản Streamlit, cấu
+  hình/chức năng phụ trợ và các test chỉ dành cho giao diện đó. Đã chạy đạt 57 test còn lại,
+  kiểm tra engine, hybrid, metrics, API, đọc tài liệu, catalog và kinh nghiệm.
+  Đã kiểm chứng mã JobVista bằng bản clone mới từ nhánh main trên GitHub.
 - Bộ đọc kinh nghiệm tuyển dụng xét thêm yêu cầu/JD khi trường nguồn không rõ.
   Đã phục hồi 67 tin, gồm VN0002 (Fullstack Java Developer: tối thiểu 2 năm),
   cập nhật tóm tắt Việt/Anh, bộ lọc và đầu vào chấm điểm. Giữ nguyên văn bản

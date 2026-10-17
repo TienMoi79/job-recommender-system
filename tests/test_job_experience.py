@@ -48,7 +48,6 @@ class JobExperienceTests(unittest.TestCase):
 
     def test_catalog_regression_and_bilingual_summary(self):
         from catalog_data import localize_jobs
-        from web_support import filter_jobs
         root=Path(__file__).resolve().parents[1]
         jobs=pd.read_csv(root/'data/jobs_catalog.csv').fillna('')
         row=jobs.set_index('Job_ID').loc['VN0002']
@@ -56,8 +55,6 @@ class JobExperienceTests(unittest.TestCase):
         self.assertTrue(row.Experience_Known)
         self.assertEqual(row.Experience_Years,2.)
         self.assertEqual(row.Experience_Source,'requirements')
-        self.assertIn('VN0002',filter_jobs(jobs,experience=2).Job_ID.tolist())
-        self.assertNotIn('VN0002',filter_jobs(jobs,experience=0).Job_ID.tolist())
         english=localize_jobs(jobs,'en').set_index('Job_ID').loc['VN0002']
         self.assertIn('2 years',english.Requirements)
         self.assertIn('2 years',english.Job_Description)

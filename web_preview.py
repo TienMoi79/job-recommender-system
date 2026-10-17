@@ -2,7 +2,7 @@
 
 FastAPI chỉ là lớp kết nối. Đọc CV và tính cosine vẫn dùng các class của đồ án.
 HTML/CSS/JavaScript được phục vụ cùng địa chỉ nên không cần Node hay hai terminal.
-Bản Streamlit cũ và notebook tiếp tục chạy độc lập.
+Notebook tiếp tục chạy độc lập; JobVista là giao diện web duy nhất.
 """
 from __future__ import annotations
 
