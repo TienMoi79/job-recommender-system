@@ -29,6 +29,28 @@ class WebPreviewTests(unittest.TestCase):
         self.assertEqual([j['id'] for j in vi['jobs']], [j['id'] for j in en['jobs']])
         self.assertIn('Hanoi', [r['label'] for r in en['regions']])
         self.assertNotEqual(vi['domains'], en['domains'])
+        self.assertEqual([j['domain_id'] for j in vi['jobs']], [j['domain_id'] for j in en['jobs']])
+        self.assertEqual(dict(vi['domain_options']).keys(), dict(en['domain_options']).keys())
+        for data in (vi,en):
+            labels=dict(data['domain_options'])
+            self.assertTrue(all(labels[job['domain_id']]==job['domain'] for job in data['jobs']))
+
+    def test_restored_cv_has_same_matches_without_server_session(self):
+        """Payload lưu trên browser có thể gửi lại sau reload, không cần session backend."""
+        from fastapi.testclient import TestClient
+        from web_preview import app
+        payload={'text':'Backend Developer. Python, SQL, Django, Docker. 2 years experience.',
+                 'location':'ha_noi','top_n':24,'experience_override':True,'experience_years':0}
+        first=self.client.post('/api/cv/match',json=payload).json()
+        # Client mới mô phỏng phiên HTTP mới; server không lưu hồ sơ cá nhân.
+        restored=TestClient(app).post('/api/cv/match',json=dict(payload)).json()
+        self.assertEqual(first,restored)
+        self.assertTrue(first['jobs'])
+        self.assertTrue(all('ha_noi' in job['regions'] for job in first['jobs']))
+        self.assertEqual(first['profile']['experience_years'],0)
+        unknown=self.client.post('/api/cv/match',json={**payload,'experience_years':None}).json()
+        self.assertIsNone(unknown['profile']['experience_years'])
+        self.assertTrue(all(job['component_weights']['Experience']==0 for job in unknown['jobs']))
 
     def test_detail_is_real_and_similar_excludes_current(self):
         detail = self.client.get('/api/jobs/VN0004?location=ha_noi').json()

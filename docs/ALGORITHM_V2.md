@@ -6,6 +6,9 @@ JobVista dùng `HybridJobRecommenderSystem` trên catalog 500 tin. Phiên bản 
 `JobRecommenderSystem` vẫn giữ nguyên cách xếp hạng làm baseline A/B.
 Notebook có ví dụ và bảng đánh giá; JobVista là giao diện web duy nhất. Không dùng dịch vụ
 LLM/OCR trả phí, không lưu CV người dùng vào index hay tập huấn luyện.
+Giao diện tự lưu nội dung CV đã đọc và lựa chọn nghề nghiệp trong localStorage
+của trình duyệt để khôi phục phiên và gợi ý trên trang chủ. Đây là hồ sơ cục bộ
+có thể xóa/cập nhật, không phải dữ liệu huấn luyện hay cache truy vấn trên server.
 
 ```mermaid
 flowchart LR

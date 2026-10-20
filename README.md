@@ -58,7 +58,8 @@ Mở **http://127.0.0.1:8000**. Nếu terminal đã hiện `(.venv)`, có thể 
   sáu thành phần điểm: từ khóa, ngữ nghĩa, kỹ năng, vị trí, lĩnh vực, kinh nghiệm.
   Có thể sửa số năm kinh nghiệm nhận diện được; để trống nghĩa là chưa rõ.
   Hiển thị kỹ năng đã thấy/chưa thấy và điều kiện bắt buộc được nêu rõ trong tin.
-  CV chỉ ở RAM, không lưu file/cơ sở dữ liệu/localStorage.
+  Nội dung CV đã đọc, tên tệp và lựa chọn khu vực/kinh nghiệm được **tự lưu trong
+  localStorage của trình duyệt** sau khi đọc thành công; không lưu tệp CV gốc.
 - Lưu việc yêu thích bằng Job_ID trong localStorage của trình duyệt này, không
   có đăng nhập hay đồng bộ tài khoản. Đổi Việt/Anh cập nhật giao diện và dữ liệu.
 - Tin là dữ liệu tham khảo. Liên kết dataset chỉ giữ trong tài liệu và metadata
@@ -72,6 +73,45 @@ Lần đầu tải model semantic cần Internet; embedding tin công khai đư�
 đang dùng từ khóa và các tín hiệu hồ sơ, không giả điểm ngữ nghĩa. Để chủ động
 chạy nhẹ, chỉ cài `requirements-preview.txt` và đặt `$env:JOBVISTA_SEMANTIC='0'`
 trước lệnh chạy web; bỏ biến này/đặt `1` rồi khởi động lại để bật semantic.
+
+### Lưu tìm kiếm và gợi ý cá nhân trên trang chủ
+
+1. Nhập từ khóa, chọn địa điểm/lĩnh vực/kinh nghiệm hoặc nhóm việc, rồi bấm
+   **Lưu tìm kiếm này**. Mục **Tìm kiếm đã lưu** giữ tối đa 20 bộ điều kiện;
+   bấm một mục để tìm lại, bấm X của mục đó để xóa. Lưu lại cùng điều kiện sẽ
+   đưa mục cũ lên đầu, không tạo bản trùng. Không lưu tìm kiếm hoàn toàn trống.
+2. Vào **Tìm việc với CV**, tải PDF/Word/ảnh và bấm **Đọc & phân tích CV**.
+   Khi đọc thành công, hồ sơ tự lưu ngay, không cần bấm tìm việc trước.
+   Khu vực, kinh nghiệm và nội dung sửa lại cũng được tự lưu; để trống kinh
+   nghiệm vẫn có nghĩa là chưa rõ, không đổi thành 0 năm.
+3. Quay về **Khám phá việc làm**: mục **Phù hợp với bạn** hiển thị tối đa 4 gợi
+   ý đầu tiên từ cùng Hybrid Engine. Chọn thẻ hoặc **Xem tất cả gợi ý** để mở
+   danh sách kết quả CV có chi tiết và giải thích điểm. Các bộ lọc khám phá
+   bên dưới không thay đổi khu vực trong hồ sơ; cần **Cập nhật hồ sơ** để đổi.
+4. Tải lại trang hoặc mở lại cùng địa chỉ vẫn giữ hồ sơ và tìm kiếm. Gợi ý được
+   tính lại với catalog hiện tại, không lưu điểm cũ hoặc coi việc đã hết hạn
+   là đang tuyển. Không có việc đủ phù hợp trong vùng sẽ hiện thông báo rỗng.
+5. **Cập nhật hồ sơ** cho phép sửa thông tin hoặc chọn CV khác. CV mới chỉ thay
+   hồ sơ đã lưu khi đọc thành công. **Xóa hồ sơ** xóa nội dung CV/lựa chọn và
+   gợi ý cá nhân; vẫn giữ việc yêu thích và các tìm kiếm đã lưu.
+
+Đây là lưu cục bộ theo **trình duyệt + địa chỉ web** (origin), chưa có tài khoản
+hay đồng bộ giữa các máy. `localhost:8000` và `127.0.0.1:8000` có vùng lưu trữ
+khác nhau; nên dùng thống nhất địa chỉ `http://127.0.0.1:8000/`. Chế độ riêng tư
+hoặc xóa dữ liệu trang web có thể làm mất thông tin. Tránh lưu CV thật trên máy
+dùng chung vì localStorage chứa văn bản CV và có thể có thông tin liên hệ.
+Nếu trình duyệt chặn lưu/đầy bộ nhớ, giao diện báo rõ dữ liệu mới chỉ dùng trong
+phiên; nếu xóa thất bại sẽ không báo đã xóa thành công. Backend vẫn chỉ xử lý CV
+trong RAM, không ghi hồ sơ người dùng vào server, GitHub, catalog, cache semantic
+hay tập huấn luyện; không gửi CV đến dịch vụ AI bên ngoài.
+
+Kiểm thử phần lưu trữ/điều phối JavaScript (tùy chọn, cần Node.js):
+
+```powershell
+node --test tests/test_personalization.cjs
+```
+
+Web chạy bằng Python như hướng dẫn trên, không cần cài Node.js để sử dụng.
 
 ### Bộ 10 CV mẫu để thử tải tệp
 
@@ -105,9 +145,10 @@ thay đổi cần giữ trước khi cập nhật; không dùng lệnh xóa sạ
 
 ### Đọc CV và kiểm thử
 
-CV và tệp upload chỉ ở bộ nhớ của phiên, không lưu file/cache truy vấn hoặc gọi
-dịch vụ OCR bên ngoài. Trọng số OCR công khai được tải vào `.cache/ocr_models`
-lần đầu; đây không phải nội dung CV. **Xóa CV** dọn cả tệp, văn bản và kết quả.
+Trên server, CV và tệp upload chỉ ở RAM, không ghi file/cache truy vấn hoặc gọi
+dịch vụ OCR bên ngoài. Trên trình duyệt, nội dung đã đọc được tự lưu như mô tả
+ở mục trên. Trọng số OCR công khai được tải vào `.cache/ocr_models` lần đầu;
+đây không phải nội dung CV. **Xóa hồ sơ** dọn dữ liệu CV đã lưu và kết quả cá nhân.
 
 Hỗ trợ PNG/JPG/JPEG/WEBP/TIFF, PDF có chữ/PDF scan và DOCX (đoạn văn, bảng,
 header, text box; ảnh nhúng khi tài liệu không có chữ). File tối đa 15 MB,

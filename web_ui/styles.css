@@ -65,3 +65,56 @@
 .explanation .skill-coverage{margin:5px 0 13px;font-size:10px}
 .missing-tags>span{background:#f4f2ec;color:#8d8470;border-color:#e9e4d8}
 .algorithm-notice{max-width:1100px;margin:0 auto 18px;color:#9b824e;background:#faf5e7;padding:12px 17px;border-radius:8px;font-size:11px}
+
+/* Cá nhân hóa đặt giữa thanh tìm kiếm và catalog, dùng cùng màu và nhịp thẻ. */
+.saved-search-panel{margin:-8px 0 26px;padding:18px 20px;border:1px solid var(--line);border-radius:12px;background:#ffffffb8}
+.saved-search-heading,.personal-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.saved-search-heading h2{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:13px;font-weight:600}
+.saved-search-heading h2>.icon{width:16px;height:16px;color:var(--green)}
+.saved-search-heading small{font-size:10px;font-weight:400;color:#73866d}
+.saved-search-heading .secondary,.personal-heading .secondary{font-size:11px;gap:8px;flex-shrink:0}
+.saved-search-list{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px;max-height:180px;overflow:auto;padding:2px}
+.search-chip{display:flex;align-items:stretch;min-width:0;max-width:100%;border:1px solid #dbe7d5;border-radius:8px;background:#f4f8f0}
+.search-chip button{display:flex;align-items:center;gap:9px;padding:9px 11px;font-size:11px;color:#446d54;text-align:left;overflow-wrap:anywhere}
+.search-chip button:first-child{min-width:0}.search-chip button:last-child{border-left:1px solid #dbe7d5;flex-shrink:0}
+.search-chip .icon{width:13px;height:13px;flex-shrink:0}.search-chip button:hover{background:#e4efdf}
+.saved-search-panel>.field-hint{margin:10px 0 0}
+.personal-empty{display:flex;gap:18px;align-items:center;padding:23px 26px;margin:0 0 30px;background:#edf4e8;border:1px solid #dce8d3;border-radius:14px}
+.personal-empty h2{font-size:16px;font-weight:600}.personal-empty p{font-size:12px;color:#71836a;margin-top:5px}
+.personal-empty .secondary{margin-left:auto;flex-shrink:0;font-size:12px}
+.personal-symbol{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#e1edd9;color:var(--green);flex-shrink:0}
+.personal-symbol>.icon{width:23px;height:23px}
+.personal-panel{border:1px solid #d7e5cf;background:linear-gradient(135deg,#f0f6eb,#fbfdf9);border-radius:16px;padding:26px;margin-bottom:36px}
+.personal-heading h2{font-size:24px;letter-spacing:-.6px;margin-top:6px;font-weight:600}
+.personal-heading p:last-child{font-size:12px;line-height:1.8;color:#6c8064;margin-top:7px}
+.saved-profile-summary{display:flex;align-items:center;gap:13px;background:#ffffffae;border:1px solid #e0e9da;border-radius:10px;padding:15px 18px;margin:20px 0}
+.saved-profile-summary>div:nth-child(2){flex:1;min-width:0}
+.saved-profile-summary strong{display:block;font-size:11px;color:var(--green);font-weight:550}
+.saved-profile-summary span:not(.personal-symbol){display:block;font-size:13px;font-weight:550;margin-top:5px;overflow-wrap:anywhere}
+.saved-profile-summary small{display:flex;align-items:center;gap:4px;margin-top:6px;font-size:10px;color:#708367}
+.saved-profile-summary small .icon{width:12px;height:12px;flex-shrink:0}
+.profile-actions{display:flex;align-items:center;gap:17px}.profile-actions .text-button{font-size:11px}
+.danger-text{color:#a16b55}.danger-text:hover{color:#884c36}
+.personal-jobs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:stretch}
+.personal-jobs .job-card{display:flex;flex-direction:column;padding:16px;min-width:0;margin:0}
+.personal-jobs .job-card-bottom{margin-top:auto}.personal-jobs .skill-tags{margin-bottom:17px}
+.personal-jobs .job-open{align-items:flex-start;gap:10px}.personal-jobs .job-open h3{font-size:13px;line-height:1.6}
+.personal-jobs .company-logo{width:36px;height:36px;font-size:12px}
+.personal-status{display:flex;align-items:center;justify-content:center;gap:15px;min-height:140px;font-size:13px;color:#6e8264;text-align:center}
+.personal-no-match{flex-direction:column;gap:10px;padding:20px}.personal-no-match h3{font-size:15px;font-weight:550}.personal-no-match p{font-size:12px;line-height:1.8;max-width:650px}
+.personal-scope,.personal-fallback{color:#77896c;font-size:10px;line-height:1.8;margin-top:17px}
+.personal-fallback{color:#947a43;margin:-5px 0 14px}
+.storage-notice{display:flex;gap:9px;background:#fff3dc;border:1px solid #e9d7b0;color:#8d6d39;font-size:11px;line-height:1.9;padding:12px 15px;border-radius:9px;margin:0 0 16px}
+.storage-notice>.icon{width:16px;height:16px;flex-shrink:0;margin-top:3px}
+.cv-saved-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}
+.cv-saved-tools span{display:flex;align-items:center;gap:5px;color:#648557;font-size:10px}.cv-saved-tools .icon{width:14px;height:14px}
+.cv-saved-tools .text-button{font-size:10px}
+@media(max-width:1130px){.personal-jobs{grid-template-columns:repeat(2,minmax(0,1fr))}.personal-heading h2{font-size:22px}.profile-actions{gap:12px}}
+@media(max-width:650px){
+  .saved-search-panel{padding:15px;margin-bottom:20px}.saved-search-heading{align-items:flex-start;gap:10px}.saved-search-heading h2{font-size:12px}.saved-search-heading small{font-size:8px}.saved-search-heading .secondary{font-size:9px;padding:8px;min-height:36px;gap:4px}
+  .saved-search-heading .secondary .icon{display:none}.search-chip button{font-size:10px}.saved-search-list{max-height:190px}
+  .personal-empty{padding:18px;gap:12px;flex-wrap:wrap}.personal-empty h2{font-size:14px}.personal-empty p{font-size:11px;line-height:1.8}.personal-empty>div{flex:1;min-width:160px}.personal-empty .secondary{margin-left:56px;font-size:11px}
+  .personal-panel{padding:18px 15px;margin-bottom:25px}.personal-heading{align-items:flex-start;flex-wrap:wrap;gap:12px}.personal-heading h2{font-size:23px}.personal-heading p:last-child{font-size:11px}.personal-heading .secondary{font-size:10px;min-height:36px}
+  .saved-profile-summary{padding:13px;flex-wrap:wrap;gap:10px}.saved-profile-summary .personal-symbol{width:34px;height:38px}.saved-profile-summary span:not(.personal-symbol){font-size:12px}.saved-profile-summary small{font-size:9px;line-height:1.8}.profile-actions{width:100%;padding-top:10px;border-top:1px solid #e0e9da;justify-content:space-between}.profile-actions .text-button{font-size:11px}
+  .personal-jobs{grid-template-columns:minmax(0,1fr);gap:12px}.personal-jobs .job-open h3{font-size:14px}.personal-status{font-size:12px;flex-wrap:wrap;padding:18px 6px}.personal-scope,.personal-fallback{font-size:9px}.cv-saved-tools{flex-wrap:wrap}
+}

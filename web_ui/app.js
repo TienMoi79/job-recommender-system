@@ -1,5 +1,5 @@
-/* JobVista: giao diện tương tác gọi API Python thật. Không lưu CV vào localStorage.
- * Chỉ danh sách Job_ID đã lưu được giữ trên chính trình duyệt của người dùng. */
+/* JobVista: API Python tính điểm thật; tìm kiếm và CV đã đọc được lưu cục bộ
+ * trong trình duyệt. Không lưu tệp CV gốc, không có đồng bộ tài khoản. */
 'use strict';
 
 const copy = {
@@ -25,7 +25,7 @@ const copy = {
     previous:'Trước', next:'Sau', page:'Trang', loading:'Đang tải cơ hội mới…', connection:'Chưa kết nối được máy chủ. Kiểm tra terminal và thử lại.', retry:'Thử lại',
     uploadStep:'Tải CV', confirmStep:'Xác nhận thông tin', resultsStep:'Khám phá cơ hội', uploadTitle:'Bắt đầu với CV của bạn',
     uploadSub:'Một tệp CV. Nhiều cơ hội mới.', dropTitle:'Kéo thả CV vào đây', dropSub:'hoặc chọn tệp từ máy tính của bạn', choose:'Chọn tệp CV', formats:'PDF, Word (.docx), JPG, PNG, WEBP, TIFF · Tối đa 15 MB',
-    privacy:'CV được xử lý tại máy chủ cục bộ, không gửi sang dịch vụ AI bên ngoài và không lưu thành tệp.', read:'Đọc & phân tích CV', reading:'Đang đọc CV của bạn…', readHint:'CV scan và ảnh cần thêm thời gian để nhận diện chữ.', remove:'Xóa CV',
+    privacy:'Nội dung CV đã đọc và lựa chọn của bạn được tự lưu trên trình duyệt này để gợi ý lần sau. Không lưu tệp gốc, không gửi tới AI bên ngoài. Có thể xóa hồ sơ bất cứ lúc nào; tránh dùng trên máy dùng chung.', read:'Đọc & phân tích CV', reading:'Đang đọc CV của bạn…', readHint:'CV scan và ảnh cần thêm thời gian để nhận diện chữ.', remove:'Xóa hồ sơ CV',
     sample:'Chưa có CV? Thử một hồ sơ mẫu', sampleData:'Phân tích dữ liệu', sampleBackend:'Lập trình Backend', sampleAI:'Kỹ sư AI',
     how:'Một hành trình, ba bước đơn giản', howSub:'Tập trung vào năng lực. Tìm cơ hội gần với bạn.',
     how1:'Thêm CV của bạn', how1Sub:'Ảnh, PDF hoặc Word — chọn định dạng thuận tiện nhất.', how2:'Chọn nơi bạn muốn làm', how2Sub:'Kiểm tra kỹ năng đã đọc và xác nhận khu vực mong muốn.', how3:'Khám phá công việc phù hợp', how3Sub:'Xem kỹ năng trùng và lý do công việc được gợi ý.',
@@ -48,6 +48,21 @@ const copy = {
     expFitUnknown:'Chưa đủ thông tin kinh nghiệm; thành phần này không được tính điểm.',
     semanticFallback:'Phần hiểu ý nghĩa chưa sẵn sàng. Kết quả hiện dùng từ khóa, kỹ năng, vị trí và kinh nghiệm.',
     invalidExperience:'Số năm kinh nghiệm phải từ 0 đến 60, hoặc để trống nếu chưa xác định.',
+    savedSearches:'Tìm kiếm đã lưu', saveSearch:'Lưu tìm kiếm này', searchSaved:'Đã lưu từ khóa và bộ lọc hiện tại',
+    noSearches:'Lưu từ khóa và bộ lọc bạn thường dùng để tìm lại chỉ với một lần nhấp.', emptySearch:'Hãy nhập từ khóa hoặc chọn một bộ lọc trước khi lưu.',
+    searchRemoved:'Đã xóa tìm kiếm đã lưu', deleteSearch:'Xóa tìm kiếm', rerunSearch:'Tìm lại', localOnly:'Chỉ trên trình duyệt này',
+    forYou:'Phù hợp với bạn', forYouSub:'Dựa trên CV đã lưu và nơi bạn muốn làm việc. Xếp theo điểm phù hợp từ cao xuống thấp.',
+    personalEyebrow:'GỢI Ý TỪ HỒ SƠ CỦA BẠN', profileEmpty:'Cơ hội phù hợp bắt đầu từ CV của bạn',
+    profileEmptySub:'Đọc CV một lần để nhận gợi ý riêng mỗi khi quay lại trang chủ.', addCv:'Thêm CV của bạn',
+    profileSaved:'Hồ sơ đã tự lưu', profileSession:'Hồ sơ chỉ dùng trong phiên này', savedCv:'CV đã lưu',
+    editProfile:'Cập nhật hồ sơ', deleteProfile:'Xóa hồ sơ', profileDeleted:'Đã xóa CV đã lưu và gợi ý cá nhân',
+    allMatches:'Xem tất cả gợi ý', personalLoading:'Đang tìm việc phù hợp với hồ sơ đã lưu…',
+    personalEmpty:'Chưa có việc đủ phù hợp với hồ sơ và khu vực này.', personalEmptySub:'Bạn có thể cập nhật kỹ năng hoặc mở rộng nơi muốn làm. Chúng tôi không thêm việc ngoài vùng để lấp danh sách.',
+    personalError:'Chưa tải được gợi ý cá nhân. Hồ sơ đã lưu vẫn được giữ lại.',
+    storageError:'Trình duyệt không cho phép lưu hoặc bộ nhớ đã đầy. Thay đổi mới chỉ dùng trong phiên này; bản đã lưu trước đó có thể vẫn còn. Hãy kiểm tra quyền lưu trữ của trình duyệt.',
+    deleteFailed:'Chưa xóa được hồ sơ khỏi bộ nhớ trình duyệt. Hãy kiểm tra quyền lưu trữ hoặc xóa dữ liệu trang web trong cài đặt trình duyệt.',
+    autoSaveHint:'Tự lưu nội dung đã đọc, khu vực và kinh nghiệm khi bạn chỉnh sửa. Chọn CV khác để thay hồ sơ; Xóa hồ sơ để bỏ dữ liệu đã lưu.',
+    personalScope:'Gợi ý riêng dùng khu vực trong hồ sơ; ô tìm kiếm bên trên chỉ lọc danh sách khám phá bên dưới.',
   },
   en: {
     pageTitle:'JobVista — Find your next opportunity', tagline:'MAKE YOUR NEXT MOVE', explore:'Explore jobs', cv:'Match your CV', saved:'Saved jobs',
@@ -71,7 +86,7 @@ const copy = {
     previous:'Previous', next:'Next', page:'Page', loading:'Loading your next opportunity…', connection:'Unable to connect. Check the server terminal and try again.', retry:'Try again',
     uploadStep:'Upload CV', confirmStep:'Check details', resultsStep:'Explore matches', uploadTitle:'Start with your CV',
     uploadSub:'One CV. A world of possibilities.', dropTitle:'Drag your CV here', dropSub:'or choose a file from your computer', choose:'Choose CV file', formats:'PDF, Word (.docx), JPG, PNG, WEBP, TIFF · Up to 15 MB',
-    privacy:'Your CV is processed on the local server, never sent to external AI services or saved as a file.', read:'Read & analyze CV', reading:'Reading your CV…', readHint:'Scanned CVs and images take longer to recognize.', remove:'Clear CV',
+    privacy:'Extracted CV content and your preferences are automatically saved in this browser for future suggestions. The original file is not saved or sent to external AI. Delete your profile anytime; avoid shared devices.', read:'Read & analyze CV', reading:'Reading your CV…', readHint:'Scanned CVs and images take longer to recognize.', remove:'Delete CV profile',
     sample:'No CV handy? Try a sample profile', sampleData:'Data analyst', sampleBackend:'Backend developer', sampleAI:'AI engineer',
     how:'One journey, three simple steps', howSub:'Focus on your strengths. Find opportunities that fit.',
     how1:'Add your CV', how1Sub:'Image, PDF or Word — use the format that works for you.', how2:'Choose where to work', how2Sub:'Check the extracted skills and confirm your preferred area.', how3:'Explore your matches', how3Sub:'See shared skills and why each job was recommended.',
@@ -94,6 +109,21 @@ const copy = {
     expFitUnknown:'Not enough experience information; this component is not scored.',
     semanticFallback:'Meaning-based matching is unavailable. These results use keywords, skills, role and experience.',
     invalidExperience:'Experience must be between 0 and 60 years, or left blank if unknown.',
+    savedSearches:'Saved searches', saveSearch:'Save this search', searchSaved:'Current keywords and filters saved',
+    noSearches:'Save the keywords and filters you often use, then run them again with one click.', emptySearch:'Enter a keyword or choose a filter before saving.',
+    searchRemoved:'Saved search deleted', deleteSearch:'Delete search', rerunSearch:'Run search', localOnly:'In this browser only',
+    forYou:'Recommended for you', forYouSub:'Based on your saved CV and preferred work location. Ranked by match score.',
+    personalEyebrow:'BASED ON YOUR PROFILE', profileEmpty:'Your next opportunity starts with your CV',
+    profileEmptySub:'Read your CV once to get personal suggestions whenever you return to the homepage.', addCv:'Add your CV',
+    profileSaved:'Profile saved automatically', profileSession:'Profile available in this session only', savedCv:'Saved CV',
+    editProfile:'Update profile', deleteProfile:'Delete profile', profileDeleted:'Saved CV and personal suggestions deleted',
+    allMatches:'See all matches', personalLoading:'Finding opportunities for your saved profile…',
+    personalEmpty:'No sufficiently relevant jobs in this location yet.', personalEmptySub:'Update your skills or broaden your preferred location. We do not fill the list with jobs outside your chosen area.',
+    personalError:'Personal suggestions are unavailable right now. Your saved profile is still here.',
+    storageError:'Browser storage is blocked or full. New changes last for this session only; an older saved copy may remain. Check your browser storage permissions.',
+    deleteFailed:'Unable to remove the profile from browser storage. Check storage permissions or clear this site’s data in your browser settings.',
+    autoSaveHint:'Extracted content, location and experience save automatically as you edit. Choose another CV to replace the profile, or delete it to remove saved data.',
+    personalScope:'Personal suggestions use your profile location. The search above filters only the explore list below.',
   }
 };
 const icons = {
@@ -117,11 +147,22 @@ const normalized = value => String(value).toLowerCase().normalize('NFD').replace
 const $ = selector => document.querySelector(selector);
 let stored = [];
 try { stored = JSON.parse(localStorage.getItem('jobvista-saved') || '[]'); } catch {}
+// Lấy localStorage cũng có thể bị SecurityError, nên trì hoãn bên trong adapter.
+const personalStore = new JobVistaStorage({getItem:key=>localStorage.getItem(key),setItem:(key,value)=>localStorage.setItem(key,value),removeItem:key=>localStorage.removeItem(key)});
+const restoredProfile = personalStore.readProfile();
 const state = {lang:'vi',view:'explore',data:null,jobs:[],saved:new Set(Array.isArray(stored)?stored.filter(x=>typeof x==='string'):[]),
   q:'',region:'',domain:'',exp:'',category:'all',page:1,selected:null,detail:null,detailVersion:0,
-  file:null,cvText:'',profile:null,ocr:false,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,matches:null,reading:false,matching:false,cvVersion:0,loading:true,error:''};
+  file:null,cvFilename:'',cvText:'',profile:null,ocr:false,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,matches:null,reading:false,matching:false,cvVersion:0,loading:true,error:'',
+  savedSearches:personalStore.readSearches(),savedProfile:restoredProfile,profileStored:!!restoredProfile,
+  storageError:personalStore.failed,homeMatches:null,homeMethod:null,homeLoading:false,homeError:false,homeVersion:0,homeKey:''};
+function restoreProfile(record) {
+  if(!record)return;
+  Object.assign(state,{file:null,cvFilename:record.filename,cvText:record.text,profile:record.profile,ocr:record.ocr,
+    cvRegion:record.region,cvExperience:record.experience,cvExperienceEdited:record.experienceEdited});
+}
+restoreProfile(restoredProfile);
 const t = key => copy[state.lang][key];
-let toastTimer, searchTimer;
+let toastTimer, searchTimer, profileTimer;
 function toast(message) { const el=$('#toast'); el.textContent=message; el.classList.add('visible'); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('visible'),3400); }
 async function api(path, options={}) {
   const response = await fetch(path, options);
@@ -151,14 +192,117 @@ function regionOptions(value, all=true, forCv=false) {
   return `${all?`<option value="">${t('regionAll')}</option>`:''}${(forCv?state.data?.all_regions||[]:state.data?.regions||[]).map(r=>`<option value="${r.id}" ${value===r.id?'selected':''}>${escape(r.label)}</option>`).join('')}`;
 }
 function searchBar() {
-  return `<section class="search-area"><form class="search-bar" id="search-form"><label class="keyword-field">${icon('search')}<input id="search" aria-label="${t('keyword')}" placeholder="${t('keyword')}" value="${escape(state.q)}" autocomplete="off"></label>
+  return `<section class="search-area"><form class="search-bar" id="search-form"><label class="keyword-field">${icon('search')}<input id="search" aria-label="${t('keyword')}" placeholder="${t('keyword')}" value="${escape(state.q)}" autocomplete="off" maxlength="200"></label>
     <label class="search-location">${icon('pin')}<select id="search-region" aria-label="${t('location')}">${regionOptions(state.region)}</select></label><button class="primary search-button" type="submit">${t('search')}${icon('arrow')}</button></form>
     <div class="suggestions"><span>${t('suggested')}</span>${['Python','Data Analyst','React','UI/UX'].map(x=>`<button data-search="${x}">${x}</button>`).join('')}<span class="search-meta">${icon('spark')}${t('publicData')}</span></div></section>`;
+}
+function domainLabel(id) {return state.data?.domain_options.find(([key])=>key===id)?.[1]||t('allDomains');}
+function searchLabel(search) {
+  return [search.q,search.region?(state.data.all_regions.find(r=>r.id===search.region)?.label||search.region):'',
+    search.domain?domainLabel(search.domain):'',search.exp?t('exp'+search.exp):'',search.category!=='all'?t(search.category):''].filter(Boolean).join(' · ');
+}
+function savedSearchPanel() {
+  return `<section class="saved-search-panel" id="saved-search-panel" aria-label="${t('savedSearches')}"><div class="saved-search-heading"><h2>${icon('clock')}${t('savedSearches')}<small>${t('localOnly')} · ${state.savedSearches.length}/20</small></h2><button class="secondary" id="save-search">${icon('bookmark')}${t('saveSearch')}</button></div>
+    ${state.savedSearches.length?`<div class="saved-search-list">${state.savedSearches.map(search=>`<div class="search-chip"><button data-run-search="${escape(search.id)}" title="${escape(t('rerunSearch')+': '+searchLabel(search))}">${escape(searchLabel(search))}${icon('arrow')}</button><button data-delete-search="${escape(search.id)}" aria-label="${escape(t('deleteSearch')+': '+searchLabel(search))}">${icon('close')}</button></div>`).join('')}</div>`:`<p class="field-hint">${t('noSearches')}</p>`}</section>`;
+}
+function storageNotice() {return state.storageError?`<p class="storage-notice" role="status">${icon('lock')}${t('storageError')}</p>`:'';}
+function personalPanel() {
+  const record=state.savedProfile;
+  if(!record)return `<section class="personal-empty"><span class="personal-symbol">${icon('spark')}</span><div><h2>${t('profileEmpty')}</h2><p>${t('profileEmptySub')}</p></div><button class="secondary" data-nav="cv">${t('addCv')}${icon('arrow')}</button></section>`;
+  const location=state.data.all_regions.find(r=>r.id===record.region)?.label||t('regionAll');
+  return `<section class="personal-panel" aria-labelledby="personal-title"><div class="personal-heading"><div><p class="section-kicker">${t('personalEyebrow')}</p><h2 id="personal-title">${t('forYou')}</h2><p>${t('forYouSub')}</p></div><button class="secondary" id="all-personal" ${!state.homeMatches?.length?'disabled':''}>${t('allMatches')}${icon('arrow')}</button></div>
+    <div class="saved-profile-summary"><span class="personal-symbol">${icon('file')}</span><div><strong>${t(state.profileStored?'profileSaved':'profileSession')}</strong><span>${escape(record.profile.title||record.profile.skills.slice(0,4).join(' · ')||t('savedCv'))}</span><small>${icon('pin')}${escape(location)} · ${record.experience===''?t('expUnknown'):escape(record.experience)+' '+t('years')}${record.updatedAt?' · '+new Date(record.updatedAt).toLocaleDateString(state.lang==='vi'?'vi-VN':'en-GB'):''}</small></div><div class="profile-actions"><button class="text-button" id="edit-profile">${t('editProfile')}</button><button class="text-button danger-text" id="delete-profile">${t('deleteProfile')}</button></div></div>
+    ${state.homeLoading?`<div class="personal-status" role="status"><span class="loader"></span>${t('personalLoading')}</div>`:state.homeError?`<div class="personal-status"><p>${t('personalError')}</p><button class="secondary" id="retry-personal">${t('retry')}</button></div>`:state.homeMatches?.length?`${state.homeMethod?.mode==='hybrid-lexical'?`<p class="personal-fallback">${t('semanticFallback')}</p>`:''}<div class="personal-jobs">${state.homeMatches.slice(0,4).map(jobCard).join('')}</div>`:`<div class="personal-status personal-no-match"><h3>${t('personalEmpty')}</h3><p>${t('personalEmptySub')}</p><button class="secondary" id="broaden-profile">${t('editProfile')}${icon('arrow')}</button></div>`}
+    <p class="personal-scope">${t('personalScope')}</p></section>`;
+}
+function refreshPersonalPanel() {
+  if($('#personal-home')){$('#personal-home').innerHTML=storageNotice()+personalPanel();bindPersonal();}
+}
+function savedMatchPayload(record) {
+  return {text:record.text,location:record.region||null,language:state.lang,top_n:24,
+    experience_override:record.experienceEdited,experience_years:record.experience===''?null:Number(record.experience)};
+}
+async function refreshHome(force=false) {
+  if(!state.savedProfile||!state.data)return;
+  const payload=savedMatchPayload(state.savedProfile),key=JSON.stringify(payload);
+  if(!force&&state.homeKey===key&&(state.homeLoading||state.homeMatches!==null))return;
+  const version=++state.homeVersion;
+  Object.assign(state,{homeKey:key,homeLoading:true,homeError:false,homeMatches:null,homeMethod:null});refreshPersonalPanel();
+  try {
+    const result=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:key});
+    // Xóa/thay CV, đổi ngôn ngữ hoặc sửa khu vực phải vô hiệu hóa kết quả cũ.
+    if(version!==state.homeVersion||!state.savedProfile||JSON.stringify(savedMatchPayload(state.savedProfile))!==key)return;
+    Object.assign(state,{homeMatches:result.jobs,homeMethod:result.algorithm,homeLoading:false});
+    // Văn bản có thể đã được người dùng sửa; dùng phân tích mới cho tóm tắt hồ sơ.
+    state.savedProfile.profile=result.profile;
+    if(!state.savedProfile.experienceEdited)state.savedProfile.experience=result.profile.experience_years??'';
+    state.homeKey=JSON.stringify(savedMatchPayload(state.savedProfile));
+    state.profileStored=personalStore.writeProfile(state.savedProfile);
+    if(!state.profileStored)state.storageError=true;
+    if(state.cvText===payload.text){state.profile=result.profile;if(!state.cvExperienceEdited)state.cvExperience=result.profile.experience_years??'';}
+    refreshPersonalPanel();
+  }catch{if(version===state.homeVersion){state.homeLoading=false;state.homeError=true;refreshPersonalPanel();}}
+}
+function persistCv() {
+  clearTimeout(profileTimer);profileTimer=null;
+  if(!state.profile||!state.cvText.trim()||
+    (state.cvExperience!==''&&(!Number.isFinite(Number(state.cvExperience))||Number(state.cvExperience)<0||Number(state.cvExperience)>60)))return false;
+  const record=JobVistaStorage.cleanProfile({version:1,text:state.cvText,filename:state.cvFilename,ocr:state.ocr,profile:state.profile,
+    region:state.cvRegion,experience:state.cvExperience,experienceEdited:state.cvExperienceEdited,updatedAt:Date.now()});
+  if(!record)return false;
+  state.savedProfile=record;state.profileStored=personalStore.writeProfile(record);
+  if(!state.profileStored)state.storageError=true;
+  if(state.homeKey!==JSON.stringify(savedMatchPayload(record))){state.homeVersion++;state.homeKey='';state.homeMatches=null;state.homeLoading=false;state.homeError=false;}
+  return true;
+}
+function saveCurrentSearch() {
+  // Đọc cả giá trị input để nút Lưu không bị chậm hơn debounce của ô tìm kiếm.
+  clearTimeout(searchTimer);state.q=($('#search')?.value??state.q).trim().slice(0,200);state.page=1;updateResults();
+  const item={q:state.q,region:state.region,domain:state.domain,exp:state.exp,category:state.category};
+  if(!JobVistaStorage.cleanSearch(item)){toast(t('emptySearch'));return;}
+  state.savedSearches=JobVistaStorage.upsertSearch(state.savedSearches,item);
+  if(!personalStore.writeSearches(state.savedSearches)){state.storageError=true;toast(t('storageError'));}else toast(t('searchSaved'));
+  $('#saved-search-panel').outerHTML=savedSearchPanel();bindSavedSearches();refreshPersonalPanel();
+}
+function runSavedSearch(id) {
+  const search=state.savedSearches.find(item=>item.id===id);if(!search)return;
+  clearTimeout(searchTimer);closeJobDetails();state.view='explore';state.page=1;
+  Object.assign(state,{q:search.q,region:search.region,domain:search.domain,exp:search.exp,category:search.category});
+  render();$('#workspace')?.scrollIntoView({behavior:'smooth',block:'start'});refreshHome();
+}
+function editSavedProfile() {
+  clearTimeout(profileTimer);state.cvVersion++;state.reading=false;state.matching=false;state.matches=null;
+  restoreProfile(state.savedProfile);navigate('cv');
+}
+function showPersonalMatches(id=null) {
+  if(!state.homeMatches)return;
+  clearTimeout(profileTimer);profileTimer=null;state.cvVersion++;state.reading=false;state.matching=false;
+  restoreProfile(state.savedProfile);state.matches=state.homeMatches;state.matchMethod=state.homeMethod;
+  navigate('cv');if(id)toggleJobDetails(id);$('#workspace')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function bindSavedSearches() {
+  if($('#save-search'))$('#save-search').onclick=saveCurrentSearch;
+  document.querySelectorAll('[data-run-search]').forEach(el=>el.onclick=()=>runSavedSearch(el.dataset.runSearch));
+  document.querySelectorAll('[data-delete-search]').forEach(el=>el.onclick=()=>{
+    state.savedSearches=state.savedSearches.filter(item=>item.id!==el.dataset.deleteSearch);
+    if(!personalStore.writeSearches(state.savedSearches)){state.storageError=true;toast(t('storageError'));}else toast(t('searchRemoved'));
+    $('#saved-search-panel').outerHTML=savedSearchPanel();bindSavedSearches();refreshPersonalPanel();
+  });
+}
+function bindPersonal() {
+  if($('#all-personal'))$('#all-personal').onclick=()=>showPersonalMatches();
+  ['edit-profile','broaden-profile'].forEach(id=>{if($('#'+id))$('#'+id).onclick=editSavedProfile;});
+  if($('#delete-profile'))$('#delete-profile').onclick=clearCv;
+  if($('#retry-personal'))$('#retry-personal').onclick=()=>refreshHome(true);
+  $('#personal-home')?.querySelectorAll('[data-nav]').forEach(el=>el.onclick=()=>navigate(el.dataset.nav));
+  $('#personal-home')?.querySelectorAll('[data-card]').forEach(el=>el.onclick=event=>{if(!event.target.closest('button,a'))showPersonalMatches(el.dataset.card);});
+  $('#personal-home')?.querySelectorAll('[data-job]').forEach(el=>el.onclick=()=>showPersonalMatches(el.dataset.job));
+  $('#personal-home')?.querySelectorAll('[data-save]').forEach(el=>el.onclick=()=>toggleSave(el.dataset.save));
 }
 function filters() {
   return `<aside class="filters"><div class="filter-heading"><h3>${icon('tune')}${t('filters')}</h3><button class="text-button" id="reset">${t('reset')}</button></div>
     <label class="field-label" for="filter-region">${t('location')}</label><select id="filter-region">${regionOptions(state.region)}</select>
-    <label class="field-label" for="filter-domain">${t('domain')}</label><select id="filter-domain"><option value="">${t('allDomains')}</option>${(state.data?.domains||[]).map(d=>`<option ${state.domain===d?'selected':''}>${escape(d)}</option>`).join('')}</select>
+    <label class="field-label" for="filter-domain">${t('domain')}</label><select id="filter-domain"><option value="">${t('allDomains')}</option>${(state.data?.domain_options||[]).map(([id,label])=>`<option value="${escape(id)}" ${state.domain===id?'selected':''}>${escape(label)}</option>`).join('')}</select>
     <fieldset class="experience"><legend>${t('experience')}</legend>${[['','expAny'],['0','exp0'],['1','exp1'],['3','exp3']].map(([value,label])=>`<label><input type="radio" name="experience" value="${value}" ${state.exp===value?'checked':''}>${t(label)}</label>`).join('')}</fieldset>
     <div class="cv-nudge"><span class="nudge-icon">${icon('spark')}</span><h3>${t('cvNudge')}</h3><p>${t('cvNudgeSub')}</p><button data-nav="cv">${t('tryCv')}${icon('arrow')}</button></div>
     <p class="filter-note">${t('sourceNote')}</p></aside>`;
@@ -184,7 +328,7 @@ function filteredJobs() {
   return jobs.filter(job=>{
     if(q&&!normalized(`${job.title} ${job.company} ${job.skills.join(' ')} ${job.domain}`).includes(q)) return false;
     if(state.region&&!job.regions.includes(state.region)) return false;
-    if(state.domain&&job.domain!==state.domain) return false;
+    if(state.domain&&job.domain_id!==state.domain) return false;
     if(state.exp){ if(!job.experience_known) return false; if(state.exp==='0'&&job.experience>=1) return false; if(state.exp==='1'&&(job.experience<1||job.experience>3)) return false; if(state.exp==='3'&&job.experience<=3)return false; }
     const category=normalized(job.domain);
     if(state.category==='data'&&!/du lieu|data/.test(category))return false;
@@ -240,14 +384,14 @@ function cvSteps() {
 }
 function cvInput() {
   return `<section class="cv-input-panel"><div class="panel-heading"><span class="section-kicker">${t('cv')}</span><h2>${t(state.profile?'analyzed':'uploadTitle')}</h2><p>${t('uploadSub')}</p></div>
-    ${state.profile?`<div class="cv-success">${icon('check')}<span><strong>${t('cvReady')}</strong><small>${escape(state.file?.name||t('sample'))}</small></span><button class="icon-button" id="clear-cv" aria-label="${t('remove')}">${icon('close')}</button></div>`:
+    ${state.profile?`<div class="cv-success">${icon('check')}<span><strong>${t('cvReady')}</strong><small>${escape(state.cvFilename||t('savedCv'))}</small></span><button class="icon-button" id="clear-cv" aria-label="${t('remove')}">${icon('close')}</button></div><div class="cv-saved-tools"><span>${icon('check')}${t(state.profileStored?'profileSaved':'profileSession')}</span><button class="text-button" id="replace-cv">${t('newFile')}</button></div><p class="field-hint">${t('autoSaveHint')}</p>`:
     `<label class="dropzone ${state.file?'has-file':''} ${state.reading?'is-reading':''}" id="dropzone" tabindex="0"><input type="file" id="cv-file" accept=".pdf,.docx,.png,.jpg,.jpeg,.webp,.tif,.tiff" ${state.reading?'disabled':''}><span class="upload-icon">${state.reading?'<span class="loader"></span>':icon(state.file?'file':'upload')}</span><strong>${state.reading?t('reading'):state.file?escape(state.file.name):t('dropTitle')}</strong><span>${t(state.reading?'readHint':state.file?'newFile':'dropSub')}</span><span class="secondary file-label">${t('choose')}${icon('arrow')}</span><small>${t('formats')}</small></label>
       <button class="primary full-width" id="read-cv" ${!state.file||state.reading?'disabled':''}>${state.reading?'<span class="loader light"></span>':icon('spark')}${t(state.reading?'reading':'read')}</button>`}
     ${state.profile?`<div class="cv-profile"><h3>${t('detected')}<span>${state.profile.skills.length}</span></h3><div class="skill-tags">${state.profile.skills.map(s=>`<span class="matched-skill">${escape(s)}</span>`).join('')||`<p class="muted">${t('noSkills')}</p>`}</div>${state.ocr?`<p class="ocr-note">${t('ocrNote')}</p>`:''}
       <label class="field-label" for="cv-region">${t('preferred')}</label><select id="cv-region">${regionOptions(state.cvRegion,true,true)}</select><p class="field-hint">${t('preferredHint')}</p>
       <label class="field-label" for="cv-experience">${t('cvExperience')}</label><input id="cv-experience" class="experience-input" type="number" min="0" max="60" step="0.5" value="${escape(state.cvExperience)}" placeholder="${t('experienceUnknown')}"><p class="field-hint">${t('cvExperienceHint')}</p>
       <details class="cv-text"><summary>${t('review')}</summary><label for="cv-text" class="sr-only">${t('textLabel')}</label><textarea id="cv-text" maxlength="60000">${escape(state.cvText)}</textarea></details><button id="match-cv" class="primary full-width" ${state.matching?'disabled':''}>${state.matching?'<span class="loader light"></span>':icon('spark')}${t(state.matching?'matching':'find')}${icon('arrow')}</button></div>`:''}
-    <p class="privacy-note">${icon('lock')}<span>${t('privacy')}</span></p>${!state.reading?`<div class="sample-area"><p>${t('sample')}</p><div>${['sampleData','sampleBackend','sampleAI'].map((key,i)=>`<button data-sample="${i}">${t(key)}${icon('arrow')}</button>`).join('')}</div></div>`:''}</section>`;
+    ${storageNotice()}<p class="privacy-note">${icon('lock')}<span>${t('privacy')}</span></p>${!state.reading?`<div class="sample-area"><p>${t('sample')}</p><div>${['sampleData','sampleBackend','sampleAI'].map((key,i)=>`<button data-sample="${i}">${t(key)}${icon('arrow')}</button>`).join('')}</div></div>`:''}</section>`;
 }
 function cvPage() {
   if(state.matches)return `${cvSteps()}<div class="cv-results-banner"><span class="success-symbol">${icon('check')}</span><div><h2>${t('matched')}</h2><p>${t('matchedSub')}${state.cvRegion?' · '+escape(state.data.all_regions.find(r=>r.id===state.cvRegion)?.label||''):''}</p></div><button class="secondary" id="edit-cv">${t('adjust')}${icon('arrow')}</button></div>${state.matchMethod?.mode==='hybrid-lexical'?`<p class="algorithm-notice">${t('semanticFallback')}</p>`:''}${workspace()}`;
@@ -257,7 +401,7 @@ function render() {
   document.documentElement.lang=state.lang;document.title=t('pageTitle');
   $('.skip-link').textContent=state.lang==='vi'?'Đến nội dung':'Skip to content';
   $('#app').innerHTML=`${header()}<main id="main" class="shell">${state.view==='saved'?`<section class="saved-hero"><p class="section-kicker">${t('saved')}</p><h1>${t('savedTitle')}</h1><p>${t('savedSub')}</p></section>`:hero()}
-    ${state.loading?`<div class="initial-loading"><span class="loader"></span>${t('loading')}</div>`:state.error?`<div class="empty-state"><p>${t('connection')}</p><button class="primary" id="retry">${t('retry')}</button></div>`:state.view==='cv'?cvPage():searchBar()+workspace()}</main><footer class="footer"><div><strong>JobVista<span> / </span></strong>${t('footer')}</div></footer>`;
+    ${state.loading?`<div class="initial-loading"><span class="loader"></span>${t('loading')}</div>`:state.error?`<div class="empty-state"><p>${t('connection')}</p><button class="primary" id="retry">${t('retry')}</button></div>`:state.view==='cv'?cvPage():searchBar()+(state.view==='explore'?savedSearchPanel()+`<div id="personal-home">${storageNotice()}${personalPanel()}</div>`:'')+workspace()}</main><footer class="footer"><div><strong>JobVista<span> / </span></strong>${t('footer')}</div></footer>`;
   bind();
 }
 function updateResults() {
@@ -270,7 +414,12 @@ function updateResults() {
 async function loadCatalog() {
   state.loading=true;state.error='';render();const language=state.lang;
   try { const data=await api(`/api/catalog?language=${language}`);if(language!==state.lang)return;
-    state.data=data;state.jobs=data.jobs;state.loading=false;render();
+    state.data=data;state.jobs=data.jobs;state.loading=false;
+    if(state.savedProfile&&!data.all_regions.some(r=>r.id===state.savedProfile.region)&&state.savedProfile.region){
+      // Không âm thầm mở rộng sang mọi vùng khi mã vùng đã lưu không còn hợp lệ.
+      state.homeError=true;state.homeMatches=null;render();return;
+    }
+    render();refreshHome();
   } catch {if(language===state.lang){state.loading=false;state.error='connection';render();}}
 }
 async function loadDetail(id) {
@@ -305,12 +454,16 @@ function toggleSave(id) {
   document.querySelector('.nav-count').textContent=state.saved.size;
   if(state.view==='saved')updateResults();else if($('#results')){$('#results').innerHTML=results();bindResults();}
   if($('#job-detail')){$('#job-detail').innerHTML=detailPanel();bindDetail();}
+  refreshPersonalPanel();
 }
-function resetFilters() {Object.assign(state,{q:'',region:'',domain:'',exp:'',category:'all',page:1});render();updateResults();}
+function resetFilters() {clearTimeout(searchTimer);Object.assign(state,{q:'',region:'',domain:'',exp:'',category:'all',page:1});render();updateResults();}
 function navigate(view) {
+  clearTimeout(searchTimer);
+  if(profileTimer)persistCv();
   state.view=view;state.page=1;state.detailVersion++;state.detail=null;state.selected=null;
   Object.assign(state,{q:'',region:'',domain:'',exp:'',category:'all'});render();
   window.scrollTo({top:0,behavior:'smooth'});
+  if(view==='explore')refreshHome();
 }
 function bindDetail() {
   $('#job-detail')?.querySelectorAll('[data-save]').forEach(el=>el.onclick=()=>toggleSave(el.dataset.save));
@@ -330,36 +483,44 @@ function bindResults() {
 }
 function bind() {
   document.querySelectorAll('[data-nav]').forEach(el=>el.onclick=e=>{e.preventDefault();navigate(el.dataset.nav);});
-  $('#language').onclick=()=>{state.lang=state.lang==='vi'?'en':'vi';$('#toast').classList.remove('visible');state.domain='';state.cvVersion++;state.reading=false;state.matching=false;state.matches=null;state.selected=null;state.detailVersion++;state.detail=null;loadCatalog();};
+  $('#language').onclick=()=>{clearTimeout(searchTimer);if(profileTimer)persistCv();state.lang=state.lang==='vi'?'en':'vi';$('#toast').classList.remove('visible');state.cvVersion++;state.homeVersion++;state.homeKey='';state.homeMatches=null;state.homeLoading=false;state.reading=false;state.matching=false;state.matches=null;state.selected=null;state.detailVersion++;state.detail=null;loadCatalog();};
   if($('#retry'))$('#retry').onclick=loadCatalog;
-  if($('#search-form'))$('#search-form').onsubmit=e=>{e.preventDefault();state.q=$('#search').value;state.page=1;updateResults();$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});};
+  if($('#search-form'))$('#search-form').onsubmit=e=>{e.preventDefault();clearTimeout(searchTimer);state.q=$('#search').value;state.page=1;updateResults();$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});};
   if($('#search'))$('#search').oninput=e=>{clearTimeout(searchTimer);const value=e.target.value;searchTimer=setTimeout(()=>{state.q=value;state.page=1;updateResults();},200);};
-  document.querySelectorAll('[data-search]').forEach(el=>el.onclick=()=>{state.q=el.dataset.search;state.page=1;$('#search').value=state.q;updateResults();});
+  document.querySelectorAll('[data-search]').forEach(el=>el.onclick=()=>{clearTimeout(searchTimer);state.q=el.dataset.search;state.page=1;$('#search').value=state.q;updateResults();});
   ['search-region','filter-region'].forEach(id=>{if($('#'+id))$('#'+id).onchange=e=>{state.region=e.target.value;state.page=1;['search-region','filter-region'].forEach(other=>{if($('#'+other))$('#'+other).value=state.region;});updateResults();};});
   if($('#filter-domain'))$('#filter-domain').onchange=e=>{state.domain=e.target.value;state.page=1;updateResults();};
   document.querySelectorAll('[name="experience"]').forEach(el=>el.onchange=()=>{state.exp=el.value;state.page=1;updateResults();});
   if($('#reset'))$('#reset').onclick=resetFilters;
-  bindResults();bindDetail();bindCv();
+  bindResults();bindDetail();bindCv();bindSavedSearches();bindPersonal();
 }
 function chooseFile(file) {
   if(!file)return;
   if(file.size>15*1024*1024||!(/\.(pdf|docx|png|jpe?g|webp|tiff?)$/i.test(file.name))){toast(t('invalidFile'));return;}
-  state.cvVersion++;Object.assign(state,{file,cvText:'',profile:null,ocr:false,matches:null,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null});render();
+  clearTimeout(profileTimer);profileTimer=null;
+  state.cvVersion++;Object.assign(state,{file,cvFilename:file.name,cvText:'',profile:null,ocr:false,matches:null,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,reading:false,matching:false});render();
 }
-function clearCv() {state.cvVersion++;Object.assign(state,{file:null,cvText:'',profile:null,ocr:false,matches:null,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,reading:false,matching:false});render();}
+function clearCv() {
+  // Nếu trình duyệt từ chối xóa, không báo thành công hoặc làm như dữ liệu đã mất.
+  if(!personalStore.removeProfile()){state.storageError=true;toast(t('deleteFailed'));return;}
+  clearTimeout(profileTimer);profileTimer=null;state.cvVersion++;state.homeVersion++;state.detailVersion++;
+  Object.assign(state,{file:null,cvFilename:'',cvText:'',profile:null,ocr:false,matches:null,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,reading:false,matching:false,
+    savedProfile:null,profileStored:false,homeMatches:null,homeMethod:null,homeLoading:false,homeError:false,homeKey:'',selected:null,detail:null});render();toast(t('profileDeleted'));
+}
 async function readCv() {
   if(!state.file||state.reading)return;state.reading=true;const version=++state.cvVersion;const file=state.file;render();
   try {const data=await api(`/api/cv/read?language=${state.lang}`,{method:'POST',headers:{'Content-Type':'application/octet-stream','X-CV-Filename':encodeURIComponent(file.name)},body:file});
-    if(version!==state.cvVersion)return;Object.assign(state,{cvText:data.text,profile:data.profile,ocr:data.ocr,cvRegion:data.profile.locations.find(code=>state.data.all_regions.some(r=>r.id===code))||'',cvExperience:data.profile.experience_years??'',cvExperienceEdited:false,reading:false});render();
+    if(version!==state.cvVersion)return;Object.assign(state,{cvText:data.text,profile:data.profile,ocr:data.ocr,cvRegion:data.profile.locations.find(code=>state.data.all_regions.some(r=>r.id===code))||'',cvExperience:data.profile.experience_years??'',cvExperienceEdited:false,reading:false});persistCv();render();if(state.view==='explore')refreshHome();
   }catch(error){if(version===state.cvVersion){state.reading=false;render();toast(error.message);}}
 }
 async function useSample(index) {
+  clearTimeout(profileTimer);profileTimer=null;
   const version=++state.cvVersion;
   try {const samples=await api('/api/samples');if(version!==state.cvVersion)return;
-    const text=samples[index].CV_Text;Object.assign(state,{file:null,cvText:text,ocr:false,profile:{skills:[],locations:[],title:''},matches:null,cvRegion:'',reading:false,matching:false});
+    const text=samples[index].CV_Text;Object.assign(state,{file:null,cvFilename:'',cvText:text,ocr:false,profile:{skills:[],locations:[],title:''},matches:null,cvRegion:'',reading:false,matching:false});
     // Phân tích bằng cùng engine thật; hồ sơ mẫu không có thành phố nên không tự gán vùng.
     const result=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,language:state.lang,top_n:1})});
-    if(version!==state.cvVersion)return;state.profile=result.profile;state.cvExperience=result.profile.experience_years??'';state.cvExperienceEdited=false;render();
+    if(version!==state.cvVersion)return;state.profile=result.profile;state.cvExperience=result.profile.experience_years??'';state.cvExperienceEdited=false;persistCv();render();if(state.view==='explore')refreshHome();
   }catch(error){if(version===state.cvVersion)toast(error.message);}
 }
 async function findMatches() {
@@ -367,7 +528,8 @@ async function findMatches() {
   if(state.cvExperience!==''&&(!Number.isFinite(Number(state.cvExperience))||Number(state.cvExperience)<0||Number(state.cvExperience)>60)){toast(t('invalidExperience'));return;}
   state.matching=true;const version=++state.cvVersion;render();
   try {const data=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:state.cvText,location:state.cvRegion||null,language:state.lang,top_n:24,experience_override:state.cvExperienceEdited,experience_years:state.cvExperience===''?null:Number(state.cvExperience)})});
-    if(version!==state.cvVersion)return;state.detailVersion++;Object.assign(state,{matches:data.jobs,profile:data.profile,matchMethod:data.algorithm,matching:false,page:1,q:'',region:'',domain:'',exp:'',category:'all',selected:null,detail:null});if(!state.cvExperienceEdited)state.cvExperience=data.profile.experience_years??'';render();$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});
+    if(version!==state.cvVersion)return;state.detailVersion++;Object.assign(state,{matches:data.jobs,profile:data.profile,matchMethod:data.algorithm,matching:false,page:1,q:'',region:'',domain:'',exp:'',category:'all',selected:null,detail:null});if(!state.cvExperienceEdited)state.cvExperience=data.profile.experience_years??'';
+    persistCv();state.homeVersion++;Object.assign(state,{homeMatches:data.jobs,homeMethod:data.algorithm,homeLoading:false,homeError:false,homeKey:JSON.stringify(savedMatchPayload(state.savedProfile))});render();$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});
   }catch(error){if(version===state.cvVersion){state.matching=false;render();toast(error.message);}}
 }
 function bindCv() {
@@ -376,6 +538,7 @@ function bindCv() {
   if(drop){drop.ondragover=e=>{e.preventDefault();drop.classList.add('drag-over');};drop.ondragleave=()=>drop.classList.remove('drag-over');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('drag-over');if(!state.reading)chooseFile(e.dataTransfer.files[0]);};drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#cv-file').click();}};}
   if($('#read-cv'))$('#read-cv').onclick=readCv;
   if($('#clear-cv'))$('#clear-cv').onclick=clearCv;
+  if($('#replace-cv'))$('#replace-cv').onclick=()=>{clearTimeout(profileTimer);profileTimer=null;state.cvVersion++;Object.assign(state,{file:null,cvFilename:'',profile:null,cvText:'',reading:false,matching:false,matches:null});render();};
   if($('#cv-region'))$('#cv-region').onchange=e=>{state.cvRegion=e.target.value;invalidateCvInputs();};
   if($('#cv-experience'))$('#cv-experience').oninput=e=>{state.cvExperience=e.target.value;state.cvExperienceEdited=true;invalidateCvInputs();};
   if($('#cv-text'))$('#cv-text').oninput=e=>{state.cvText=e.target.value;invalidateCvInputs();};
@@ -387,7 +550,11 @@ function invalidateCvInputs() {
   // Bỏ kết quả đang tính từ CV/vùng cũ; không cho phản hồi chậm ghi đè dữ liệu mới.
   const wasMatching=state.matching;
   state.cvVersion++;state.matches=null;state.matching=false;
+  state.homeVersion++;state.homeKey='';state.homeMatches=null;state.homeLoading=false;
+  clearTimeout(profileTimer);profileTimer=setTimeout(()=>{persistCv();if(state.view==='explore')refreshHome();},500);
   if(wasMatching&&$('#match-cv')){$('#match-cv').disabled=false;$('#match-cv').innerHTML=`${icon('spark')}${t('find')}${icon('arrow')}`;}
 }
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.selected)closeJobDetails(true);});
+// Lưu nốt sửa đổi chưa hết debounce trước khi đóng/tải lại tab.
+window.addEventListener('pagehide',()=>{if(profileTimer)persistCv();});
 loadCatalog();

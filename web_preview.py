@@ -50,6 +50,8 @@ class CatalogService:
         result = {
             "id": str(row["Job_ID"]), "title": str(row["Title"]),
             "company": str(row.get("Company", "")), "domain": str(row["Domain"]),
+            # Khóa lĩnh vực ổn định giúp tìm kiếm đã lưu chạy đúng khi đổi Việt/Anh.
+            "domain_id": str(row.get("Original_Domain", row["Domain"])),
             "skills": [skill.strip() for skill in str(row["Skills"]).split(";") if skill.strip()],
             "regions": codes, "location": " · ".join(region_label(code, self.language) for code in codes),
             "salary": str(row.get("Salary", "")), "experience": float(row["Experience_Years"]),
@@ -124,6 +126,8 @@ def get_catalog(language: Language = "vi"):
         "regions": [{"id": code, "label": region_label(code, language)} for code in REGIONS if code in codes],
         "all_regions": [{"id": code, "label": region_label(code, language)} for code in REGIONS],
         "domains": sorted(service.jobs["Domain"].unique().tolist()),
+        "domain_options": sorted({str(row.get("Original_Domain", row["Domain"])): str(row["Domain"])
+                                  for _, row in service.jobs.iterrows()}.items(), key=lambda item: item[1]),
         "companies": service.company_count,
     }
 
