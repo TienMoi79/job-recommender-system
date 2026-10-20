@@ -9,6 +9,8 @@ LLM/OCR trả phí, không lưu CV người dùng vào index hay tập huấn lu
 Giao diện tự lưu nội dung CV đã đọc và lựa chọn nghề nghiệp trong localStorage
 của trình duyệt để khôi phục phiên và gợi ý trên trang chủ. Đây là hồ sơ cục bộ
 có thể xóa/cập nhật, không phải dữ liệu huấn luyện hay cache truy vấn trên server.
+Web cũng tự ghi nhớ điều kiện tìm kiếm trong trình duyệt để cá nhân hóa gợi ý;
+lịch sử không xuất hiện thành bảng hoặc nút lưu trên giao diện.
 
 ```mermaid
 flowchart LR

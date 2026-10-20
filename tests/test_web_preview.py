@@ -52,6 +52,26 @@ class WebPreviewTests(unittest.TestCase):
         self.assertIsNone(unknown['profile']['experience_years'])
         self.assertTrue(all(job['component_weights']['Experience']==0 for job in unknown['jobs']))
 
+    def test_personal_recommendations_use_private_search_signals_and_cv_region(self):
+        import time
+        signal={'q':'Python','region':'ha_noi','updatedAt':time.time()*1000,'count':2}
+        result=self.client.post('/api/recommendations',json={'searches':[signal]}).json()
+        self.assertTrue(result['jobs'])
+        self.assertEqual(result['personalization']['mode'],'interest')
+        self.assertTrue(all('ha_noi' in job['regions'] for job in result['jobs']))
+        self.assertTrue(all('score' not in job for job in result['jobs']))
+        # Client khác không nhận lịch sử hoặc gợi ý của client trước.
+        self.assertEqual(self.client.post('/api/recommendations',json={}).json()['jobs'],[])
+        cv={'text':'Backend Developer. Python SQL Django Docker. 2 years experience.','location':'ha_noi'}
+        response=self.client.post('/api/recommendations',json={'profile':cv,'searches':[{**signal,'region':'ho_chi_minh'}]})
+        self.assertEqual(response.headers['cache-control'],'no-store')
+        self.assertTrue(all('ha_noi' in job['regions'] for job in response.json()['jobs']))
+        for language in ('vi','en'):
+            translated=self.client.post('/api/recommendations',json={'language':language,'searches':[signal]}).json()
+            self.assertEqual([job['id'] for job in translated['jobs']],[job['id'] for job in result['jobs']])
+        self.assertEqual(self.client.post('/api/recommendations',json={'searches':[{**signal,'region':'invalid'}]}).status_code,422)
+        self.assertEqual(self.client.post('/api/recommendations',json={'searches':[signal]*21}).status_code,422)
+
     def test_detail_is_real_and_similar_excludes_current(self):
         detail = self.client.get('/api/jobs/VN0004?location=ha_noi').json()
         self.assertTrue(detail['job']['description'])

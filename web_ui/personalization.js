@@ -50,7 +50,8 @@
           !['all', 'dev', 'data', 'ai'].includes(value.category)) return null;
       const result = { id: text(value.id, 80), q: text(value.q, 200).trim(), region: text(value.region, 50),
         domain: text(value.domain, 150), exp: value.exp, category: value.category,
-        updatedAt: Number.isFinite(value.updatedAt) ? value.updatedAt : 0 };
+        updatedAt: Number.isFinite(value.updatedAt) ? value.updatedAt : 0,
+        count: Number.isInteger(value.count) ? Math.max(1, Math.min(20, value.count)) : 1 };
       return result.q || result.region || result.domain || result.exp || result.category !== 'all' ? result : null;
     }
     static searchKey(value) {
@@ -74,8 +75,10 @@
       const key = JobVistaStorage.searchKey(item);
       const previous = items.find(entry => JobVistaStorage.searchKey(entry) === key);
       item.id = previous?.id || Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+      // Gõ tiếp hoặc đổi bộ lọc liên tiếp không được tính như nhiều lượt quan tâm.
+      item.count = previous ? Math.min(20, previous.count + (Date.now()-previous.updatedAt >= 30000 ? 1 : 0)) : 1;
       item.updatedAt = Date.now();
-      return [item, ...items.filter(entry => JobVistaStorage.searchKey(entry) !== key)].slice(0, 20);
+      return [item, ...items.filter(entry => JobVistaStorage.searchKey(entry) !== key && Date.now()-entry.updatedAt <= 90*86400000)].slice(0, 20);
     }
   }
   root.JobVistaStorage = JobVistaStorage;

@@ -27,6 +27,7 @@ from catalog_data import localize_jobs
 from cv_documents import CVReadError, MAX_FILE_BYTES, MAX_TEXT_CHARS, ResumeDocumentReader
 from job_recommender import JobRecommenderSystem
 from hybrid_recommender import HybridJobRecommenderSystem
+from interest_recommender import SearchInterestRecommender
 from locations import REGIONS, region_label
 from resume_profile import ResumeAnalyzer
 from ui_text import TEXT
@@ -44,6 +45,7 @@ class CatalogService:
         self.company_count = int(original["Company"].nunique())
         self.jobs = localize_jobs(original, language)
         self.engine = HybridJobRecommenderSystem(self.jobs, use_semantic=os.environ.get('JOBVISTA_SEMANTIC','1')!='0')
+        self.interests = SearchInterestRecommender(self.jobs, self.engine.diversifier)
 
     def serialize(self, row, *, detail=False):
         codes = [code for code in str(row.get("Region_Codes", "")).split(";") if code in REGIONS]
@@ -193,6 +195,37 @@ def match_cv(payload: MatchRequest):
     return {"jobs":service.records(result),"profile":details,
             "algorithm":{"mode":'hybrid' if service.engine.semantic_status=='ready' else 'hybrid-lexical',
                          "semantic_status":service.engine.semantic_status,"diversify":service.engine.diversify}}
+
+
+class SearchSignal(BaseModel):
+    q: str = Field(default='', max_length=200)
+    region: str = Field(default='', max_length=50)
+    domain: str = Field(default='', max_length=150)
+    exp: Literal['', '0', '1', '3'] = ''
+    category: Literal['all', 'dev', 'data', 'ai'] = 'all'
+    updatedAt: float = Field(ge=0, allow_inf_nan=False)
+    count: int = Field(default=1, ge=1, le=20)
+
+
+class HomeRequest(BaseModel):
+    language: Language = 'vi'
+    profile: MatchRequest | None = None
+    searches: list[SearchSignal] = Field(default_factory=list, max_length=20)
+    top_n: int = Field(default=24, ge=1, le=50)
+
+
+@app.post('/api/recommendations')
+def home_recommendations(payload: HomeRequest):
+    """Lịch sử chỉ thuộc request, không ghi log/tệp và không chia sẻ giữa người dùng."""
+    if any(event.region and event.region not in REGIONS for event in payload.searches):
+        raise HTTPException(422, 'invalid_location')
+    service = catalog(payload.language)
+    base = match_cv(payload.profile.model_copy(update={'language': payload.language, 'top_n': 50})) if payload.profile else None
+    candidates = base['jobs'] if base else service.records(service.jobs)
+    jobs, personalization = service.interests.recommend(candidates, [event.model_dump() for event in payload.searches],
+                                                       payload.top_n, has_cv=base is not None)
+    return {'jobs': jobs, 'profile': base['profile'] if base else None,
+            'algorithm': base['algorithm'] if base else {'mode': 'interest'}, 'personalization': personalization}
 
 
 app.mount("/assets", StaticFiles(directory=ROOT / "web_ui"), name="assets")

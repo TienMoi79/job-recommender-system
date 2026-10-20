@@ -15,7 +15,7 @@ function memoryStorage() {
 const profile = (extra={}) => ({version:1,text:'Backend Developer. Python, Django. 2 years experience.',filename:'sample.docx',
   region:'ha_noi',experience:'2',experienceEdited:true,ocr:false,updatedAt:123,
   profile:{title:'Backend Developer',skills:['Python','Django'],locations:['ha_noi'],experience_years:2,experience_status:'confirmed'},...extra});
-const search = (extra={}) => ({id:'search-1',q:'Python',region:'ha_noi',domain:'Software Development',exp:'1',category:'dev',updatedAt:123,...extra});
+const search = (extra={}) => ({id:'search-1',q:'Python',region:'ha_noi',domain:'Software Development',exp:'1',category:'dev',updatedAt:123,count:1,...extra});
 
 test('CV persists across adapter instances without the original file or arbitrary fields', () => {
   const memory=memoryStorage(), store=new Storage(memory);
@@ -68,16 +68,23 @@ test('saved searches cap at 20 and invalid entries are excluded', () => {
   const memory=memoryStorage();memory.setItem('jobvista-searches-v1',JSON.stringify({version:1,items:[null,{},...items,items[0]]}));
   assert.equal(new Storage(memory).readSearches().length,20);
 });
+test('automatic interests count distinct visits, suppress rapid repeats and expire old entries', () => {
+  const old=search({updatedAt:Date.now()-31000,count:3});
+  let items=Storage.upsertSearch([old],search());assert.equal(items[0].count,4);
+  items=Storage.upsertSearch(items,search());assert.equal(items[0].count,4);
+  items=Storage.upsertSearch([search({q:'old',updatedAt:Date.now()-91*86400000})],search());
+  assert.equal(items.length,1);assert.equal(items[0].q,'Python');
+});
 
 // Kiểm thử điều phối bất đồng bộ bằng các promise chủ động, không mở trình duyệt
 // và không sao chép thuật toán Python. Chỉ bỏ entrypoint tải catalog khỏi sandbox.
 function appHarness() {
   const memory=memoryStorage(),calls=[];
   const context=vm.createContext({JobVistaStorage:Storage,localStorage:memory,console,Date,Set,JSON,Number,String,
-    setTimeout,clearTimeout,document:{addEventListener(){}},window:{addEventListener(){},scrollTo(){}}});
+    setTimeout,clearTimeout,document:{addEventListener(){},querySelector(){return null;}},window:{addEventListener(){},scrollTo(){}}});
   const source=fs.readFileSync(path.join(__dirname,'../web_ui/app.js'),'utf8').replace(/loadCatalog\(\);\s*$/,'');
   vm.runInContext(source+`;render=()=>{};toast=()=>{};refreshPersonalPanel=()=>{};
-    globalThis.appTest={state,persistCv,clearCv,refreshHome,savedMatchPayload,restoreProfile,chooseFile,readCv,copy};`,context);
+    globalThis.appTest={state,persistCv,clearCv,refreshHome,homePayload,rememberSearch,restoreProfile,chooseFile,readCv,personalPanel,copy};`,context);
   return {context,memory,calls,app:context.appTest};
 }
 function deferredApp() {
@@ -90,8 +97,9 @@ function deferredApp() {
 test('homepage uses the saved CV, preferred location and explicit unknown override', async () => {
   const h=deferredApp();h.app.state.cvExperience='';h.app.persistCv();
   const pending=h.app.refreshHome();assert.equal(h.calls.length,1);
-  assert.equal(h.calls[0].payload.location,'ha_noi');assert.equal(h.calls[0].payload.experience_override,true);
-  assert.equal(h.calls[0].payload.experience_years,null);
+  assert.equal(h.calls[0].url,'/api/recommendations');
+  assert.equal(h.calls[0].payload.profile.location,'ha_noi');assert.equal(h.calls[0].payload.profile.experience_override,true);
+  assert.equal(h.calls[0].payload.profile.experience_years,null);
   h.calls[0].resolve({jobs:[{id:'VN0004',score:0.9}],profile:profile().profile,algorithm:{mode:'hybrid'}});await pending;
   assert.equal(h.app.state.homeMatches[0].id,'VN0004');
   await h.app.refreshHome();assert.equal(h.calls.length,1); // Tái dùng kết quả trong phiên, không tính lại vô ích.
@@ -115,7 +123,7 @@ test('a late response for an earlier CV or language cannot replace current match
   h.calls[1].resolve({jobs:[],profile:profile().profile,algorithm:{mode:'hybrid-lexical'}});await second;
   h.calls[0].resolve({jobs:[{id:'stale'}],profile:profile().profile,algorithm:{mode:'hybrid'}});await first;
   assert.equal(h.app.state.homeMatches.length,0);assert.equal(h.app.state.homeMethod.mode,'hybrid-lexical');
-  assert.equal(h.calls[1].payload.language,'en');assert.equal(h.calls[1].payload.location,'quang_ninh');
+  assert.equal(h.calls[1].payload.language,'en');assert.equal(h.calls[1].payload.profile.location,'quang_ninh');
 });
 test('network failures retain the saved CV and allow a successful retry', async () => {
   const h=deferredApp(),first=h.app.refreshHome();h.calls[0].reject(Error('offline'));await first;
@@ -148,4 +156,32 @@ test('failed profile deletion keeps the visible and stored profile consistent', 
 });
 test('new UI strings have the same Vietnamese and English keys', () => {
   const {app}=appHarness();assert.deepEqual(Object.keys(app.copy.vi).sort(),Object.keys(app.copy.en).sort());
+});
+test('searches feed recommendations automatically without a saved-search UI', async () => {
+  const h=deferredApp();h.app.state.savedProfile=null;h.app.state.profile=null;
+  h.app.state.jobs=[{id:'a',title:'Python Developer',company:'A',skills:['Python'],domain:'Software Development',
+    domain_id:'Software Development',regions:['ha_noi'],experience_known:true,experience:2,location:'Hà Nội',salary:''}];
+  h.app.state.q='Python';h.app.state.region='ha_noi';
+  h.app.rememberSearch();assert.equal(h.calls[0].payload.profile,null);
+  assert.equal(h.calls[0].payload.searches[0].q,'Python');assert.equal(h.calls[0].payload.searches[0].region,'ha_noi');
+  assert.equal(Object.hasOwn(h.calls[0].payload.searches[0],'id'),false);
+  const history=new Storage(h.memory).readSearches();assert.equal(history.length,1);
+  h.calls[0].resolve({jobs:[{...h.app.state.jobs[0],personal_score:1}],profile:null,
+    algorithm:{mode:'interest'},personalization:{mode:'interest',location:'ha_noi'}});
+  await new Promise(resolve=>setImmediate(resolve));
+  const html=h.app.personalPanel();assert.ok(html.includes('Có thể bạn quan tâm'));
+  assert.equal(html.includes('Lưu tìm kiếm'),false);assert.equal(html.includes('saved-search'),false);
+  const source=fs.readFileSync(path.join(__dirname,'../web_ui/app.js'),'utf8');
+  assert.equal(source.includes('saved-search-panel'),false);assert.equal(source.includes('save-search'),false);
+  h.app.state.q='no matching jobs';h.app.rememberSearch();
+  assert.equal(new Storage(h.memory).readSearches().length,1); // Không học từ kết quả rỗng.
+});
+test('late interest suggestions cannot overwrite a newer search', async () => {
+  const h=deferredApp();h.app.state.savedProfile=null;
+  h.app.state.jobs=[{id:'a',title:'Python React',company:'A',skills:[],domain:'Software Development',regions:['ha_noi']}];
+  h.app.state.q='Python';h.app.rememberSearch();h.app.state.q='React';h.app.rememberSearch();
+  h.calls[1].resolve({jobs:[{id:'new'}],profile:null,algorithm:{mode:'interest'},personalization:{}});
+  await new Promise(resolve=>setImmediate(resolve));
+  h.calls[0].resolve({jobs:[{id:'old'}],profile:null,algorithm:{mode:'interest'},personalization:{}});
+  await new Promise(resolve=>setImmediate(resolve));assert.equal(h.app.state.homeMatches[0].id,'new');
 });

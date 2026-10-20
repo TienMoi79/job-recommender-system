@@ -74,26 +74,43 @@ Lần đầu tải model semantic cần Internet; embedding tin công khai đư�
 chạy nhẹ, chỉ cài `requirements-preview.txt` và đặt `$env:JOBVISTA_SEMANTIC='0'`
 trước lệnh chạy web; bỏ biến này/đặt `1` rồi khởi động lại để bật semantic.
 
-### Lưu tìm kiếm và gợi ý cá nhân trên trang chủ
+### Ghi nhớ mối quan tâm và gợi ý cá nhân trên trang chủ
 
-1. Nhập từ khóa, chọn địa điểm/lĩnh vực/kinh nghiệm hoặc nhóm việc, rồi bấm
-   **Lưu tìm kiếm này**. Mục **Tìm kiếm đã lưu** giữ tối đa 20 bộ điều kiện;
-   bấm một mục để tìm lại, bấm X của mục đó để xóa. Lưu lại cùng điều kiện sẽ
-   đưa mục cũ lên đầu, không tạo bản trùng. Không lưu tìm kiếm hoàn toàn trống.
+1. Tìm việc bình thường bằng từ khóa và bộ lọc. Web **tự ghi nhớ ở phía logic
+   gợi ý**, không có bảng lịch sử, danh sách tìm kiếm đã lưu hay nút lưu trên
+   giao diện. Bấm Tìm việc/chọn từ khóa gợi ý sẽ ghi nhận ngay; gõ hoặc đổi bộ
+   lọc sẽ ghi nhận sau khi dừng thao tác khoảng một giây. Chỉ ghi các tìm kiếm
+   có điều kiện và có kết quả, không ghi từng phím gõ hay truy vấn rỗng.
 2. Vào **Tìm việc với CV**, tải PDF/Word/ảnh và bấm **Đọc & phân tích CV**.
    Khi đọc thành công, hồ sơ tự lưu ngay, không cần bấm tìm việc trước.
    Khu vực, kinh nghiệm và nội dung sửa lại cũng được tự lưu; để trống kinh
    nghiệm vẫn có nghĩa là chưa rõ, không đổi thành 0 năm.
-3. Quay về **Khám phá việc làm**: mục **Phù hợp với bạn** hiển thị tối đa 4 gợi
-   ý đầu tiên từ cùng Hybrid Engine. Chọn thẻ hoặc **Xem tất cả gợi ý** để mở
-   danh sách kết quả CV có chi tiết và giải thích điểm. Các bộ lọc khám phá
-   bên dưới không thay đổi khu vực trong hồ sơ; cần **Cập nhật hồ sơ** để đổi.
+3. Quay về **Khám phá việc làm**: nếu có CV, mục **Phù hợp với bạn** lấy hồ sơ
+   và khu vực làm căn cứ chính, rồi dùng mối quan tâm để điều chỉnh thứ tự.
+   Nếu chưa có CV nhưng đã tìm việc, mục **Có thể bạn quan tâm** gợi ý từ hành
+   vi tìm kiếm. Chọn thẻ hoặc **Xem tất cả gợi ý** để mở kết quả và chi tiết.
+   Khu vực CV luôn được ưu tiên; tìm ở vùng khác không tự thay vùng của hồ sơ.
 4. Tải lại trang hoặc mở lại cùng địa chỉ vẫn giữ hồ sơ và tìm kiếm. Gợi ý được
    tính lại với catalog hiện tại, không lưu điểm cũ hoặc coi việc đã hết hạn
    là đang tuyển. Không có việc đủ phù hợp trong vùng sẽ hiện thông báo rỗng.
 5. **Cập nhật hồ sơ** cho phép sửa thông tin hoặc chọn CV khác. CV mới chỉ thay
    hồ sơ đã lưu khi đọc thành công. **Xóa hồ sơ** xóa nội dung CV/lựa chọn và
-   gợi ý cá nhân; vẫn giữ việc yêu thích và các tìm kiếm đã lưu.
+   kết quả liên quan đến CV; vẫn giữ việc yêu thích và bộ nhớ mối quan tâm từ tìm kiếm.
+   Vì vậy sau khi xóa CV, web vẫn có thể gợi ý theo mối quan tâm, nhưng không
+   gọi đó là đánh giá phù hợp với CV. Xóa dữ liệu trang web trong trình duyệt
+   sẽ xóa cả bộ nhớ tìm kiếm, hồ sơ và việc yêu thích.
+
+Logic trong `interest_recommender.py`: giữ tối đa 20 bộ điều kiện khác nhau,
+bỏ điều kiện quá 90 ngày. Trọng số quan tâm giảm một nửa sau 14 ngày; tìm lặp
+có ảnh hưởng giới hạn, thao tác liên tiếp dưới 30 giây không tăng số lượt.
+Khi có CV, chỉ sắp xếp lại các tin đã qua ngưỡng/lọc vùng của Hybrid Engine:
+85% điểm CV + 15% quan tâm nếu có tín hiệu trùng; không có tín hiệu thì giữ điểm
+CV. Khi chưa có CV, ưu tiên vùng của lượt tìm gần nhất, không lấp danh sách
+bằng tin không trùng điều kiện. Điểm gợi ý và sáu thành phần điểm CV được tách
+riêng trong dữ liệu/giải thích; không coi điểm hành vi là độ phù hợp kỹ năng.
+Đây là quy tắc cá nhân hóa thử nghiệm, chưa có bằng chứng nâng chỉ số benchmark.
+API `/api/recommendations` xử lý lịch sử theo từng request, không lưu vào server
+hoặc dùng chung lịch sử giữa người dùng; không huấn luyện lại mô hình từ lịch sử.
 
 Đây là lưu cục bộ theo **trình duyệt + địa chỉ web** (origin), chưa có tài khoản
 hay đồng bộ giữa các máy. `localhost:8000` và `127.0.0.1:8000` có vùng lưu trữ
