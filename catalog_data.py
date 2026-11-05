@@ -1,4 +1,4 @@
-"""Chọn phần văn bản Việt/Anh của cùng 500 tin, không tạo thêm tin mới."""
+"""Chọn phần văn bản Việt/Anh của cùng catalog, không tạo thêm tin mới."""
 from __future__ import annotations
 import pandas as pd
 import re

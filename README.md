@@ -18,6 +18,11 @@ chuyên môn nhất / gần nơi ở nhất**. Đọc [giải thích Lab 3, côn
 nguồn dataset và cách thử](docs/LAB3_RATING_DISTANCE.md). Notebook bổ sung:
 `lab3_jobvista.ipynb`. Benchmark A/B/C cũ vẫn chỉ áp dụng cho snapshot 500 tin.
 
+Mô tả/yêu cầu đã được chia tiêu đề, đoạn và bullet; tiền Việt hiển thị thống
+nhất theo triệu và giữ nguyên kỳ trả. Số thiếu đơn vị hoặc tiền bảo hiểm/phụ
+cấp bị lấy nhầm không được coi là lương. Xem [bản rà soát và quy tắc lương](docs/DATA_PRESENTATION_REPAIR.md)
+và `outputs/data_quality/presentation_audit.csv` để đối chiếu từng bản ghi nguồn.
+
 ## 1. Cài đặt và chạy
 
 **Giao diện web duy nhất hiện tại là JobVista, chạy bằng `python web_preview.py`

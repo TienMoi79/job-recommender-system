@@ -84,7 +84,7 @@ function appHarness() {
     setTimeout,clearTimeout,document:{addEventListener(){},querySelector(){return null;}},window:{addEventListener(){},scrollTo(){}}});
   const source=fs.readFileSync(path.join(__dirname,'../web_ui/app.js'),'utf8').replace(/loadCatalog\(\);\s*$/,'');
   vm.runInContext(source+`;render=()=>{};toast=()=>{};refreshPersonalPanel=()=>{};
-    globalThis.appTest={state,persistCv,clearCv,refreshHome,homePayload,rememberSearch,restoreProfile,chooseFile,readCv,personalPanel,locationComparison,demandExplanation,copy};`,context);
+    globalThis.appTest={state,persistCv,clearCv,refreshHome,homePayload,rememberSearch,restoreProfile,chooseFile,readCv,personalPanel,locationComparison,demandExplanation,jobDocument,copy};`,context);
   return {context,memory,calls,app:context.appTest};
 }
 function deferredApp() {
@@ -174,6 +174,17 @@ test('comparison keeps content scores and distance labels distinct and escapes j
   assert.ok(html.includes('không phải đường đi thực tế'));assert.equal(html.includes('0 km'),false);
   const rating=h.app.demandExplanation({demand_rating:2.5,demand_actors:10,demand_weight:.1});
   assert.ok(rating.includes('2.50/5'));assert.ok(rating.includes('10%'));assert.ok(rating.includes('không phải đánh giá chất lượng'));
+});
+test('job text renders as separate paragraphs, headings and lists without source HTML execution', () => {
+  const {app}=appHarness();
+  const html=app.jobDocument('MÔ TẢ CÔNG VIỆC:\n• Viết API với Node.js\n• Kinh nghiệm 3 - 4 năm\nQUYỀN LỢI:\nLương 15 - 25 triệu.\n<script>bad()</script>');
+  assert.ok(html.includes('<h4>MÔ TẢ CÔNG VIỆC</h4>'));
+  assert.ok(html.includes('<ul><li>Viết API với Node.js</li><li>Kinh nghiệm 3 - 4 năm</li></ul>'));
+  assert.ok(html.includes('<p>Lương 15 - 25 triệu.</p>'));
+  assert.ok(html.includes('&lt;script&gt;bad()&lt;/script&gt;'));assert.equal(html.includes('<script>'),false);
+  assert.equal(app.jobDocument(''), '');
+  assert.equal(app.jobDocument('MÔ TẢ CÔNG VIỆC:\nNội dung.','description'),'<p>Nội dung.</p>');
+  assert.equal(app.jobDocument('1) Làm API\n2) Kiểm thử API'),'<ol><li>Làm API</li><li>Kiểm thử API</li></ol>');
 });
 test('searches feed recommendations automatically without a saved-search UI', async () => {
   const h=deferredApp();h.app.state.savedProfile=null;h.app.state.profile=null;

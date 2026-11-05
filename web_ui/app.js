@@ -382,6 +382,22 @@ function explanation(job) {
 function detailTopline(job=null) {
   return `<div class="detail-topline"><span><i></i>${t('details')}</span><button class="detail-close icon-button" id="close-detail" aria-label="${t('close')}">${icon('close')}</button>${job?saveButton(job):''}</div>`;
 }
+function jobDocument(value,kind='') {
+  // API cung cấp text xuống dòng; HTML luôn được escape, không chèn source HTML.
+  const lines=String(value||'').split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+  const repeated={description:['mo ta cong viec','job description'],requirements:['yeu cau','yeu cau ung vien','yeu cau cong viec','requirements']};
+  if(repeated[kind]?.includes(normalized(lines[0]||'').replace(/[:：]$/,'').trim()))lines.shift();
+  let html='',items=[],listType='ul';
+  const flush=()=>{if(items.length){html+=`<${listType}>${items.map(item=>`<li>${escape(item)}</li>`).join('')}</${listType}>`;items=[];}};
+  for(const line of lines){
+    const numbered=/^\d{1,2}[.)]\s+/.test(line),bullet=/^[•▪●·∙*+]\s+|^[-–—]\s+/.test(line);
+    if(numbered||bullet){const type=numbered?'ol':'ul';if(items.length&&type!==listType)flush();listType=type;items.push(line.replace(/^(?:[•▪●·∙*+\-–—]|\d{1,2}[.)])\s+/,''));continue;}
+    flush();
+    if(line.length<=85&&/[:：]$/.test(line))html+=`<h4>${escape(line.replace(/[:：]$/,''))}</h4>`;
+    else html+=`<p>${escape(line)}</p>`;
+  }
+  flush();return html;
+}
 function detailPanel() {
   if(!state.selected)return '';
   if(!state.detail||state.detail.job.id!==state.selected)return `${detailTopline()}<div class="detail-loading"><span class="loader"></span></div>`;
@@ -393,8 +409,8 @@ function detailPanel() {
     <div class="detail-facts"><div><small>${state.lang==='vi'?'Mức lương':'Salary'}</small><strong>${escape(job.salary||t('salaryUnknown'))}</strong></div><div><small>${t('experience')}</small><strong>${experience(job)}</strong></div></div>
     <div class="detail-actions"><button class="secondary" data-save="${job.id}">${icon('bookmark')}${t(state.saved.has(job.id)?'unsave':'save')}</button></div>
     ${job.home_region?`<p class="detail-distance">${icon('pin')}${escape(distanceLabel(job))}</p><p class="field-hint">${t('distanceNote')}</p>`:''}${job.personalization_mode&&job.personalization_mode!=='cv'?`<div class="interest-explanation">${icon('spark')}<div><strong>${t('personalScore')}: ${job.personal_score.toFixed(3)}</strong><p>${t(job.personalization_mode==='cv+interest'?'combinedWhy':'interestWhy')}</p></div></div>`:''}${explanation(job)}${demandExplanation(job)}<section class="detail-section"><h3>${t('skills')}</h3><div class="skill-tags">${job.skills.map(s=>`<span>${escape(s)}</span>`).join('')}</div></section>
-    <section class="detail-section"><h3>${t('description')}</h3><p class="description">${escape(job.description)}</p></section>
-    ${job.requirements?`<section class="detail-section"><h3>${t('requirements')}</h3><p class="description">${escape(job.requirements)}</p></section>`:''}
+    <section class="detail-section"><h3>${t('description')}</h3><div class="description job-document">${jobDocument(job.description,'description')}</div></section>
+    ${job.requirements?`<section class="detail-section"><h3>${t('requirements')}</h3><div class="description job-document">${jobDocument(job.requirements,'requirements')}</div></section>`:''}
     <section class="detail-section similar-section"><h3>${t('similar')}</h3><p class="muted">${t('similarSub')}</p>${state.detail.similar.map(j=>`<button class="similar-job" data-job="${j.id}">${companyLogo(j,true)}<span><strong>${escape(j.title)}</strong><small>${escape(j.location)}</small></span>${icon('chevron')}</button>`).join('')}</section><p class="source-note">${t('sourceNote')}</p>`;
 }
 function workspace() { return `<section class="workspace ${state.selected?'has-detail':''} ${state.view==='personal'?'personal-results':''}" id="workspace">${['cv','personal'].includes(state.view)?'':filters()}<div class="results" id="results">${results()}</div><aside class="job-detail ${state.selected?'mobile-open':''}" id="job-detail" aria-label="${t('details')}" ${state.selected?'':'hidden'}>${detailPanel()}</aside></section>`; }

@@ -42,7 +42,19 @@ class CatalogTests(unittest.TestCase):
     def test_first_500_ids_and_source_text_are_preserved(self):
         frozen=pd.read_csv(BASE_DIR/'data/evaluation/jobs_catalog_500.csv').fillna('')
         for column in frozen.columns:
+            if column in ('Salary','Salary_EN'):continue  # Sửa hiển thị lương có lưu Salary_Original.
             self.assertEqual(self.jobs.head(500)[column].fillna('').tolist(),frozen[column].tolist(),column)
+
+    def test_presentation_has_no_currencyless_numbers_or_thousand_vnd_labels(self):
+        jobs=self.jobs.set_index('Job_ID')
+        self.assertEqual(jobs.loc['VN0005','Salary'],'1–2 triệu/tuần')
+        self.assertEqual(jobs.loc['VN0059','Salary'],'Chưa rõ mức lương')
+        self.assertEqual(jobs.loc['VN0059','Salary_Original'],'105')
+        self.assertEqual(jobs.loc['VN0142','Salary'],'Lương thỏa thuận')
+        self.assertFalse(self.jobs.Salary.str.contains('nghìn|ngàn|VND MONTH',regex=True).any())
+        self.assertFalse(self.jobs.Salary.str.fullmatch(r'[\d\s.,–-]+').any())
+        self.assertGreater(len(jobs.loc['VN0010','Job_Description_Display'].splitlines()),10)
+        self.assertIn('\nQUYỀN LỢI:',jobs.loc['VN0014','Job_Description_Display'])
 
     def test_bilingual_views_share_records_and_regional_matching(self):
         vi, en = localize_jobs(self.jobs, "vi"), localize_jobs(self.jobs, "en")

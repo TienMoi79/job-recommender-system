@@ -87,6 +87,12 @@ mới: không dùng kết quả benchmark500 như kết quả đo cho7050. Khở
 để nạp catalog mới. Chi tiết rating và nguồn tọa độ GeoNames phục vụ đối chiếu
 khoảng cách tại [Lab 3, rating và khoảng cách](../docs/LAB3_RATING_DISTANCE.md).
 
+Phần hiển thị được rà soát riêng ở `repair_job_presentation.py`: bổ sung cột
+`*_Display` có xuống dòng, giữ nguyên văn bản NLP; `Salary`/`Salary_EN` chuẩn
+hóa tiền Việt sang triệu, giữ kỳ trả và lưu giá trị nguồn ở `Salary_Original`.
+Không đoán lương từ số trần như105, không coi bảo hiểm/phụ cấp là lương. Chi tiết
+và ví dụ đối chiếu tại [bản sửa mô tả và lương](../docs/DATA_PRESENTATION_REPAIR.md).
+
 Trích dẫn do dataset card đề xuất: Le, Ngoc-Quang; Hoang, Duc Duong; Tran, Mai Vu;
 Vuong, Thi-Hai-Yen (2026). *CareerPathKG: Knowledge Graph Integrated Framework
 for Career Intelligence*. EACL Industry Track, pp. 813–822.

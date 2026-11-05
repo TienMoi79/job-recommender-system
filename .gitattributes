@@ -1,0 +1,4 @@
+# These datasets have byte-level checksums in their manifests. Preserve the
+# exact CSV bytes (including quoted multiline fields) on every platform.
+/data/jobs_catalog.csv -text -whitespace
+/data/evaluation/jobs_catalog_500.csv -text -whitespace

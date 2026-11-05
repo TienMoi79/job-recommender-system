@@ -30,6 +30,7 @@ from hybrid_recommender import HybridJobRecommenderSystem
 from interest_recommender import SearchInterestRecommender
 from demand_rating import DemandRatingStore
 from job_proximity import home_locations, compare_options, annotate_distance
+from job_presentation import display_job_field
 from locations import REGIONS, region_label
 from resume_profile import ResumeAnalyzer
 from ui_text import TEXT
@@ -64,7 +65,7 @@ class CatalogService:
             "excerpt": str(row["Job_Description"])[:200],
         }
         if detail:
-            result.update(description=str(row["Job_Description"]), requirements=str(row.get("Requirements", "")),
+            result.update(description=display_job_field(row,'Job_Description'), requirements=display_job_field(row,'Requirements'),
                           source=str(row.get("Source_URL", "")))
         if "Similarity_Score" in row:
             result["score"] = round(float(row["Similarity_Score"]), 4)

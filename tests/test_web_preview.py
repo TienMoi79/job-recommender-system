@@ -94,6 +94,15 @@ class WebPreviewTests(unittest.TestCase):
                 self.assertEqual(job['experience'],2.)
                 self.assertIn('2 năm' if language=='vi' else '2 years',job['requirements'])
 
+    def test_salary_and_multiline_detail_regressions_from_user_screenshots(self):
+        for language,expected in [('vi','1–2 triệu/tuần'),('en','1–2 million VND/week')]:
+            self.assertEqual(self.client.get('/api/jobs/VN0005?language='+language).json()['job']['salary'],expected)
+        self.assertEqual(self.client.get('/api/jobs/VN0059').json()['job']['salary'],'Chưa rõ mức lương')
+        self.assertEqual(self.client.get('/api/jobs/VN0142').json()['job']['salary'],'Lương thỏa thuận')
+        job=self.client.get('/api/jobs/VN0010').json()['job']
+        self.assertIn('\nYÊU CẦU:\n',job['description'])
+        self.assertGreater(len(job['description'].splitlines()),10)
+
     def test_match_equals_existing_engine_and_filters_region(self):
         from web_preview import catalog
         text = 'Backend Developer. Python, Django, FastAPI, PostgreSQL, REST API, Docker. Preferred location: Hanoi.'

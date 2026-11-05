@@ -23,6 +23,7 @@ import requests
 from locations import REGIONS, find_regions, plain_text, region_label
 from resume_profile import extract_skills, identify_roles, ROLES
 from job_experience import metadata_experience, resolve_job_experience
+from job_presentation import normalize_salary, presentation_fields
 
 SOURCE = "tinixai/vietnamese-job-descriptions"
 REVISION = "679c3a17347ff6ce769d9bf510c122a087493cf6"
@@ -45,15 +46,7 @@ def experience_years(raw: str) -> tuple[float, bool]:
 
 
 def salary_english(raw: str) -> str:
-    norm = plain_text(raw)
-    if not raw or norm in ("dang cap nhat", "thoa thuan", "thuong luong"):
-        return "Not specified" if norm != "thoa thuan" else "Negotiable"
-    if "trieu" in norm:
-        numbers = re.findall(r"\d+(?:[.,]\d+)?", raw)
-        return "VND " + " - ".join(numbers[:2]) + " million" if numbers else "Not specified"
-    if "usd" in norm or "$" in raw:
-        return "USD " + " - ".join(re.findall(r"\d+(?:[.,]\d+)?", raw)[:2])
-    return "See source listing"
+    return normalize_salary(raw).en
 
 
 def company_english(raw: str) -> str:
@@ -122,7 +115,7 @@ class PublicJobCatalogBuilder:
         # Khi mô tả gốc đã là tiếng Anh, dùng toàn văn thay vì bỏ chi tiết.
         if not re.search(r"[À-ỹ]", description) and re.search(r"\b(the|with|and|responsibilities|develop)\b", description, re.I):
             en_description = description
-        return {
+        result = {
             "Title": title, "Title_EN": en_title, "Skills": "; ".join(skills),
             "Experience_Years": years, "Experience_Known": known,
             "Experience_Text": clean(raw.get("experience_level")) or "Chưa rõ",
@@ -142,6 +135,9 @@ class PublicJobCatalogBuilder:
             "Source_Revision": REVISION, "Source_License": LICENSE,
             "Source_URL": f"https://huggingface.co/datasets/{SOURCE}/viewer/default/train?row={row_index}",
         }
+        result.update(presentation_fields(raw.get('job_description') or '',raw.get('requirements') or '',raw.get('salary') or '',
+                      '\n'.join(str(raw.get(key) or '') for key in ('job_description','requirements','benefits'))))
+        return result
 
     def build(self, source_path: Path, output_dir: Path, count: int = 500) -> pd.DataFrame:
         if count != 500:

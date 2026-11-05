@@ -63,9 +63,32 @@
   },
   "company_count": 3594,
   "unknown_experience_count": 556,
-  "csv_sha256": "9def4e3ae83b58e54398e1c74d4d5abb1a1b37b6986dc5bf9120c8505b80d4cd",
+  "csv_sha256": "eff43c6e978c3aaca075b8a750d06a9683c2b4112d62dafd4efcb19d9681e60f",
   "source_sha256": "4d5e11b58490edc40900386986de71e844cd9f0f3a5fc714418747f66462f834",
   "vacancy_status": "Historical source snapshot; current availability not verified.",
   "english_content": "Rule-based structured summaries unless original English is available; not full translations.",
-  "pipeline": "Parquet batches -> pandas masks/drop_duplicates -> normalization -> fingerprint dedup -> concat/category/value_counts"
+  "pipeline": "Parquet batches -> pandas masks/drop_duplicates -> normalization -> fingerprint dedup -> concat/category/value_counts",
+  "presentation": {
+    "rule": "job-presentation-v1",
+    "rows_audited": 7050,
+    "salary_changed": 6672,
+    "salary_changed_since_last_run": 0,
+    "salary_status_counts": {
+      "normalized": 5167,
+      "missing_or_ambiguous": 1006,
+      "negotiable": 797,
+      "invalid_amount": 60,
+      "allowance_conflict": 10,
+      "missing_unit": 6,
+      "negotiable_from_source": 4
+    },
+    "multiline_descriptions": 6855,
+    "multiline_requirements": 5991,
+    "nlp_source_columns_changed": false,
+    "frozen_benchmark_changed": false,
+    "applied": true,
+    "previous_csv_sha256": "9afb6bed6748482f72d2a43a144a2add8d71eaff9f7d4ddc81b2e86bb170d8b5",
+    "source_text": "Original NLP columns unchanged; display layout restored heuristically.",
+    "salary_policy": "VND amounts in millions, original pay period kept; currency-less/invalid amounts not guessed; explicit negotiable salary beats allowance contamination."
+  }
 }

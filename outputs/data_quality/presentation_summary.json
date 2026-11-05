@@ -1,0 +1,21 @@
+{
+  "rule": "job-presentation-v1",
+  "rows_audited": 7050,
+  "salary_changed": 6672,
+  "salary_changed_since_last_run": 0,
+  "salary_status_counts": {
+    "normalized": 5167,
+    "missing_or_ambiguous": 1006,
+    "negotiable": 797,
+    "invalid_amount": 60,
+    "allowance_conflict": 10,
+    "missing_unit": 6,
+    "negotiable_from_source": 4
+  },
+  "multiline_descriptions": 6855,
+  "multiline_requirements": 5991,
+  "nlp_source_columns_changed": false,
+  "frozen_benchmark_changed": false,
+  "applied": true,
+  "backup": "D:\\Trí tuệ nhân tạo và ứng dụng\\ProJeat\\.cache\\presentation-before-20261105_042124"
+}
