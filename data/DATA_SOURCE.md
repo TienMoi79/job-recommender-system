@@ -1,7 +1,9 @@
-# Nguồn và cách chuẩn hóa catalog 500 tin IT
+# Nguồn và cách chuẩn hóa catalog 7.050 tin IT
 
-Catalog chính: `jobs_catalog.csv`. Hai giao diện Việt/Anh dùng cùng 500 `Job_ID`,
-không phải 1.000 tin riêng. Các CSV 20 tin cũ là mẫu nhỏ phục vụ bài học và kiểm thử.
+Catalog chính: `jobs_catalog.csv`. Hai giao diện Việt/Anh dùng cùng 7.050 `Job_ID`,
+không phải hai tập tin riêng. 500 ID đầu giữ nguyên; 6.550 tin được bổ sung ngày
+05/11/2026 từ cùng nguồn. Bản 500 đóng băng ở `evaluation/jobs_catalog_500.csv`
+để tái lập benchmark cũ. Các CSV 20 tin cũ là mẫu nhỏ phục vụ bài học và kiểm thử.
 
 ## Nguồn
 
@@ -18,10 +20,13 @@ không phải 1.000 tin riêng. Các CSV 20 tin cũ là mẫu nhỏ phục vụ 
 
 ## Quy tắc lựa chọn và các trường suy ra
 
-`build_job_catalog.py` đọc Parquet theo batch, chọn tin IT có mô tả ít nhất 160
+`expand_job_catalog.py` dùng pandas trên batch Parquet 4.096 dòng để tiền lọc,
+bỏ thiếu và trùng; sau đó chuẩn hóa tin IT có mô tả ít nhất 160
 ký tự, địa điểm nhận diện được và ít nhất hai kỹ năng trong từ điển. Loại công ty
 trống/nhãn lỗi như “Quy mô:”, loại bản ghi trùng nội dung và giới hạn kinh nghiệm
-bất thường. Lấy mẫu tái lập với seed 42, xen kẽ nhóm nghề trong từng khu vực.
+bất thường. Bản 500 cũ lấy mẫu seed42; bản mở rộng giữ tất cả tin đạt quy tắc
+trong các nhóm vùng đã nhận diện, không còn quota 10 vùng. Quét 606.878 hàng,
+tiền lọc 14.373 hàng, thu được tổng 7.050 tin; 3.594 công ty và 24 vùng chính.
 
 - `Company`, `Location`, `Salary`, `Job_Description`, `Requirements` giữ thông
   tin nguồn đã bỏ HTML/khoảng trắng dư. Không tự tạo công ty, lương hoặc địa điểm.
@@ -60,24 +65,27 @@ còn trong CSV. Lương và số năm chưa rõ được ghi rõ, không bổ su
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements-catalog.txt
-.\.venv\Scripts\python.exe build_job_catalog.py
+.\.venv\Scripts\python.exe expand_job_catalog.py
 ```
 
 Script tải snapshot vào `.cache/tinix-jobs.parquet` nếu chưa có, không đưa toàn
 bộ nguồn vào Git. Manifest ghi số hàng quét, số tin đủ điều kiện, phân bố thực,
-số công ty, seed và SHA-256 của CSV. Nếu vùng có ít tin hợp lệ hơn kế hoạch,
-script lấy bù từ tin thật của vùng khác, không tạo thêm tin giả.
+số công ty và SHA-256 của CSV/Parquet. Không tạo thêm tin giả. Script cũ
+`build_job_catalog.py` chỉ phục vụ tái tạo bản500, không chạy đè catalog mới.
 
 `catalog_manifest.json` là thống kê của bản bàn giao; kiểm tra bằng
 `tests/test_catalog.py`. Việc kiểm tra cấu trúc và xếp hạng đúng thứ tự chưa thay
 thế đánh giá độ chính xác gợi ý trên các cặp CV–việc làm được gán nhãn.
 
-Bản sửa 16/10/2026 phục hồi 67 tin từng thiếu số năm; số tin chưa xác định còn
+Bản sửa 16/10/2026 trên snapshot500 phục hồi 67 tin từng thiếu số năm; số tin chưa xác định còn
 67/500. Giữ nguyên 500 Job_ID, công ty, địa điểm và văn bản nguồn, không lấy mẫu
 lại catalog. Bản ghi sửa ở `outputs/data_quality/experience_repairs.csv`; manifest
 có checksum trước/sau. `python repair_catalog_experience.py` chỉ xem trước;
 thêm `--apply` mới áp dụng và lưu bản cũ trong `.cache/experience-before-*`.
-Sau thay đổi dữ liệu cần khởi động lại web và chạy lại đánh giá/notebook.
+Catalog7050 có 556 tin chưa xác định kinh nghiệm. Chưa có qrels độc lập cho tập
+mới: không dùng kết quả benchmark500 như kết quả đo cho7050. Khởi động lại web
+để nạp catalog mới. Chi tiết rating và nguồn tọa độ GeoNames phục vụ đối chiếu
+khoảng cách tại [Lab 3, rating và khoảng cách](../docs/LAB3_RATING_DISTANCE.md).
 
 Trích dẫn do dataset card đề xuất: Le, Ngoc-Quang; Hoang, Duc Duong; Tran, Mai Vu;
 Vuong, Thi-Hai-Yen (2026). *CareerPathKG: Knowledge Graph Integrated Framework

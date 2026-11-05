@@ -79,6 +79,18 @@ class HybridTests(unittest.TestCase):
         self.assertEqual(result.iloc[0].Job_ID,'P1')
         self.assertGreater(result.iloc[0].Component_Weights['Semantic'],0.)
         self.assertEqual(result.iloc[0].Ranking_Method,'hybrid')
+        self.assertTrue(result.attrs['semantic_used'])
+
+    def test_public_index_warmup_does_not_block_cv_or_claim_semantic_scores(self):
+        self.engine.use_semantic=True;self.engine.semantic_status='loading'
+        self.engine._semantic_lock.acquire()
+        try:
+            result=self.engine.match_cv_to_jobs(self.cv)
+            self.assertFalse(result.empty)
+            self.assertFalse(result.attrs['semantic_used'])
+            self.assertTrue(result.Ranking_Method.eq('hybrid-lexical').all())
+            self.assertTrue(all(weights['Semantic']==0 for weights in result.Component_Weights))
+        finally:self.engine._semantic_lock.release()
 
     def test_empty_region_and_unrelated_text_do_not_pad(self):
         self.assertTrue(self.engine.match_cv_to_jobs(self.cv,location='quang_ninh').empty)
@@ -157,10 +169,12 @@ class EvaluationTests(unittest.TestCase):
 
     def test_benchmark_groups_and_catalog_hash_are_frozen(self):
         root=Path(__file__).resolve().parents[1]
-        data,queries=load_benchmark(root/'data/evaluation/benchmark.json',pd.read_csv(root/'data/jobs_catalog.csv'))
+        data,queries=load_benchmark(root/'data/evaluation/benchmark.json',pd.read_csv(root/'data/evaluation/jobs_catalog_500.csv'))
         self.assertEqual(len(queries),30)
         self.assertEqual(sum(query.split=='dev' for query in queries),10)
         self.assertTrue(data['frozen_before_model_comparison'])
+        with self.assertRaises(ValueError):
+            load_benchmark(root/'data/evaluation/benchmark.json',pd.read_csv(root/'data/jobs_catalog.csv'))
 
     def test_public_embedding_cache_contains_only_catalog(self):
         from semantic_index import PublicSemanticIndex

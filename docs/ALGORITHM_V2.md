@@ -2,7 +2,8 @@
 
 ## Phạm vi
 
-JobVista dùng `HybridJobRecommenderSystem` trên catalog 500 tin. Phiên bản cũ
+JobVista dùng `HybridJobRecommenderSystem` trên catalog hiện tại 7.050 tin; các
+chỉ số A/B/C trong tài liệu này thuộc snapshot 500 tin. Phiên bản cũ
 `JobRecommenderSystem` vẫn giữ nguyên cách xếp hạng làm baseline A/B.
 Notebook có ví dụ và bảng đánh giá; JobVista là giao diện web duy nhất. Không dùng dịch vụ
 LLM/OCR trả phí, không lưu CV người dùng vào index hay tập huấn luyện.
@@ -11,6 +12,8 @@ của trình duyệt để khôi phục phiên và gợi ý trên trang chủ. �
 có thể xóa/cập nhật, không phải dữ liệu huấn luyện hay cache truy vấn trên server.
 Web cũng tự ghi nhớ điều kiện tìm kiếm trong trình duyệt để cá nhân hóa gợi ý;
 lịch sử không xuất hiện thành bảng hoặc nút lưu trên giao diện.
+Phần mở rộng 05/11/2026 về pandas, rating nhu cầu nghề và so sánh nơi ở/xu
+hướng nghề được mô tả tại [Lab 3, rating và khoảng cách](LAB3_RATING_DISTANCE.md).
 
 ```mermaid
 flowchart LR
@@ -116,7 +119,7 @@ trả kết quả hoàn toàn không liên quan. Các ngưỡng này vẫn cần
 Chỉ nhóm gần trùng khi cùng công ty gốc, cùng vùng, cùng cấp bậc, chức danh
 gần nhau (SequenceMatcher >= 0,88) và phần đầu mô tả nguồn gần nhau (>= 0,88;
 tối đa 2500 ký tự). Không nhóm chỉ vì cùng Role_Code, không trộn Junior với Senior.
-Không xóa dòng nào khỏi catalog 500 tin; chỉ chọn một đại diện trong kết quả.
+Không xóa dòng nào khỏi catalog; chỉ chọn một đại diện trong kết quả.
 
 Ưu tiên tối đa 2 tin mỗi công ty nếu có tin từ công ty khác đạt ít nhất 85%
 điểm của tin cần thay. Nếu không có lựa chọn đủ gần, giữ tin tốt hơn. Tin tương

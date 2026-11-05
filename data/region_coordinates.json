@@ -1,0 +1,159 @@
+{
+  "source": "https://download.geonames.org/export/dump/",
+  "download": "https://download.geonames.org/export/dump/cities15000.zip",
+  "license": "CC-BY-4.0",
+  "retrieved_date": "2026-11-05",
+  "meaning": "Representative city coordinates for job-search regions, not home/job addresses or administrative boundaries.",
+  "regions": {
+    "ha_noi": {
+      "geoname_id": 1581130,
+      "name": "Hanoi",
+      "lat": 21.0245,
+      "lon": 105.84117
+    },
+    "ho_chi_minh": {
+      "geoname_id": 1566083,
+      "name": "Ho Chi Minh City",
+      "lat": 10.82302,
+      "lon": 106.62965
+    },
+    "da_nang": {
+      "geoname_id": 1583992,
+      "name": "Da Nang",
+      "lat": 16.06778,
+      "lon": 108.22083
+    },
+    "khanh_hoa": {
+      "geoname_id": 1572151,
+      "name": "Nha Trang",
+      "lat": 12.24507,
+      "lon": 109.19432
+    },
+    "can_tho": {
+      "geoname_id": 1586203,
+      "name": "Cần Thơ",
+      "lat": 10.03711,
+      "lon": 105.78825
+    },
+    "hai_phong": {
+      "geoname_id": 1581298,
+      "name": "Haiphong",
+      "lat": 20.86481,
+      "lon": 106.68345
+    },
+    "hue": {
+      "geoname_id": 1580240,
+      "name": "Huế",
+      "lat": 16.4619,
+      "lon": 107.59546
+    },
+    "binh_duong": {
+      "geoname_id": 1565022,
+      "name": "Thủ Dầu Một",
+      "lat": 10.9804,
+      "lon": 106.6519
+    },
+    "dong_nai": {
+      "geoname_id": 1587923,
+      "name": "Biên Hòa",
+      "lat": 10.94469,
+      "lon": 106.82432
+    },
+    "bac_ninh": {
+      "geoname_id": 1591449,
+      "name": "Bắc Ninh",
+      "lat": 21.18608,
+      "lon": 106.07631
+    },
+    "quang_ninh": {
+      "geoname_id": 1580410,
+      "name": "Hạ Long",
+      "lat": 20.95045,
+      "lon": 107.07336
+    },
+    "ba_ria_vung_tau": {
+      "geoname_id": 1562414,
+      "name": "Vũng Tàu",
+      "lat": 10.34599,
+      "lon": 107.08426
+    },
+    "lam_dong": {
+      "geoname_id": 1584071,
+      "name": "Ðà Lạt",
+      "lat": 11.94646,
+      "lon": 108.44193
+    },
+    "quy_nhon": {
+      "geoname_id": 1568574,
+      "name": "Qui Nhon",
+      "lat": 13.77648,
+      "lon": 109.22367
+    },
+    "nghe_an": {
+      "geoname_id": 1562798,
+      "name": "Vinh",
+      "lat": 18.67337,
+      "lon": 105.69232
+    },
+    "thai_nguyen": {
+      "geoname_id": 1566319,
+      "name": "Thái Nguyên",
+      "lat": 21.59422,
+      "lon": 105.84817
+    },
+    "hai_duong": {
+      "geoname_id": 1581326,
+      "name": "Hải Dương",
+      "lat": 20.94099,
+      "lon": 106.33302
+    },
+    "hung_yen": {
+      "geoname_id": 1580142,
+      "name": "Hưng Yên",
+      "lat": 20.64637,
+      "lon": 106.05112
+    },
+    "long_an": {
+      "geoname_id": 1567069,
+      "name": "Tân An",
+      "lat": 10.53589,
+      "lon": 106.41366
+    },
+    "tien_giang": {
+      "geoname_id": 1574023,
+      "name": "Mỹ Tho",
+      "lat": 10.36004,
+      "lon": 106.35996
+    },
+    "thanh_hoa": {
+      "geoname_id": 1566166,
+      "name": "Thanh Hóa",
+      "lat": 19.8,
+      "lon": 105.76667
+    },
+    "quang_nam": {
+      "geoname_id": 1567148,
+      "name": "Tam Kỳ",
+      "lat": 15.57364,
+      "lon": 108.47403
+    },
+    "quang_ngai": {
+      "geoname_id": 1568770,
+      "name": "Quảng Ngãi",
+      "lat": 15.12047,
+      "lon": 108.79232
+    },
+    "dak_lak": {
+      "geoname_id": 1586896,
+      "name": "Buôn Ma Thuột",
+      "lat": 12.66747,
+      "lon": 108.03775
+    },
+    "gia_lai": {
+      "geoname_id": 1569684,
+      "name": "Pleiku",
+      "lat": 13.98333,
+      "lon": 108.0
+    }
+  }
+}

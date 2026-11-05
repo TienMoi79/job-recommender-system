@@ -8,9 +8,15 @@ Xem [thiết kế thuật toán](docs/ALGORITHM_V2.md) và
 [kết quả đánh giá pilot](docs/EVALUATION_REPORT.md). Nhãn pilot chưa được chuyên
 gia độc lập xác nhận, không phải số liệu độ chính xác tuyển dụng thực tế.
 
-Web và notebook hiện ưu tiên **catalog 500 tin IT từ bộ dữ liệu công khai TiniX
-AI**, có công ty, lương, địa điểm, yêu cầu và thông tin nguồn. Tin được chọn/làm
+Web và notebook hiện ưu tiên **catalog 7.050 tin IT từ bộ dữ liệu công khai TiniX
+AI**, gồm 3.594 công ty, 24 vùng chính, có lương, địa điểm, yêu cầu và thông tin nguồn. Tin được chọn/làm
 sạch, không nhân bản 20 dòng mock. Xem [nguồn, giấy phép và quy tắc chuẩn hóa](data/DATA_SOURCE.md).
+
+**Bổ sung theo góp ý giảng viên 05/11/2026:** pandas xử lý nguồn 606.878 dòng
+theo batch; rating nhu cầu nghề từ lượt ghép CV ẩn danh; đối chiếu **phù hợp
+chuyên môn nhất / gần nơi ở nhất**. Đọc [giải thích Lab 3, công thức rating,
+nguồn dataset và cách thử](docs/LAB3_RATING_DISTANCE.md). Notebook bổ sung:
+`lab3_jobvista.ipynb`. Benchmark A/B/C cũ vẫn chỉ áp dụng cho snapshot 500 tin.
 
 ## 1. Cài đặt và chạy
 
@@ -31,7 +37,7 @@ chọn **Code → Download ZIP**, giải nén rồi mở terminal trong thư m�
 ### Chạy JobVista trên máy mới — cổng 8000
 
 Giao diện mới chạy bằng một lệnh Python, dùng FastAPI cùng HTML/CSS/JavaScript.
-Không cần cài Node, không cần chạy hai terminal. Dùng chính catalog 500 tin,
+Không cần cài Node, không cần chạy hai terminal. Dùng chính catalog 7.050 tin,
 `ResumeDocumentReader` và `HybridJobRecommenderSystem`; hai thuật toán baseline vẫn được giữ để đánh giá.
 
 Cần Python 3.10 trở lên. Trong terminal của thư mục vừa clone, chạy:
@@ -73,6 +79,10 @@ Lần đầu tải model semantic cần Internet; embedding tin công khai đư�
 đang dùng từ khóa và các tín hiệu hồ sơ, không giả điểm ngữ nghĩa. Để chủ động
 chạy nhẹ, chỉ cài `requirements-preview.txt` và đặt `$env:JOBVISTA_SEMANTIC='0'`
 trước lệnh chạy web; bỏ biến này/đặt `1` rồi khởi động lại để bật semantic.
+Với catalog 7.050 tin, lần đầu tạo embedding có thể mất vài phút trên CPU.
+Trong lúc làm nóng, API phục vụ bằng từ khóa/kỹ năng/kinh nghiệm và thông báo
+chưa dùng ngữ nghĩa; không bắt người dùng chờ toàn bộ index. Index sẵn sàng sẽ
+được dùng cho lượt tìm tiếp theo, không tự thay điểm của kết quả đã hiển thị.
 
 ### Ghi nhớ mối quan tâm và gợi ý cá nhân trên trang chủ
 
@@ -99,6 +109,16 @@ trước lệnh chạy web; bỏ biến này/đặt `1` rồi khởi động l�
    Vì vậy sau khi xóa CV, web vẫn có thể gợi ý theo mối quan tâm, nhưng không
    gọi đó là đánh giá phù hợp với CV. Xóa dữ liệu trang web trong trình duyệt
    sẽ xóa cả bộ nhớ tìm kiếm, hồ sơ và việc yêu thích.
+
+Sau khi đọc CV, kiểm tra riêng **nơi muốn làm việc** và **nơi ở hiện tại**.
+Bấm **Tìm công việc phù hợp** để xem hai cột so sánh chuyên môn/khoảng cách;
+danh sách chính vẫn tôn trọng vùng muốn làm. Mỗi lượt ghép CV chủ động cập nhật
+một nguyện vọng nghề gần nhất cho mã trình duyệt ẩn danh trong 30 ngày. Rating
+chỉ góp tối đa 10% khi đủ 5 trình duyệt; nhấn tìm lại không tạo thêm người.
+Điểm quan tâm không phải chất lượng công việc và chưa chứng minh tăng độ chính
+xác. DB `.local/jobvista.sqlite3` không lưu nội dung CV và không được push Git.
+Các bản clone chạy localhost riêng có thống kê riêng; cần chung server để cộng
+nhu cầu giữa các thiết bị. `GET /api/demand` hiển thị thống kê tổng hợp để kiểm tra.
 
 Logic trong `interest_recommender.py`: giữ tối đa 20 bộ điều kiện khác nhau,
 bỏ điều kiện quá 90 ngày. Trọng số quan tâm giảm một nửa sau 14 ngày; tìm lặp
@@ -190,7 +210,7 @@ Kiểm thử API, đọc CV và AI Engine:
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-`tests/test_web_preview.py` kiểm tra catalog 500 tin, API Việt/Anh, chi tiết,
+`tests/test_web_preview.py` kiểm tra catalog 7.050 tin, API Việt/Anh, chi tiết,
 việc tương tự, ghép CV có điểm thật, lọc vùng, đọc Word, giới hạn upload và lỗi
 đầu vào. Bộ test dùng cấu hình nhẹ để không tải model; semantic thật được đánh
 giá riêng bằng `evaluation.py`. Các test cho giao diện cũ đã được gỡ theo mã cũ.
@@ -198,7 +218,7 @@ giá riêng bằng `evaluation.py`. Các test cho giao diện cũ đã được 
 ### Chạy bằng Jupyter Notebook để trình bày đồ án
 
 Mở **[job_recommender_notebook.ipynb](job_recommender_notebook.ipynb)**. Notebook có
-giải thích tiếng Việt, đọc catalog 500 tin, chuẩn bị 3 CV tiếng Việt,
+giải thích tiếng Việt, đọc catalog hiện tại, chuẩn bị 3 CV tiếng Việt,
 minh họa TF-IDF/cosine, chạy hai chức năng gợi ý và lưu kết quả. Mặc định dùng TF-IDF
 để không cần tải trọng số mô hình. Các lớp OOP được import từ module trong repo,
 vì vậy cần tải **toàn bộ repository**, không chỉ riêng file notebook.
@@ -292,7 +312,7 @@ requirements-notebook.txt  # Thư viện để mở và thực thi notebook
 requirements.txt           # Thư viện cho TF-IDF
 requirements-semantic.txt  # Thêm Sentence Transformers
 data/
-  jobs_catalog.csv         # 500 tin IT có metadata và provenance; catalog chính
+  jobs_catalog.csv         # 7.050 tin IT có metadata và provenance; catalog chính
   catalog_manifest.json    # Nguồn, revision, phân bố, số công ty và checksum
   DATA_SOURCE.md           # Giấy phép/ghi công và các trường được suy ra
   jobs.csv                 # 20 công việc giả lập
@@ -450,7 +470,7 @@ kinh nghiệm cao hơn CV và giải thích phần chênh lệch; đây không p
 tin việc làm, chưa phải item-based collaborative filtering từ lịch sử tương tác.
 Không dùng thông tin cá nhân ngoài văn bản được truyền vào để xây hồ sơ người dùng.
 
-Web dùng 500 tin từ nguồn công khai và notebook có CV mẫu. Tin là dữ liệu tham
+Web dùng 7.050 tin từ nguồn công khai và notebook có CV mẫu. Tin là dữ liệu tham
 khảo lịch sử, chưa được xác nhận còn tuyển. Bản Anh có thể là tóm tắt; kỹ năng
 và vùng được suy ra bằng quy tắc, OCR có thể sai. Kết quả chạy thành công chưa
 chứng minh độ chính xác ghép CV trên dữ liệu gán nhãn.
@@ -491,7 +511,7 @@ báo cáo ghi rõ bản hybrid không ngữ nghĩa. Đừng chỉnh trọng số
 - Đã chạy demo TF-IDF cho truy vấn `J001` và cả 3 CV, lưu kết quả trong
   `outputs/tfidf/`. Top-1 của CV001/CV002/CV003 lần lượt là Data Analyst,
   Python Backend Developer và AI Engineer.
-- Catalog bàn giao có đúng 500 tin không trùng tuyệt đối, 387 công ty và 10 nhóm
+- Bản catalog 14/10/2026 trước mở rộng có đúng 500 tin không trùng tuyệt đối, 387 công ty và 10 nhóm
   khu vực; provenance và checksum nằm trong `data/catalog_manifest.json`.
 - Giao diện hiện tại chỉ còn JobVista ở cổng 8000. Đã gỡ bản Streamlit, cấu
   hình/chức năng phụ trợ và các test chỉ dành cho giao diện đó. Đã chạy đạt 57 test còn lại,

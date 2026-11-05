@@ -20,7 +20,7 @@ import pandas as pd
 import pyarrow.parquet as pq
 import requests
 
-from locations import find_regions, plain_text, region_label
+from locations import REGIONS, find_regions, plain_text, region_label
 from resume_profile import extract_skills, identify_roles, ROLES
 from job_experience import metadata_experience, resolve_job_experience
 
@@ -104,7 +104,8 @@ class PublicJobCatalogBuilder:
         years, known = experience.years,experience.known
         if years > 15:
             return None
-        main_region = next((code for code in regions if code in QUOTAS), None)
+        allowed_regions = REGIONS if getattr(self, 'all_regions', False) else QUOTAS
+        main_region = next((code for code in regions if code in allowed_regions), None)
         if main_region is None:
             return None
         technologies = [skill for skill in skills if skill in ("Python", "Java", "C#", "C++", "PHP", "React", "Flutter", "SQL")]
@@ -125,7 +126,7 @@ class PublicJobCatalogBuilder:
             "Title": title, "Title_EN": en_title, "Skills": "; ".join(skills),
             "Experience_Years": years, "Experience_Known": known,
             "Experience_Text": clean(raw.get("experience_level")) or "Chưa rõ",
-            "Experience_Source":experience.source,"Experience_Evidence":experience.evidence,
+            "Experience_Source":experience.source,"Experience_Evidence":experience.evidence.strip(),
             "Domain": role[3], "Domain_EN": role[4], "Role_Code": role[0],
             "Job_Description": description, "Job_Description_EN": en_description,
             "Requirements": requirements,

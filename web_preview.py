@@ -28,6 +28,8 @@ from cv_documents import CVReadError, MAX_FILE_BYTES, MAX_TEXT_CHARS, ResumeDocu
 from job_recommender import JobRecommenderSystem
 from hybrid_recommender import HybridJobRecommenderSystem
 from interest_recommender import SearchInterestRecommender
+from demand_rating import DemandRatingStore
+from job_proximity import home_locations, compare_options, annotate_distance
 from locations import REGIONS, region_label
 from resume_profile import ResumeAnalyzer
 from ui_text import TEXT
@@ -54,6 +56,7 @@ class CatalogService:
             "company": str(row.get("Company", "")), "domain": str(row["Domain"]),
             # Khóa lĩnh vực ổn định giúp tìm kiếm đã lưu chạy đúng khi đổi Việt/Anh.
             "domain_id": str(row.get("Original_Domain", row["Domain"])),
+            "role_code": str(row.get('Role_Code','')),
             "skills": [skill.strip() for skill in str(row["Skills"]).split(";") if skill.strip()],
             "regions": codes, "location": " · ".join(region_label(code, self.language) for code in codes),
             "salary": str(row.get("Salary", "")), "experience": float(row["Experience_Years"]),
@@ -89,10 +92,16 @@ def catalog(language: str) -> CatalogService:
     return CatalogService(language)
 
 
+@lru_cache(maxsize=1)
+def demand_store():
+    return DemandRatingStore(os.environ.get('JOBVISTA_DEMAND_DB',str(ROOT/'.local/jobvista.sqlite3')))
+
+
 def profile_data(text: str, *, ocr=False):
     profile = ResumeAnalyzer().analyze(text, ocr=ocr)
     return {"skills": list(profile.skills), "title": profile.title_text,
             "locations": list(profile.location_candidates),
+            "home_locations": home_locations(text),
             'experience_years':profile.experience_years,'experience_status':profile.experience_status}
 
 
@@ -176,6 +185,10 @@ class MatchRequest(BaseModel):
     language: Language = "vi"
     experience_years: float | None = Field(default=None,ge=0,le=60,allow_inf_nan=False)
     experience_override: bool = False
+    home_region: str | None = None
+    compare_locations: bool = False
+    actor_id: str | None = Field(default=None, pattern=r'^[a-fA-F0-9-]{32,36}$')
+    record_demand: bool = False
 
 
 @app.post("/api/cv/match")
@@ -184,16 +197,38 @@ def match_cv(payload: MatchRequest):
         raise HTTPException(422, "empty_cv")
     if payload.location is not None and payload.location not in REGIONS:
         raise HTTPException(422, "invalid_location")
+    if payload.home_region is not None and payload.home_region not in REGIONS:
+        raise HTTPException(422, 'invalid_location')
     service = catalog(payload.language)
     profile=ResumeAnalyzer().analyze(payload.text)
     if payload.experience_override:
         profile=replace(profile,experience_years=payload.experience_years,
                         experience_status='confirmed' if payload.experience_years is not None else 'unknown')
-    result = service.engine.match_cv_to_jobs(payload.text,payload.top_n,location=payload.location,profile=profile)
+    national=None
+    if payload.compare_locations:
+        national=service.engine.match_cv_to_jobs(payload.text,len(service.jobs),location=None,profile=profile)
+        regional=national if payload.location is None else national.loc[national.Region_Codes.map(lambda value:payload.location in str(value).split(';'))]
+        result=service.engine.diversifier.select(regional,payload.top_n) if service.engine.diversify else regional.head(payload.top_n)
+        semantic_used=national.attrs.get('semantic_used',False)
+    else:
+        result=service.engine.match_cv_to_jobs(payload.text,payload.top_n,location=payload.location,profile=profile)
+        semantic_used=result.attrs.get('semantic_used',False)
+    if payload.record_demand and payload.actor_id:
+        demand_store().record(payload.actor_id,profile.role_codes)
+    demand=demand_store().snapshot()
+    home=payload.home_region
+    jobs=annotate_distance(DemandRatingStore.rerank(service.records(result),demand),home)
+    comparison=None
+    if payload.compare_locations:
+        # Bảng đối chiếu toàn quốc riêng, KHÔNG lẫn tin ngoài vùng vào danh sách
+        # chính đã lọc theo nơi muốn làm. Tính cả pool đạt ngưỡng, không chỉ top50
+        # để việc gần nhà nhưng điểm thấp hơn vẫn có cơ hội được đối chiếu.
+        comparison=compare_options(DemandRatingStore.rerank(service.records(national),demand),home)
     details=profile_data(payload.text)
     details.update(experience_years=profile.experience_years,experience_status=profile.experience_status)
-    return {"jobs":service.records(result),"profile":details,
-            "algorithm":{"mode":'hybrid' if service.engine.semantic_status=='ready' else 'hybrid-lexical',
+    return {"jobs":jobs,"profile":details,"comparison":comparison,
+            "demand":{"total_actors":demand['total_actors'],'ready':demand['ready'],'window_days':30},
+            "algorithm":{"mode":'hybrid' if semantic_used else 'hybrid-lexical',
                          "semantic_status":service.engine.semantic_status,"diversify":service.engine.diversify}}
 
 
@@ -220,12 +255,21 @@ def home_recommendations(payload: HomeRequest):
     if any(event.region and event.region not in REGIONS for event in payload.searches):
         raise HTTPException(422, 'invalid_location')
     service = catalog(payload.language)
-    base = match_cv(payload.profile.model_copy(update={'language': payload.language, 'top_n': 50})) if payload.profile else None
+    base = match_cv(payload.profile.model_copy(update={'language': payload.language, 'top_n': 50,
+                    'record_demand':False,'actor_id':None,'compare_locations':False})) if payload.profile else None
     candidates = base['jobs'] if base else service.records(service.jobs)
     jobs, personalization = service.interests.recommend(candidates, [event.model_dump() for event in payload.searches],
                                                        payload.top_n, has_cv=base is not None)
+    # Luồng trang chủ cộng rating sau điểm nội dung/quan tâm. Mở trang nhiều lần
+    # không tăng lượt nhu cầu; chỉ nút Tìm công việc từ CV mới ghi nhận.
+    jobs=DemandRatingStore.rerank(jobs,demand_store().snapshot())
     return {'jobs': jobs, 'profile': base['profile'] if base else None,
             'algorithm': base['algorithm'] if base else {'mode': 'interest'}, 'personalization': personalization}
+
+
+@app.get('/api/demand')
+def get_demand():
+    return demand_store().snapshot()
 
 
 app.mount("/assets", StaticFiles(directory=ROOT / "web_ui"), name="assets")

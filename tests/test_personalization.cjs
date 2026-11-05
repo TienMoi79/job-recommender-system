@@ -13,8 +13,8 @@ function memoryStorage() {
     removeItem: key => values.delete(key), values };
 }
 const profile = (extra={}) => ({version:1,text:'Backend Developer. Python, Django. 2 years experience.',filename:'sample.docx',
-  region:'ha_noi',experience:'2',experienceEdited:true,ocr:false,updatedAt:123,
-  profile:{title:'Backend Developer',skills:['Python','Django'],locations:['ha_noi'],experience_years:2,experience_status:'confirmed'},...extra});
+  region:'ha_noi',homeRegion:'',experience:'2',experienceEdited:true,ocr:false,updatedAt:123,
+  profile:{title:'Backend Developer',skills:['Python','Django'],locations:['ha_noi'],home_locations:[],experience_years:2,experience_status:'confirmed'},...extra});
 const search = (extra={}) => ({id:'search-1',q:'Python',region:'ha_noi',domain:'Software Development',exp:'1',category:'dev',updatedAt:123,count:1,...extra});
 
 test('CV persists across adapter instances without the original file or arbitrary fields', () => {
@@ -84,7 +84,7 @@ function appHarness() {
     setTimeout,clearTimeout,document:{addEventListener(){},querySelector(){return null;}},window:{addEventListener(){},scrollTo(){}}});
   const source=fs.readFileSync(path.join(__dirname,'../web_ui/app.js'),'utf8').replace(/loadCatalog\(\);\s*$/,'');
   vm.runInContext(source+`;render=()=>{};toast=()=>{};refreshPersonalPanel=()=>{};
-    globalThis.appTest={state,persistCv,clearCv,refreshHome,homePayload,rememberSearch,restoreProfile,chooseFile,readCv,personalPanel,copy};`,context);
+    globalThis.appTest={state,persistCv,clearCv,refreshHome,homePayload,rememberSearch,restoreProfile,chooseFile,readCv,personalPanel,locationComparison,demandExplanation,copy};`,context);
   return {context,memory,calls,app:context.appTest};
 }
 function deferredApp() {
@@ -156,6 +156,24 @@ test('failed profile deletion keeps the visible and stored profile consistent', 
 });
 test('new UI strings have the same Vietnamese and English keys', () => {
   const {app}=appHarness();assert.deepEqual(Object.keys(app.copy.vi).sort(),Object.keys(app.copy.en).sort());
+});
+test('home location persists independently from the preferred work region', () => {
+  const h=deferredApp();h.app.state.cvHomeRegion='ho_chi_minh';h.app.persistCv();
+  const saved=new Storage(h.memory).readProfile();assert.equal(saved.homeRegion,'ho_chi_minh');assert.equal(saved.region,'ha_noi');
+  assert.equal(h.app.homePayload().profile.home_region,'ho_chi_minh');
+  assert.equal(Object.hasOwn(h.app.homePayload().profile,'record_demand'),false);
+  h.app.restoreProfile(saved);assert.equal(h.app.state.cvHomeRegion,'ho_chi_minh');
+});
+test('comparison keeps content scores and distance labels distinct and escapes job text', () => {
+  const h=appHarness();h.app.state.cvHomeRegion='ho_chi_minh';h.app.state.comparison={
+    best_fit:[{id:'a',title:'<script>bad</script>',company:'A',location:'Hà Nội',score:.9,distance_km:1135}],
+    near_home:[{id:'b',title:'Backend',company:'B',location:'HCM',score:.7,same_region:true}]};
+  const html=h.app.locationComparison();assert.ok(html.includes('0.900'));assert.ok(html.includes('0.700'));
+  assert.ok(html.includes('1135 km'));assert.ok(html.includes('Cùng khu vực nơi ở'));
+  assert.ok(html.includes('&lt;script&gt;'));assert.equal(html.includes('<script>'),false);
+  assert.ok(html.includes('không phải đường đi thực tế'));assert.equal(html.includes('0 km'),false);
+  const rating=h.app.demandExplanation({demand_rating:2.5,demand_actors:10,demand_weight:.1});
+  assert.ok(rating.includes('2.50/5'));assert.ok(rating.includes('10%'));assert.ok(rating.includes('không phải đánh giá chất lượng'));
 });
 test('searches feed recommendations automatically without a saved-search UI', async () => {
   const h=deferredApp();h.app.state.savedProfile=null;h.app.state.profile=null;

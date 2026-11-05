@@ -31,12 +31,13 @@
           !value.text.trim() || value.text.length > 60000 || years(value.experience) === null) return null;
       const profile = value.profile || {};
       return { version: 1, text: value.text, filename: text(value.filename, 240), ocr: value.ocr === true,
-        region: text(value.region, 50), experience: years(value.experience),
+        region: text(value.region, 50), homeRegion: text(value.homeRegion,50), experience: years(value.experience),
         experienceEdited: value.experienceEdited === true,
         updatedAt: Number.isFinite(value.updatedAt) ? value.updatedAt : 0,
         profile: { title: text(profile.title, 300),
           skills: Array.isArray(profile.skills) ? profile.skills.filter(s => typeof s === 'string').slice(0, 100).map(s => text(s, 100)) : [],
           locations: Array.isArray(profile.locations) ? profile.locations.filter(s => typeof s === 'string').slice(0, 20).map(s => text(s, 50)) : [],
+          home_locations: Array.isArray(profile.home_locations) ? profile.home_locations.filter(s=>typeof s==='string').slice(0,20).map(s=>text(s,50)) : [],
           experience_years: years(profile.experience_years) === null || years(profile.experience_years) === '' ? null : Number(profile.experience_years),
           experience_status: text(profile.experience_status, 40) } };
     }

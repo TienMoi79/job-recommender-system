@@ -38,7 +38,17 @@ const copy = {
     scoreNote:'Điểm kết hợp nội dung, kỹ năng, vị trí và kinh nghiệm; không phải xác suất trúng tuyển. Thành phần chưa rõ được bỏ qua và các trọng số còn lại được chuẩn hóa lại.',
     titleScore:'Vị trí', skillScore:'Kỹ năng', domainScore:'Lĩnh vực', descScore:'Nội dung CV', adjust:'Chỉnh sửa CV',
     changed:'Thông tin đã thay đổi. Bấm tìm lại để cập nhật kết quả.', invalidFile:'Vui lòng chọn PDF, Word .docx hoặc ảnh được hỗ trợ, tối đa 15 MB.',
-    emptyCv:'Hãy tải CV hoặc chọn một hồ sơ mẫu trước.', publicData:'500 tin IT · Nguồn công khai · Dùng cho đồ án',
+    emptyCv:'Hãy tải CV hoặc chọn một hồ sơ mẫu trước.', publicData:'tin IT · Nguồn công khai · Dùng cho đồ án',
+    homeRegion:'Bạn hiện đang ở đâu?', homeHint:'Nơi ở khác với nơi muốn làm việc. Chọn lại nếu CV được đọc chưa đúng; dùng để đối chiếu việc gần bạn.',
+    homeUnknown:'Chưa xác định nơi ở', comparisonTitle:'Cân nhắc chuyên môn và khoảng cách',
+    comparisonSub:'Đối chiếu toàn quốc; danh sách bên dưới vẫn theo nơi muốn làm việc bạn đã chọn.',
+    bestFit:'Phù hợp chuyên môn nhất', nearest:'Gần nơi ở nhất trong các việc đạt ngưỡng',
+    distanceNote:'Khoảng cách ước tính đường chim bay giữa các điểm đại diện thành phố; không phải đường đi thực tế hay địa chỉ công ty. Cùng khu vực vẫn có thể cách xa nhau.',
+    sameRegion:'Cùng khu vực nơi ở', approxDistance:'Cách khu vực của bạn khoảng', unknownDistance:'Chưa xác định khoảng cách',
+    setHome:'Cần xác nhận nơi ở để so sánh khoảng cách.', noNear:'Chưa có việc đủ phù hợp và đủ thông tin vị trí để đối chiếu.',
+    cvOnlyScore:'Điểm chuyên môn CV', demandLabel:'Điểm quan tâm ngành', demandHint:'Điểm nhu cầu từ lượt ghép CV ẩn danh trong 30 ngày, không phải đánh giá chất lượng công việc.',
+    demandSample:'trình duyệt tham gia', demandWaiting:'Chưa đủ 5 trình duyệt để tính vào xếp hạng.', demandActive:'Góp tối đa 10% vào điểm gợi ý; nội dung phù hợp vẫn là căn cứ chính.',
+    demandPrivacy:'Khi bấm tìm việc, web ghi nhận nhóm nghề và mã trình duyệt ẩn danh để tính nhu cầu; không đưa nội dung CV vào thống kê.',
     emptyDetail:'Chi tiết sẽ xuất hiện ở đây', close:'Đóng chi tiết', selected:'Đang xem', footer:'Từ kỹ năng đến cơ hội mới.', newFile:'Chọn CV khác',
     lexicalScore:'Từ khóa', semanticScore:'Ý nghĩa nội dung', expScore:'Kinh nghiệm', notUsed:'Chưa sử dụng',
     cvExperience:'Tổng số năm kinh nghiệm', cvExperienceHint:'Kiểm tra số năm đã đọc. Có thể sửa hoặc để trống nếu chưa xác định; không rõ sẽ không bị coi là 0 năm.',
@@ -46,7 +56,7 @@ const copy = {
     matchedCount:'kỹ năng trong tin đã thấy trong CV', expMeets:'Kinh nghiệm đạt mức tối thiểu được ghi trong tin.',
     expBelow:'Kinh nghiệm thấp hơn mức tối thiểu trong tin; hệ thống giảm điểm mềm, không tự loại.',
     expFitUnknown:'Chưa đủ thông tin kinh nghiệm; thành phần này không được tính điểm.',
-    semanticFallback:'Phần hiểu ý nghĩa chưa sẵn sàng. Kết quả hiện dùng từ khóa, kỹ năng, vị trí và kinh nghiệm.',
+    semanticFallback:'Lượt tìm này dùng từ khóa, kỹ năng, vị trí và kinh nghiệm; chưa dùng điểm tương đồng ngữ nghĩa.',
     invalidExperience:'Số năm kinh nghiệm phải từ 0 đến 60, hoặc để trống nếu chưa xác định.',
     forYou:'Phù hợp với bạn', forYouSub:'Ưu tiên CV và nơi bạn muốn làm, kết hợp những công việc bạn quan tâm gần đây.',
     interestTitle:'Có thể bạn quan tâm', interestSub:'Gợi ý từ mối quan tâm gần đây. Thêm CV để đối chiếu với kỹ năng và kinh nghiệm của bạn.',
@@ -100,7 +110,17 @@ const copy = {
     scoreNote:'A combined content, skills, role and experience score, not a hiring probability. Unknown components are omitted and the remaining weights are renormalized.',
     titleScore:'Position', skillScore:'Skills', domainScore:'Field', descScore:'CV content', adjust:'Edit CV',
     changed:'Your information changed. Find matches again to refresh the results.', invalidFile:'Choose a supported PDF, Word .docx or image file, up to 15 MB.',
-    emptyCv:'Upload a CV or choose a sample profile first.', publicData:'500 IT listings · Public data · Academic project',
+    emptyCv:'Upload a CV or choose a sample profile first.', publicData:'IT listings · Public data · Academic project',
+    homeRegion:'Where do you currently live?', homeHint:'Your home area can differ from your preferred work location. Check the extracted area to compare nearby opportunities.',
+    homeUnknown:'Home area not identified', comparisonTitle:'Compare career fit and distance',
+    comparisonSub:'Nationwide comparison; the main list below still follows your preferred work location.',
+    bestFit:'Best professional fit', nearest:'Closest to home among qualifying jobs',
+    distanceNote:'Approximate straight-line distance between representative city points, not travel distance or the company address. Jobs in the same area may still be far apart.',
+    sameRegion:'In your home area', approxDistance:'Approximately this far from your area:', unknownDistance:'Distance not identified',
+    setHome:'Confirm your home area to compare distance.', noNear:'No sufficiently relevant jobs with known locations to compare yet.',
+    cvOnlyScore:'CV content score', demandLabel:'Career interest rating', demandHint:'Demand from anonymous CV matching over 30 days, not an employer or job quality rating.',
+    demandSample:'participating browsers', demandWaiting:'At least 5 browsers are needed before demand affects ranking.', demandActive:'Contributes up to 10% to recommendation scores; content fit remains the main signal.',
+    demandPrivacy:'Finding jobs records the career group and an anonymous browser identifier for demand statistics; CV content is not stored in these statistics.',
     emptyDetail:'Job details will appear here', close:'Close details', selected:'Selected', footer:'From your skills to your next opportunity.', newFile:'Choose another CV',
     lexicalScore:'Keywords', semanticScore:'Meaning', expScore:'Experience', notUsed:'Not used',
     cvExperience:'Total years of experience', cvExperienceHint:'Check the extracted years. Correct them or leave blank if unknown; unknown is not treated as zero.',
@@ -108,7 +128,7 @@ const copy = {
     matchedCount:'skills in the listing found in your CV', expMeets:'Your experience meets the stated minimum.',
     expBelow:'Your experience is below the stated minimum; a soft score reduction applies, without automatic rejection.',
     expFitUnknown:'Not enough experience information; this component is not scored.',
-    semanticFallback:'Meaning-based matching is unavailable. These results use keywords, skills, role and experience.',
+    semanticFallback:'These results use keywords, skills, role and experience; semantic similarity was not used for this search.',
     invalidExperience:'Experience must be between 0 and 60 years, or left blank if unknown.',
     forYou:'Recommended for you', forYouSub:'Your CV and preferred location come first, with recent job interests helping personalize the order.',
     interestTitle:'You might be interested', interestSub:'Based on your recent interests. Add a CV to check your skills and experience against these opportunities.',
@@ -154,13 +174,13 @@ const personalStore = new JobVistaStorage({getItem:key=>localStorage.getItem(key
 const restoredProfile = personalStore.readProfile();
 const state = {lang:'vi',view:'explore',data:null,jobs:[],saved:new Set(Array.isArray(stored)?stored.filter(x=>typeof x==='string'):[]),
   q:'',region:'',domain:'',exp:'',category:'all',page:1,selected:null,detail:null,detailVersion:0,
-  file:null,cvFilename:'',cvText:'',profile:null,ocr:false,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,matches:null,reading:false,matching:false,cvVersion:0,loading:true,error:'',
+  file:null,cvFilename:'',cvText:'',profile:null,ocr:false,cvRegion:'',cvHomeRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,matches:null,comparison:null,reading:false,matching:false,cvVersion:0,loading:true,error:'',
   searchHistory:personalStore.readSearches(),savedProfile:restoredProfile,profileStored:!!restoredProfile,
   storageError:personalStore.failed,homeMatches:null,homeMethod:null,homePreference:null,homeLoading:false,homeError:false,homeVersion:0,homeKey:''};
 function restoreProfile(record) {
   if(!record)return;
   Object.assign(state,{file:null,cvFilename:record.filename,cvText:record.text,profile:record.profile,ocr:record.ocr,
-    cvRegion:record.region,cvExperience:record.experience,cvExperienceEdited:record.experienceEdited});
+    cvRegion:record.region,cvHomeRegion:record.homeRegion||record.profile.home_locations?.[0]||'',cvExperience:record.experience,cvExperienceEdited:record.experienceEdited});
 }
 restoreProfile(restoredProfile);
 const t = key => copy[state.lang][key];
@@ -184,7 +204,7 @@ function hero() {
   const isCv=state.view==='cv';
   return `<section class="hero ${isCv?'cv-hero':''}"><div class="hero-content"><p class="eyebrow"><span class="eyebrow-line"></span>${t('eyebrow')}</p>
     <h1>${t(isCv?'heroCv':'hero')}</h1><p class="hero-intro">${t(isCv?'cvIntro':'intro')}</p>
-    <div class="hero-stats"><span><strong>${state.jobs.length||'500'}</strong>${t('jobs')}</span><i></i><span><strong>${state.data?.companies||'387'}</strong>${t('companies')}</span><i></i><span><strong>${state.data?.regions.length||'10'}</strong>${t('regions')}</span></div></div>
+    <div class="hero-stats"><span><strong>${state.jobs.length||'—'}</strong>${t('jobs')}</span><i></i><span><strong>${state.data?.companies||'—'}</strong>${t('companies')}</span><i></i><span><strong>${state.data?.regions.length||'—'}</strong>${t('regions')}</span></div></div>
     <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><span class="art-spark">✳</span>
       <div class="floating-note">${icon('check')} ${t('skillConnection')}</div>
       <div class="opportunity-card"><div class="mini-card-top"><span class="mini-logo">&lt;/&gt;</span><span class="mini-dots">•••</span></div><p>${t('cardRole')}</p><h3>Backend Developer</h3><span class="mini-company">Python · FastAPI · SQL</span><div class="mini-tags"><b>Python</b><b>SQL</b><b>Docker</b></div><div class="mini-card-bottom"><span>${icon('pin')} ${state.lang==='vi'?'Hà Nội':'Hanoi'}</span><span class="art-check">${icon('check')}</span></div></div>
@@ -196,7 +216,7 @@ function regionOptions(value, all=true, forCv=false) {
 function searchBar() {
   return `<section class="search-area"><form class="search-bar" id="search-form"><label class="keyword-field">${icon('search')}<input id="search" aria-label="${t('keyword')}" placeholder="${t('keyword')}" value="${escape(state.q)}" autocomplete="off" maxlength="200"></label>
     <label class="search-location">${icon('pin')}<select id="search-region" aria-label="${t('location')}">${regionOptions(state.region)}</select></label><button class="primary search-button" type="submit">${t('search')}${icon('arrow')}</button></form>
-    <div class="suggestions"><span>${t('suggested')}</span>${['Python','Data Analyst','React','UI/UX'].map(x=>`<button data-search="${x}">${x}</button>`).join('')}<span class="search-meta">${icon('spark')}${t('publicData')}</span></div></section>`;
+    <div class="suggestions"><span>${t('suggested')}</span>${['Python','Data Analyst','React','UI/UX'].map(x=>`<button data-search="${x}">${x}</button>`).join('')}<span class="search-meta">${icon('spark')}${state.jobs.length} ${t('publicData')}</span></div></section>`;
 }
 function storageNotice() {return state.storageError?`<p class="storage-notice" role="status">${icon('lock')}${t('storageError')}</p>`:'';}
 function personalPanel() {
@@ -215,7 +235,7 @@ function refreshPersonalPanel() {
 }
 function savedMatchPayload(record) {
   return {text:record.text,location:record.region||null,language:state.lang,top_n:24,
-    experience_override:record.experienceEdited,experience_years:record.experience===''?null:Number(record.experience)};
+    home_region:record.homeRegion||null,experience_override:record.experienceEdited,experience_years:record.experience===''?null:Number(record.experience)};
 }
 function homePayload() {
   return {language:state.lang,profile:state.savedProfile?savedMatchPayload(state.savedProfile):null,
@@ -249,7 +269,7 @@ function persistCv() {
   if(!state.profile||!state.cvText.trim()||
     (state.cvExperience!==''&&(!Number.isFinite(Number(state.cvExperience))||Number(state.cvExperience)<0||Number(state.cvExperience)>60)))return false;
   const record=JobVistaStorage.cleanProfile({version:1,text:state.cvText,filename:state.cvFilename,ocr:state.ocr,profile:state.profile,
-    region:state.cvRegion,experience:state.cvExperience,experienceEdited:state.cvExperienceEdited,updatedAt:Date.now()});
+    region:state.cvRegion,homeRegion:state.cvHomeRegion,experience:state.cvExperience,experienceEdited:state.cvExperienceEdited,updatedAt:Date.now()});
   if(!record)return false;
   state.savedProfile=record;state.profileStored=personalStore.writeProfile(record);
   if(!state.profileStored)state.storageError=true;
@@ -304,10 +324,19 @@ function companyLogo(job, small=false) {
   return `<span class="company-logo logo-${hash} ${small?'small':''}" aria-hidden="true">${escape(initials)}</span>`;
 }
 function experience(job) { return job.experience_known?`${t('minExp')} ${job.experience} ${state.lang==='en'&&job.experience===1?'year':t('years')}`:t('expUnknown'); }
+function distanceLabel(job){return job.same_region?t('sameRegion'):job.distance_km!==null&&job.distance_km!==undefined?`${t('approxDistance')} ${job.distance_km} km`:t('unknownDistance');}
+function demandExplanation(job) {
+  if(job.demand_rating===undefined)return '';
+  return `<section class="demand-explanation"><h3>${t('demandLabel')}: ${job.demand_rating.toFixed(2)}/5</h3>${job.personal_score!==undefined?`<p><strong>${t('personalScore')}: ${job.personal_score.toFixed(3)}</strong></p>`:''}<p>${t('demandHint')}</p><small>${job.demand_actors} ${t('demandSample')} · ${t(job.demand_weight>0?'demandActive':'demandWaiting')}</small></section>`;
+}
+function locationComparison() {
+  const comparison=state.comparison;if(!comparison)return '';
+  return `<section class="location-comparison"><div class="personal-heading"><div><p class="section-kicker">${t('comparisonTitle')}</p><h2>${t('comparisonTitle')}</h2><p>${t('comparisonSub')}</p></div></div><div class="comparison-columns">${[['best_fit','bestFit'],['near_home','nearest']].map(([key,label])=>`<div><h3>${icon(key==='best_fit'?'spark':'pin')}${t(label)}</h3><div class="comparison-jobs">${comparison[key].map(job=>`<article class="comparison-card"><button data-compare-job="${job.id}"><strong>${escape(job.title)}</strong><small>${escape(job.company)}</small><span>${escape(job.location)}</span><span class="comparison-distance">${escape(distanceLabel(job))}</span><b>${t('cvOnlyScore')}: ${job.score.toFixed(3)}</b></button></article>`).join('')||`<p class="field-hint">${t(state.cvHomeRegion?'noNear':'setHome')}</p>`}</div></div>`).join('')}</div><p class="field-hint">${t('distanceNote')}</p></section>`;
+}
 function saveButton(job, extra='') {const saved=state.saved.has(job.id); return `<button class="save-button ${saved?'is-saved':''} ${extra}" data-save="${job.id}" aria-label="${t(saved?'unsave':'save')}" aria-pressed="${saved}" title="${t(saved?'unsave':'save')}">${icon('bookmark')}</button>`;}
 function jobCard(job) {
   return `<article class="job-card ${state.selected===job.id?'selected':''}" data-card="${job.id}"><div class="card-main"><button class="job-open" data-job="${job.id}" aria-label="${escape(job.title)}" aria-controls="job-detail" aria-expanded="${state.selected===job.id}">${companyLogo(job)}<span><span class="job-company">${escape(job.company)}</span><h3>${escape(job.title)}</h3></span></button>${saveButton(job)}</div>
-    <div class="job-meta"><span>${icon('pin')}${escape(job.location)}</span><span>${icon('briefcase')}${experience(job)}</span></div>
+    <div class="job-meta"><span>${icon('pin')}${escape(job.location)}</span><span>${icon('briefcase')}${experience(job)}</span></div>${job.home_region?`<p class="job-distance">${icon('pin')}${escape(distanceLabel(job))}</p>`:''}
     <div class="skill-tags">${job.skills.slice(0,4).map(s=>`<span class="${job.matched_skills?.includes(s)?'matched-skill':''}">${escape(s)}</span>`).join('')}${job.skills.length>4?`<span>+${job.skills.length-4}</span>`:''}</div>
     <div class="job-card-bottom"><strong>${escape(job.salary||t('salaryUnknown'))}</strong>${job.personal_score!==undefined||job.score!==undefined?`<span class="match-score" title="${t(job.personal_score!==undefined?'personalScore':'score')}">${icon('spark')}${(job.personal_score??job.score).toFixed(3)}</span>`:`<button class="card-arrow" data-job="${job.id}" aria-controls="job-detail" aria-expanded="${state.selected===job.id}" aria-label="${t('details')}: ${escape(job.title)}">${icon('arrow')}</button>`}</div></article>`;
 }
@@ -357,12 +386,13 @@ function detailPanel() {
   if(!state.selected)return '';
   if(!state.detail||state.detail.job.id!==state.selected)return `${detailTopline()}<div class="detail-loading"><span class="loader"></span></div>`;
   if(state.detail.error)return `${detailTopline()}<div class="empty-state"><p>${t('connection')}</p><button class="secondary" data-retry-job="${state.selected}">${t('retry')}</button></div>`;
-  const job={...state.detail.job,...(['cv','personal'].includes(state.view)?state.matches?.find(j=>j.id===state.selected)||{}:{})};
+  const comparisonJobs=state.comparison?[...state.comparison.best_fit,...state.comparison.near_home]:[];
+  const job={...state.detail.job,...(['cv','personal'].includes(state.view)?state.matches?.find(j=>j.id===state.selected)||comparisonJobs.find(j=>j.id===state.selected)||{}:{})};
   return `${detailTopline(job)}
     <div class="detail-company">${companyLogo(job)}<span>${escape(job.company)}</span></div><h2 class="detail-title">${escape(job.title)}</h2><p class="detail-location">${icon('pin')}${escape(job.location)}</p>
     <div class="detail-facts"><div><small>${state.lang==='vi'?'Mức lương':'Salary'}</small><strong>${escape(job.salary||t('salaryUnknown'))}</strong></div><div><small>${t('experience')}</small><strong>${experience(job)}</strong></div></div>
     <div class="detail-actions"><button class="secondary" data-save="${job.id}">${icon('bookmark')}${t(state.saved.has(job.id)?'unsave':'save')}</button></div>
-    ${job.personalization_mode&&job.personalization_mode!=='cv'?`<div class="interest-explanation">${icon('spark')}<div><strong>${t('personalScore')}: ${job.personal_score.toFixed(3)}</strong><p>${t(job.personalization_mode==='cv+interest'?'combinedWhy':'interestWhy')}</p></div></div>`:''}${explanation(job)}<section class="detail-section"><h3>${t('skills')}</h3><div class="skill-tags">${job.skills.map(s=>`<span>${escape(s)}</span>`).join('')}</div></section>
+    ${job.home_region?`<p class="detail-distance">${icon('pin')}${escape(distanceLabel(job))}</p><p class="field-hint">${t('distanceNote')}</p>`:''}${job.personalization_mode&&job.personalization_mode!=='cv'?`<div class="interest-explanation">${icon('spark')}<div><strong>${t('personalScore')}: ${job.personal_score.toFixed(3)}</strong><p>${t(job.personalization_mode==='cv+interest'?'combinedWhy':'interestWhy')}</p></div></div>`:''}${explanation(job)}${demandExplanation(job)}<section class="detail-section"><h3>${t('skills')}</h3><div class="skill-tags">${job.skills.map(s=>`<span>${escape(s)}</span>`).join('')}</div></section>
     <section class="detail-section"><h3>${t('description')}</h3><p class="description">${escape(job.description)}</p></section>
     ${job.requirements?`<section class="detail-section"><h3>${t('requirements')}</h3><p class="description">${escape(job.requirements)}</p></section>`:''}
     <section class="detail-section similar-section"><h3>${t('similar')}</h3><p class="muted">${t('similarSub')}</p>${state.detail.similar.map(j=>`<button class="similar-job" data-job="${j.id}">${companyLogo(j,true)}<span><strong>${escape(j.title)}</strong><small>${escape(j.location)}</small></span>${icon('chevron')}</button>`).join('')}</section><p class="source-note">${t('sourceNote')}</p>`;
@@ -379,12 +409,13 @@ function cvInput() {
       <button class="primary full-width" id="read-cv" ${!state.file||state.reading?'disabled':''}>${state.reading?'<span class="loader light"></span>':icon('spark')}${t(state.reading?'reading':'read')}</button>`}
     ${state.profile?`<div class="cv-profile"><h3>${t('detected')}<span>${state.profile.skills.length}</span></h3><div class="skill-tags">${state.profile.skills.map(s=>`<span class="matched-skill">${escape(s)}</span>`).join('')||`<p class="muted">${t('noSkills')}</p>`}</div>${state.ocr?`<p class="ocr-note">${t('ocrNote')}</p>`:''}
       <label class="field-label" for="cv-region">${t('preferred')}</label><select id="cv-region">${regionOptions(state.cvRegion,true,true)}</select><p class="field-hint">${t('preferredHint')}</p>
+      <label class="field-label" for="cv-home-region">${t('homeRegion')}</label><select id="cv-home-region"><option value="">${t('homeUnknown')}</option>${state.data.all_regions.filter(r=>r.id!=='remote').map(r=>`<option value="${r.id}" ${state.cvHomeRegion===r.id?'selected':''}>${escape(r.label)}</option>`).join('')}</select><p class="field-hint">${t('homeHint')}</p>
       <label class="field-label" for="cv-experience">${t('cvExperience')}</label><input id="cv-experience" class="experience-input" type="number" min="0" max="60" step="0.5" value="${escape(state.cvExperience)}" placeholder="${t('experienceUnknown')}"><p class="field-hint">${t('cvExperienceHint')}</p>
       <details class="cv-text"><summary>${t('review')}</summary><label for="cv-text" class="sr-only">${t('textLabel')}</label><textarea id="cv-text" maxlength="60000">${escape(state.cvText)}</textarea></details><button id="match-cv" class="primary full-width" ${state.matching?'disabled':''}>${state.matching?'<span class="loader light"></span>':icon('spark')}${t(state.matching?'matching':'find')}${icon('arrow')}</button></div>`:''}
-    ${storageNotice()}<p class="privacy-note">${icon('lock')}<span>${t('privacy')}</span></p>${!state.reading?`<div class="sample-area"><p>${t('sample')}</p><div>${['sampleData','sampleBackend','sampleAI'].map((key,i)=>`<button data-sample="${i}">${t(key)}${icon('arrow')}</button>`).join('')}</div></div>`:''}</section>`;
+    ${storageNotice()}<p class="privacy-note">${icon('lock')}<span>${t('privacy')} ${t('demandPrivacy')}</span></p>${!state.reading?`<div class="sample-area"><p>${t('sample')}</p><div>${['sampleData','sampleBackend','sampleAI'].map((key,i)=>`<button data-sample="${i}">${t(key)}${icon('arrow')}</button>`).join('')}</div></div>`:''}</section>`;
 }
 function cvPage() {
-  if(state.matches)return `${cvSteps()}<div class="cv-results-banner"><span class="success-symbol">${icon('check')}</span><div><h2>${t('matched')}</h2><p>${t('matchedSub')}${state.cvRegion?' · '+escape(state.data.all_regions.find(r=>r.id===state.cvRegion)?.label||''):''}</p></div><button class="secondary" id="edit-cv">${t('adjust')}${icon('arrow')}</button></div>${state.matchMethod?.mode==='hybrid-lexical'?`<p class="algorithm-notice">${t('semanticFallback')}</p>`:''}${workspace()}`;
+  if(state.matches)return `${cvSteps()}<div class="cv-results-banner"><span class="success-symbol">${icon('check')}</span><div><h2>${t('matched')}</h2><p>${t('matchedSub')}${state.cvRegion?' · '+escape(state.data.all_regions.find(r=>r.id===state.cvRegion)?.label||''):''}</p></div><button class="secondary" id="edit-cv">${t('adjust')}${icon('arrow')}</button></div>${locationComparison()}${state.matchMethod?.mode==='hybrid-lexical'?`<p class="algorithm-notice">${t('semanticFallback')}</p>`:''}${workspace()}`;
   return `${cvSteps()}<div class="cv-layout">${cvInput()}<aside class="cv-guide"><span class="guide-illustration">${icon('file')}<b>${icon('spark')}</b></span><p class="section-kicker">JOBVISTA</p><h2>${t('how')}</h2><p>${t('howSub')}</p><ol>${[1,2,3].map(i=>`<li><span>0${i}</span><div><h3>${t('how'+i)}</h3><p>${t('how'+i+'Sub')}</p></div></li>`).join('')}</ol><div class="guide-note">${icon('check')}<span>${t('scoreNote')}</span></div></aside></div>`;
 }
 function render() {
@@ -490,26 +521,26 @@ function chooseFile(file) {
   if(!file)return;
   if(file.size>15*1024*1024||!(/\.(pdf|docx|png|jpe?g|webp|tiff?)$/i.test(file.name))){toast(t('invalidFile'));return;}
   clearTimeout(profileTimer);profileTimer=null;
-  state.cvVersion++;Object.assign(state,{file,cvFilename:file.name,cvText:'',profile:null,ocr:false,matches:null,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,reading:false,matching:false});render();
+  state.cvVersion++;Object.assign(state,{file,cvFilename:file.name,cvText:'',profile:null,ocr:false,matches:null,comparison:null,cvRegion:'',cvHomeRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,reading:false,matching:false});render();
 }
 function clearCv() {
   // Nếu trình duyệt từ chối xóa, không báo thành công hoặc làm như dữ liệu đã mất.
   if(!personalStore.removeProfile()){state.storageError=true;toast(t('deleteFailed'));return;}
   clearTimeout(profileTimer);profileTimer=null;state.cvVersion++;state.homeVersion++;state.detailVersion++;
-  Object.assign(state,{file:null,cvFilename:'',cvText:'',profile:null,ocr:false,matches:null,cvRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,reading:false,matching:false,
+  Object.assign(state,{file:null,cvFilename:'',cvText:'',profile:null,ocr:false,matches:null,comparison:null,cvRegion:'',cvHomeRegion:'',cvExperience:'',cvExperienceEdited:false,matchMethod:null,reading:false,matching:false,
     savedProfile:null,profileStored:false,homeMatches:null,homeMethod:null,homePreference:null,homeLoading:false,homeError:false,homeKey:'',selected:null,detail:null});render();toast(t('profileDeleted'));if(state.view==='explore')refreshHome();
 }
 async function readCv() {
   if(!state.file||state.reading)return;state.reading=true;const version=++state.cvVersion;const file=state.file;render();
   try {const data=await api(`/api/cv/read?language=${state.lang}`,{method:'POST',headers:{'Content-Type':'application/octet-stream','X-CV-Filename':encodeURIComponent(file.name)},body:file});
-    if(version!==state.cvVersion)return;Object.assign(state,{cvText:data.text,profile:data.profile,ocr:data.ocr,cvRegion:data.profile.locations.find(code=>state.data.all_regions.some(r=>r.id===code))||'',cvExperience:data.profile.experience_years??'',cvExperienceEdited:false,reading:false});persistCv();render();if(state.view==='explore')refreshHome();
+    if(version!==state.cvVersion)return;Object.assign(state,{cvText:data.text,profile:data.profile,ocr:data.ocr,cvRegion:data.profile.locations.find(code=>state.data.all_regions.some(r=>r.id===code))||'',cvHomeRegion:data.profile.home_locations?.[0]||'',cvExperience:data.profile.experience_years??'',cvExperienceEdited:false,reading:false});persistCv();render();if(state.view==='explore')refreshHome();
   }catch(error){if(version===state.cvVersion){state.reading=false;render();toast(error.message);}}
 }
 async function useSample(index) {
   clearTimeout(profileTimer);profileTimer=null;
   const version=++state.cvVersion;
   try {const samples=await api('/api/samples');if(version!==state.cvVersion)return;
-    const text=samples[index].CV_Text;Object.assign(state,{file:null,cvFilename:'',cvText:text,ocr:false,profile:{skills:[],locations:[],title:''},matches:null,cvRegion:'',reading:false,matching:false});
+    const text=samples[index].CV_Text;Object.assign(state,{file:null,cvFilename:'',cvText:text,ocr:false,profile:{skills:[],locations:[],home_locations:[],title:''},matches:null,comparison:null,cvRegion:'',cvHomeRegion:'',reading:false,matching:false});
     // Phân tích bằng cùng engine thật; hồ sơ mẫu không có thành phố nên không tự gán vùng.
     const result=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,language:state.lang,top_n:1})});
     if(version!==state.cvVersion)return;state.profile=result.profile;state.cvExperience=result.profile.experience_years??'';state.cvExperienceEdited=false;persistCv();render();if(state.view==='explore')refreshHome();
@@ -519,8 +550,8 @@ async function findMatches() {
   if(!state.cvText.trim()){toast(t('emptyCv'));return;}
   if(state.cvExperience!==''&&(!Number.isFinite(Number(state.cvExperience))||Number(state.cvExperience)<0||Number(state.cvExperience)>60)){toast(t('invalidExperience'));return;}
   state.matching=true;const version=++state.cvVersion;render();
-  try {const data=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:state.cvText,location:state.cvRegion||null,language:state.lang,top_n:24,experience_override:state.cvExperienceEdited,experience_years:state.cvExperience===''?null:Number(state.cvExperience)})});
-    if(version!==state.cvVersion)return;state.detailVersion++;Object.assign(state,{matches:data.jobs,profile:data.profile,matchMethod:data.algorithm,matching:false,page:1,q:'',region:'',domain:'',exp:'',category:'all',selected:null,detail:null});if(!state.cvExperienceEdited)state.cvExperience=data.profile.experience_years??'';
+  try {const data=await api('/api/cv/match',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:state.cvText,location:state.cvRegion||null,home_region:state.cvHomeRegion||null,compare_locations:true,actor_id:anonymousActor(),record_demand:true,language:state.lang,top_n:24,experience_override:state.cvExperienceEdited,experience_years:state.cvExperience===''?null:Number(state.cvExperience)})});
+    if(version!==state.cvVersion)return;state.detailVersion++;Object.assign(state,{matches:data.jobs,comparison:data.comparison,profile:data.profile,matchMethod:data.algorithm,matching:false,page:1,q:'',region:'',domain:'',exp:'',category:'all',selected:null,detail:null});if(!state.cvExperienceEdited)state.cvExperience=data.profile.experience_years??'';
     persistCv();state.homeVersion++;Object.assign(state,{homeMatches:null,homeMethod:null,homeLoading:false,homeError:false,homeKey:''});render();$('#workspace').scrollIntoView({behavior:'smooth',block:'start'});
   }catch(error){if(version===state.cvVersion){state.matching=false;render();toast(error.message);}}
 }
@@ -532,6 +563,8 @@ function bindCv() {
   if($('#clear-cv'))$('#clear-cv').onclick=clearCv;
   if($('#replace-cv'))$('#replace-cv').onclick=()=>{clearTimeout(profileTimer);profileTimer=null;state.cvVersion++;Object.assign(state,{file:null,cvFilename:'',profile:null,cvText:'',reading:false,matching:false,matches:null});render();};
   if($('#cv-region'))$('#cv-region').onchange=e=>{state.cvRegion=e.target.value;invalidateCvInputs();};
+  if($('#cv-home-region'))$('#cv-home-region').onchange=e=>{state.cvHomeRegion=e.target.value;invalidateCvInputs();};
+  document.querySelectorAll('[data-compare-job]').forEach(el=>el.onclick=()=>{toggleJobDetails(el.dataset.compareJob);$('#workspace')?.scrollIntoView({behavior:'smooth',block:'start'});});
   if($('#cv-experience'))$('#cv-experience').oninput=e=>{state.cvExperience=e.target.value;state.cvExperienceEdited=true;invalidateCvInputs();};
   if($('#cv-text'))$('#cv-text').oninput=e=>{state.cvText=e.target.value;invalidateCvInputs();};
   if($('#match-cv'))$('#match-cv').onclick=findMatches;
@@ -541,10 +574,14 @@ function bindCv() {
 function invalidateCvInputs() {
   // Bỏ kết quả đang tính từ CV/vùng cũ; không cho phản hồi chậm ghi đè dữ liệu mới.
   const wasMatching=state.matching;
-  state.cvVersion++;state.matches=null;state.matching=false;
+  state.cvVersion++;state.matches=null;state.comparison=null;state.matching=false;
   state.homeVersion++;state.homeKey='';state.homeMatches=null;state.homeLoading=false;
   clearTimeout(profileTimer);profileTimer=setTimeout(()=>{persistCv();if(state.view==='explore')refreshHome();},500);
   if(wasMatching&&$('#match-cv')){$('#match-cv').disabled=false;$('#match-cv').innerHTML=`${icon('spark')}${t('find')}${icon('arrow')}`;}
+}
+
+function anonymousActor(){
+  try{let id=localStorage.getItem('jobvista-demand-actor');if(!/^[a-f0-9-]{36}$/i.test(id||'')){id=crypto.randomUUID();localStorage.setItem('jobvista-demand-actor',id);}return id;}catch{return null;}
 }
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.selected)closeJobDetails(true);});
 // Lưu nốt sửa đổi chưa hết debounce trước khi đóng/tải lại tab.

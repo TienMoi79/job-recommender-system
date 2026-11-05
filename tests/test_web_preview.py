@@ -2,6 +2,7 @@
 from io import BytesIO
 import importlib.util
 import unittest
+from tempfile import TemporaryDirectory
 from urllib.parse import quote
 from unittest.mock import patch
 
@@ -16,15 +17,21 @@ class WebPreviewTests(unittest.TestCase):
         from web_preview import app, catalog
         cls.settings=patch.dict('os.environ',{'JOBVISTA_SEMANTIC':'0'})
         cls.settings.start();catalog.cache_clear()
+        cls.demand_temp=TemporaryDirectory()
+        from demand_rating import DemandRatingStore
+        cls.rating_patch=patch('web_preview.demand_store',return_value=DemandRatingStore(cls.demand_temp.name+'/test.sqlite3'))
+        cls.rating_patch.start()
+        cls.addClassCleanup(cls.demand_temp.cleanup)
+        cls.addClassCleanup(cls.rating_patch.stop)
         cls.addClassCleanup(cls.settings.stop)
         cls.addClassCleanup(catalog.cache_clear)
         cls.client = TestClient(app)
 
-    def test_bilingual_catalog_has_same_500_records(self):
+    def test_bilingual_catalog_has_same_expanded_records(self):
         vi = self.client.get('/api/catalog').json()
         en = self.client.get('/api/catalog?language=en').json()
-        self.assertEqual(len(vi['jobs']), 500)
-        self.assertEqual(vi['companies'], 387)
+        self.assertEqual(len(vi['jobs']), 7050)
+        self.assertGreater(vi['companies'], 387)
         self.assertEqual(en['companies'], vi['companies'])
         self.assertEqual([j['id'] for j in vi['jobs']], [j['id'] for j in en['jobs']])
         self.assertIn('Hanoi', [r['label'] for r in en['regions']])
@@ -122,6 +129,32 @@ class WebPreviewTests(unittest.TestCase):
         self.assertIn('Django', data['text'])
         confirmed=self.client.post('/api/cv/match',json={'text':data['text'],'experience_override':True,'experience_years':3}).json()
         self.assertEqual(confirmed['profile']['experience_years'],3)
+
+    def test_cv_demand_counts_once_and_comparison_does_not_break_region_filter(self):
+        from demand_rating import DemandRatingStore
+        with TemporaryDirectory() as folder, patch('web_preview.demand_store',return_value=DemandRatingStore(folder+'/isolated.sqlite3')) as factory:
+            payload={'text':'Backend Developer Python\nPython SQL Django FastAPI PostgreSQL Docker\n2 years experience.\nAddress: HCM\nPreferred location: Hanoi',
+                     'location':'ha_noi','home_region':'ho_chi_minh','compare_locations':True,
+                     'actor_id':'11111111-1111-4111-8111-111111111111','record_demand':True,'top_n':5}
+            response=self.client.post('/api/cv/match',json=payload)
+            self.assertEqual(response.status_code,200)
+            result=response.json()
+            self.assertEqual(result['profile']['home_locations'],['ho_chi_minh'])
+            self.assertTrue(all('ha_noi' in job['regions'] for job in result['jobs']))
+            self.assertEqual(result['demand']['total_actors'],1)
+            self.assertTrue(result['comparison']['best_fit'])
+            self.assertTrue(result['comparison']['near_home'])
+            self.assertTrue(result['comparison']['near_home'][0]['same_region'])
+            self.assertGreaterEqual(result['comparison']['best_fit'][0]['score'],result['comparison']['near_home'][0]['score'])
+            self.client.post('/api/cv/match',json={**payload,'compare_locations':False})
+            self.assertEqual(factory.return_value.snapshot()['total_actors'],1)
+            # Trang chủ từ chối ghi nhu cầu ngay cả khi client cố gửi cờ true.
+            self.client.post('/api/recommendations',json={'profile':payload})
+            self.assertEqual(factory.return_value.snapshot()['total_actors'],1)
+            for i in range(4):factory.return_value.record('test-only-'+str(i),['backend'])
+            rated=self.client.post('/api/cv/match',json={**payload,'compare_locations':False}).json()
+            self.assertTrue(all(job['demand_weight']==.1 for job in rated['jobs']))
+            self.assertTrue(all('ha_noi' in job['regions'] for job in rated['jobs']))
 
     def test_invalid_input_and_size_limit(self):
         response = self.client.post('/api/cv/read?language=en', content=b'bad', headers={'X-CV-Filename': 'x.exe'})

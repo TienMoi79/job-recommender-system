@@ -96,13 +96,17 @@ class JobDiversifier:
         self.company = {str(row.Job_ID): company_key(row) for _,row in jobs.iterrows()}
         self.group = {str(job_id):str(job_id) for job_id in jobs.Job_ID}
         records = [row for _,row in jobs.iterrows()]
+        buckets = {}
         for index, left in enumerate(records):
             company = self.company[str(left.Job_ID)]
             if not company:
                 continue
             left_title = self._title(left)
             left_text = self._description(left)
-            for right in records[:index]:
+            # Chỉ so trong cùng công ty/vùng/cấp bậc. Giữ nguyên điều kiện
+            # nhóm trùng cũ nhưng tránh quét O(N²) toàn catalog lớn.
+            key = (company, str(left.get('Region_Codes','')), self._seniority(left_title))
+            for right in buckets.get(key, []):
                 if self.company[str(right.Job_ID)] != company:
                     continue
                 if str(left.get('Region_Codes','')) != str(right.get('Region_Codes','')):
@@ -117,9 +121,13 @@ class JobDiversifier:
                 right_text = self._description(right)
                 if len(left_text) < 30 or len(right_text) < 30:
                     continue
-                if SequenceMatcher(None, left_text, right_text, autojunk=False).ratio() >= .88:
+                matcher = SequenceMatcher(None, left_text, right_text, autojunk=False)
+                # quick_ratio là cận trên: chỉ bỏ cặp chắc chắn không đạt,
+                # không đổi kết quả nhóm trùng so với ratio đầy đủ.
+                if left_text == right_text or (matcher.quick_ratio() >= .88 and matcher.ratio() >= .88):
                     self.group[str(left.Job_ID)] = self.group[str(right.Job_ID)]
                     break
+            buckets.setdefault(key, []).append(left)
 
     @staticmethod
     def _title(row):
@@ -202,9 +210,14 @@ class HybridJobRecommenderSystem(JobRecommenderSystem):
     def _semantic_scores(self, text):
         if not self.use_semantic:
             return np.zeros(len(self._jobs)), False
-        with self._semantic_lock:
+        # Catalog lớn có thể cần vài phút encode lần đầu. Trong lúc luồng làm
+        # nóng đang giữ lock, phục vụ bằng lexical có thông báo thay vì treo CV.
+        if not self._semantic_lock.acquire(blocking=False):
+            return np.zeros(len(self._jobs)), False
+        try:
             if self._semantic is None and self.semantic_status != 'unavailable':
                 try:
+                    self.semantic_status = 'loading'
                     from semantic_index import PublicSemanticIndex
                     self._semantic = PublicSemanticIndex(self._documents, model_name=self.model_name)
                     self.semantic_status = 'ready'
@@ -212,6 +225,8 @@ class HybridJobRecommenderSystem(JobRecommenderSystem):
                     # API trả trạng thái này cho giao diện, không giả vờ có
                     # điểm ngữ nghĩa khi thiếu thư viện/model hoặc tải lỗi.
                     self.semantic_status = 'unavailable'
+        finally:
+            self._semantic_lock.release()
         if self._semantic is None:
             return np.zeros(len(self._jobs)), False
         return self._semantic.similarity(text), True
@@ -297,6 +312,7 @@ class HybridJobRecommenderSystem(JobRecommenderSystem):
         result['Job_Skill_Coverage'] = [job_coverage[i] for i in indices]
         result['Job_Skills_Count'] = [len(self._evidence[i].mentioned) for i in indices]
         result['Ranking_Method'] = 'hybrid' if semantic_available else 'hybrid-lexical'
+        result.attrs['semantic_used'] = semantic_available
         return result
 
     def recommend_similar_jobs(self, job_id, top_n=5, *, location=None):

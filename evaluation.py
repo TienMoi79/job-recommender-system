@@ -51,9 +51,11 @@ class EvaluationQuery:
 def load_benchmark(path: str | Path, catalog: pd.DataFrame):
     source = json.loads(Path(path).read_text(encoding='utf-8'))
     expected = source['catalog_sha256']
-    catalog_path = Path(path).resolve().parents[1]/'jobs_catalog.csv'
+    catalog_path = Path(path).resolve().parent/'jobs_catalog_500.csv'
     if catalog_path.is_file() and sha256(catalog_path.read_bytes()).hexdigest()!=expected:
         raise ValueError('Catalog changed: review qrels before using benchmark')
+    if catalog_path.is_file() and set(catalog.Job_ID)!=set(pd.read_csv(catalog_path,usecols=['Job_ID']).Job_ID):
+        raise ValueError('This benchmark is frozen on 500 jobs; label the expanded catalog before evaluating it')
     queries = [EvaluationQuery(**entry) for entry in source['queries']]
     if len({query.id for query in queries}) != len(queries):
         raise ValueError('Query IDs must be unique')
@@ -119,7 +121,8 @@ def run_evaluation(output: str | Path='outputs/evaluation', *, split='test', sem
     from hybrid_recommender import HybridJobRecommenderSystem, DEFAULT_WEIGHTS
     from semantic_index import MODEL_REVISION
     root=Path(__file__).resolve().parent
-    jobs=pd.read_csv(root/'data/jobs_catalog.csv').fillna('')
+    # Qrels chỉ gán nhãn cho snapshot500, không dùng lại như ground truth cho7050.
+    jobs=pd.read_csv(root/'data/evaluation/jobs_catalog_500.csv').fillna('')
     metadata,queries=load_benchmark(root/'data/evaluation/benchmark.json',jobs)
     destination=Path(output); destination.mkdir(parents=True,exist_ok=True)
     engines=[('A_tfidf',lambda:JobRecommenderSystem(jobs,backend='tfidf'))]

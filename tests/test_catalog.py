@@ -18,8 +18,8 @@ class CatalogTests(unittest.TestCase):
         cls.path = BASE_DIR / "data/jobs_catalog.csv"
         cls.jobs = pd.read_csv(cls.path, encoding="utf-8-sig")
 
-    def test_500_unique_real_records_with_traceable_source(self):
-        self.assertEqual(len(self.jobs), 500)
+    def test_expanded_unique_real_records_with_traceable_source(self):
+        self.assertEqual(len(self.jobs), 7050)
         self.assertTrue(self.jobs.Job_ID.is_unique)
         self.assertTrue(self.jobs.Source_Row_ID.is_unique)
         self.assertTrue(self.jobs.Content_Fingerprint.is_unique)
@@ -36,8 +36,13 @@ class CatalogTests(unittest.TestCase):
         self.assertIn("ho_chi_minh", set(self.jobs.Primary_Region))
         self.assertIn("khanh_hoa", set(self.jobs.Primary_Region))
         manifest = json.loads((BASE_DIR / "data/catalog_manifest.json").read_text(encoding="utf-8"))
-        self.assertEqual(manifest["selected_rows"], 500)
+        self.assertEqual(manifest["selected_rows"], len(self.jobs))
         self.assertEqual(manifest["csv_sha256"], sha256(self.path.read_bytes()).hexdigest())
+
+    def test_first_500_ids_and_source_text_are_preserved(self):
+        frozen=pd.read_csv(BASE_DIR/'data/evaluation/jobs_catalog_500.csv').fillna('')
+        for column in frozen.columns:
+            self.assertEqual(self.jobs.head(500)[column].fillna('').tolist(),frozen[column].tolist(),column)
 
     def test_bilingual_views_share_records_and_regional_matching(self):
         vi, en = localize_jobs(self.jobs, "vi"), localize_jobs(self.jobs, "en")
