@@ -1,5 +1,9 @@
 # Đồ án: Hệ gợi ý việc làm trực tuyến
 
+**Dành cho thành viên viết báo cáo:** đọc [hồ sơ tổng hợp toàn bộ quá trình và
+trạng thái đồ án](docs/TONG_HOP_DO_AN_CHO_BAO_CAO.md), gồm lịch sử yêu cầu,
+chức năng, dữ liệu, thuật toán, kết quả thực nghiệm, cách demo và dàn ý báo cáo.
+
 Mã nguồn cho **Mock Data, AI Engine, đánh giá xếp hạng và giao diện web**,
 kèm Jupyter Notebook để trình bày. Python theo hướng đối tượng, có comment/docstring
 tiếng Việt. Phiên bản 2 bổ sung 5 phần: kết hợp từ khóa/ngữ nghĩa, đối chiếu kinh
