@@ -1,16 +1,25 @@
 # Hồ sơ bàn giao để viết báo cáo đồ án — Hệ gợi ý việc làm trực tuyến (JobVista)
 
-**Ngày tổng hợp:** 10/11/2026; bổ sung nhóm gợi ý kết hợp ngày 11/11/2026.
+**Ngày cập nhật:** 11/11/2026; giữ toàn bộ lịch sử từ ngày bắt đầu đồ án.
 
-**Môn học:** Trí tuệ nhân tạo ứng dụng.  
-**Repository:** [TienMoi79/job-recommender-system](https://github.com/TienMoi79/job-recommender-system).  
-**Phiên bản chức năng được đối chiếu:** commit [`9b51bad`](https://github.com/TienMoi79/job-recommender-system/commit/9b51badefd0cf169819e0315a0e29f4a3b112613), ngày 05/11/2026.  
-Phần bổ sung 11/11/2026 được mô tả ở mục 12 và [tài liệu gợi ý kết hợp](BALANCED_RECOMMENDATIONS.md).
+**Môn học:** Trí tuệ nhân tạo ứng dụng.
+
+**Repository:** [TienMoi79/job-recommender-system](https://github.com/TienMoi79/job-recommender-system).
+
+**Phiên bản chức năng được đối chiếu:** commit [`7206ab7`](https://github.com/TienMoi79/job-recommender-system/commit/7206ab73c2208ca79b94661947fe0e7654c9a436), ngày 11/11/2026. Bao gồm nhóm gợi ý kết hợp ở commit [`329c59e`](https://github.com/TienMoi79/job-recommender-system/commit/329c59ed9168eb0afac84a9c98d84c808f1a3304).
+
 **Mục đích:** giúp thành viên chưa tham gia phát triển hiểu toàn bộ quá trình, đọc mã nguồn, chạy demo và viết báo cáo đúng với sản phẩm đã làm.
+
+**Những điểm mới cần đưa vào báo cáo lần này:**
+
+- Nhóm **Cân bằng chuyên môn và khoảng cách** lên đầu, dùng điểm thử nghiệm 70% CV + 30% độ gần; hai nhóm chuyên môn/gần nơi ở nằm bên dưới để đối chiếu.
+- Danh sách kết quả chính phía dưới đổi tên thành **Việc làm phù hợp với CV tại khu vực bạn chọn**; chọn tất cả địa điểm thì ghi **Việc làm phù hợp với CV trên tất cả khu vực**. Có bản tiếng Anh tương ứng.
+- Ba nhóm đối chiếu toàn quốc và danh sách chính theo vùng có phạm vi/cách xếp hạng khác nhau; không gọi mọi điểm hiển thị là điểm cân bằng.
+- Đã chạy toàn bộ 91 test Python, 24 test JavaScript và notebook Lab 3; đã kiểm tra giao diện Việt/Anh và màn hình điện thoại. Giữ nguyên giới hạn đánh giá pilot trên 500 tin.
 
 Tài liệu này tổng hợp yêu cầu trong cuộc trao đổi, lịch sử Git và mã nguồn hiện có; không phải bản chép nguyên văn hội thoại hay bản báo cáo theo mẫu của trường. Thông tin sinh viên, nhóm, giảng viên, lớp, mẫu bìa và biểu mẫu đánh giá cần do nhóm điền theo thực tế. Không tự điền tên thành viên hay tỷ lệ đóng góp chưa được xác nhận.
 
-Các đường dẫn tệp bên dưới tính từ thư mục gốc repository; liên kết tương đối hoạt động khi đọc tài liệu trong repo. Đây là tài liệu mô tả và bàn giao, không yêu cầu người đọc chạy mọi script sửa dữ liệu.
+Các tên tệp trong nội dung tính từ thư mục gốc repository. Liên kết đến mã nguồn/tài liệu được trỏ tới phiên bản GitHub đã đối chiếu để có thể gửi riêng file Markdown cho người khác; ảnh minh chứng được lưu cùng repo và hiển thị khi có Internet. Đây là tài liệu mô tả và bàn giao, không yêu cầu người đọc chạy mọi script sửa dữ liệu.
 
 ## Mục lục
 
@@ -46,7 +55,7 @@ JobVista là hệ thống thử nghiệm hỗ trợ tìm việc trong lĩnh vự
 
 Ví dụ, ứng viên có Python, SQL, Power BI và muốn làm Data Analyst tại Hà Nội sẽ nhận các việc có chuyên môn liên quan, trong vùng đã xác nhận. Hệ thống giải thích kỹ năng nào đã thấy/chưa thấy trong CV và xem xét kinh nghiệm. Sau đó, ứng viên có thể so sánh việc phù hợp chuyên môn nhất với việc gần khu vực đang ở nhất.
 
-Phiên bản hiện tại có **7.050 công việc từ nguồn dữ liệu công khai**, không phải 7.050 dòng việc làm tự bịa. Có giao diện web Việt/Anh, đọc CV Word/PDF/ảnh, lưu hồ sơ cục bộ, ghi nhớ mối quan tâm tìm kiếm và bổ sung rating nhu cầu nghề. Hai notebook phục vụ trình bày thuật toán theo yêu cầu giảng viên.
+Phiên bản hiện tại có **7.050 công việc từ nguồn dữ liệu công khai**, không phải 7.050 dòng việc làm tự bịa. Có giao diện web Việt/Anh, đọc CV Word/PDF/ảnh, lưu hồ sơ cục bộ, ghi nhớ mối quan tâm tìm kiếm và bổ sung rating nhu cầu nghề. Sau khi ghép CV, nhóm gợi ý kết hợp chuyên môn–khoảng cách được ưu tiên hiển thị trước các nhóm đối chiếu riêng; danh sách chính bên dưới vẫn theo vùng muốn làm việc. Hai notebook phục vụ trình bày thuật toán theo yêu cầu giảng viên.
 
 Đây là **hệ gợi ý dựa trên nội dung kết hợp một số tín hiệu hành vi và quy tắc xếp hạng**. Hệ thống chưa phải nền tảng tuyển dụng vận hành thực tế: chưa có tài khoản, nhà tuyển dụng, nộp đơn hay xác minh tin còn tuyển.
 
@@ -88,7 +97,8 @@ Các ngày bên dưới dựa vào lịch sử commit, giúp người viết ph�
 | 05/11/2026 | Góp ý thầy: tăng dữ liệu, vận dụng pandas/rating Lab 3, xử lý việc xa nhà | `8d07e61`: 7.050 tin, rating nhu cầu và bảng so sánh chuyên môn/khoảng cách |
 | 05/11/2026 | Phát hiện mô tả dồn đoạn, lương nghìn và số trần “105” | `9b51bad`: rà 7.050 tin, phục hồi bố cục và chuẩn hóa lương có bằng chứng |
 | 10/11/2026 | Kiểm tra GitHub, đối chiếu chức năng với nền tảng tuyển dụng và tổng hợp bàn giao | Nhánh `main` đã có bản chức năng `9b51bad`; tài liệu này ghi lại trạng thái để viết báo cáo |
-| 11/11/2026 | Thầy yêu cầu kết hợp chuyên môn và khoảng cách, đưa nhóm kết hợp lên đầu | Backup 11 tệp trước sửa; bổ sung điểm 70% CV + 30% độ gần, giữ hai nhóm cũ phía dưới; không bịa điểm khi thiếu nơi ở |
+| 11/11/2026 | Thầy yêu cầu kết hợp chuyên môn và khoảng cách, đưa nhóm kết hợp lên đầu | `329c59e`: backup 11 tệp trước sửa; bổ sung điểm 70% CV + 30% độ gần, giữ hai nhóm cũ phía dưới; không bịa điểm khi thiếu nơi ở |
+| 11/11/2026 | Làm rõ vai trò danh sách dưới ba nhóm gợi ý | `7206ab7`: đổi tiêu đề danh sách CV theo vùng đã chọn/tất cả khu vực, mô tả số kết quả và bản tiếng Anh; không thay thuật toán |
 
 Trong quá trình làm cũng có yêu cầu dọn các thư mục lab lưu nhầm khỏi Project. Phạm vi dữ liệu ứng dụng không dùng bài lab phim/sách; Lab 3 chỉ được tham khảo cách xử lý pandas và công thức rating. Không ghi tên ba thư mục đã dọn nếu không có chứng cứ để xác nhận.
 
@@ -109,9 +119,23 @@ Trong quá trình làm cũng có yêu cầu dọn các thư mục lab lưu nhầ
 2. Đọc/trích xuất văn bản; dùng OCR nếu là ảnh hoặc PDF scan.
 3. Kiểm tra và sửa nội dung, nơi muốn làm việc, nơi ở và số năm kinh nghiệm.
 4. Bấm tìm công việc phù hợp.
-5. Xem xếp hạng, giải thích từng thành phần, kỹ năng trùng/chưa thấy và hai nhóm so sánh địa điểm.
+5. Xem nhóm kết hợp trước, rồi hai nhóm đối chiếu chuyên môn/gần nơi ở và danh sách kết quả chính theo vùng đã chọn.
+6. Chọn một công việc để xem chi tiết, sáu thành phần điểm chuyên môn, kỹ năng đã thấy/chưa thấy trong CV và lý do phù hợp.
 
 Kinh nghiệm là tín hiệu giảm điểm mềm, không tự loại tất cả ứng viên thiếu năm. Vùng muốn làm là ràng buộc cho danh sách chính; không có việc thì báo rỗng thay vì đưa tin ở tỉnh khác vào cho đủ số lượng.
+
+**Cách đọc kết quả hiện tại, từ trên xuống:**
+
+| Phần hiển thị | Phạm vi | Cách xếp hạng/vai trò |
+|---|---|---|
+| Cân bằng chuyên môn và khoảng cách | Toàn quốc, trong các việc đạt ngưỡng CV và có khoảng cách xác định | `B = 0,70×điểm CV + 0,30×điểm gần`; tối đa 3 gợi ý |
+| Phù hợp chuyên môn nhất | Pool việc đạt ngưỡng trên toàn quốc | Ưu tiên điểm CV; không giảm điểm chuyên môn chỉ vì xa |
+| Gần nơi ở nhất trong các việc đạt ngưỡng | Pool việc đạt ngưỡng có khoảng cách xác định trên toàn quốc | Ưu tiên khoảng cách, sau đó điểm CV khi cùng khoảng cách |
+| Việc làm phù hợp với CV tại khu vực bạn chọn | Vùng muốn làm việc đã xác nhận; hoặc mọi vùng nếu chọn tất cả | Danh sách chính, điểm CV và rating nhu cầu khi đủ mẫu; chưa áp dụng công thức cân bằng 70/30 |
+
+Ví dụ CV ở Cần Thơ nhưng chọn muốn làm TP.HCM: phần đối chiếu phía trên vẫn có thể đưa ra công việc tại Cần Thơ hoặc Hà Nội để người dùng cân nhắc; danh sách chính phía dưới chỉ lấy việc tại vùng TP.HCM. Số 24 trong ảnh demo là số gợi ý đã trả về ở lượt đó (web yêu cầu tối đa 24), không phải khẳng định chỉ có đúng 24 tin liên quan trong toàn bộ catalog. Thẻ danh sách hiển thị điểm chuyên môn CV; điểm nhu cầu là tầng sắp xếp riêng khi đủ mẫu.
+
+Tiêu đề bản Anh là **Jobs matching your CV in your selected area** hoặc **Jobs matching your CV across all areas**. Dòng đếm kết quả cũng nói rõ gợi ý từ CV và phạm vi vùng, thay vì chỉ ghi “phù hợp bộ lọc”. Đổi tên này chỉ áp dụng cho danh sách CV; trang khám phá chung vẫn dùng tên riêng của trang đó.
 
 ### 4.3. Hồ sơ, việc đã lưu và trang chủ cá nhân
 
@@ -174,7 +198,7 @@ Frontend và API được phục vụ từ một tiến trình Python ở cổng
 | Benchmark pilot đóng băng | 500 việc + 30 CV văn bản giả lập | Đánh giá A/B/C; 10 CV dev và 20 CV test |
 | Bộ tệp CV thử upload | 10 hồ sơ × 3 định dạng = 30 tệp | Kiểm tra đọc Word/PDF/ảnh; không phải 30 ứng viên độc lập |
 
-Tệp chính là [`data/jobs_catalog.csv`](../data/jobs_catalog.csv). File có **7.050 dòng dữ liệu và 42 cột** ở phiên bản được đối chiếu; một dòng logic CSV có thể chứa nhiều dòng văn bản trong dấu nháy. Không dùng số dòng vật lý của tệp để kết luận số việc làm.
+Tệp chính là [`data/jobs_catalog.csv`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/data/jobs_catalog.csv). File có **7.050 dòng dữ liệu và 42 cột** ở phiên bản được đối chiếu; một dòng logic CSV có thể chứa nhiều dòng văn bản trong dấu nháy. Không dùng số dòng vật lý của tệp để kết luận số việc làm.
 
 Tên `data/jobs_vie.cvs` thuộc lịch sử mẫu 20 tin theo yêu cầu ban đầu. Trên máy làm việc hiện còn thay đổi cục bộ liên quan tên `jobs_vie.csv`/`jobs_vie.cvs`, tách khỏi bản nâng cấp web đã push. Không dùng tệp mẫu này để mô tả quy mô catalog đang chạy và không tự khôi phục/xóa thay đổi cục bộ của người dùng.
 
@@ -188,7 +212,7 @@ Tên `data/jobs_vie.cvs` thuộc lịch sử mẫu 20 tin theo yêu cầu ban đ
 - Nguồn còn dữ liệu nên chưa cần ghép thêm dataset khác. Chỉ giữ tập con đạt quy tắc cho bài toán IT; không đưa toàn bộ 606.878 bản ghi lên giao diện.
 - Đây là snapshot lịch sử; **chưa xác minh các tin còn tuyển**. Link `Source_URL` dẫn tới bản ghi dataset, không phải cam kết có trang ứng tuyển hoạt động.
 
-Thống kê/nguồn/checksum: [`data/catalog_manifest.json`](../data/catalog_manifest.json). Giải thích đầy đủ: [`data/DATA_SOURCE.md`](../data/DATA_SOURCE.md).
+Thống kê/nguồn/checksum: [`data/catalog_manifest.json`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/data/catalog_manifest.json). Giải thích đầy đủ: [`data/DATA_SOURCE.md`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/data/DATA_SOURCE.md).
 
 ### 6.3. Cấu trúc các trường
 
@@ -209,7 +233,7 @@ Các trường kỹ năng/nhóm nghề/vùng có phần được suy ra bằng t
 
 ## 7. Làm sạch dữ liệu và vận dụng pandas Lab 3
 
-Pipeline chính ở [`expand_job_catalog.py`](../expand_job_catalog.py):
+Pipeline chính ở [`expand_job_catalog.py`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/expand_job_catalog.py):
 
 1. Đọc Parquet theo batch **4.096 dòng**, không nạp đồng thời toàn bộ nguồn dài vào RAM.
 2. Dùng pandas điền thiếu, chuẩn hóa chuỗi và mặt nạ `str.contains` để tiền lọc tin IT.
@@ -227,7 +251,7 @@ Phần vận dụng Lab 3 không dừng ở mở CSV: xử lý nguồn theo batc
 
 ### 8.1. Đọc tài liệu
 
-Lớp [`ResumeDocumentReader`](../cv_documents.py) nhận byte của tệp và trả văn bản cùng thông tin cách đọc:
+Lớp [`ResumeDocumentReader`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/cv_documents.py) nhận byte của tệp và trả văn bản cùng thông tin cách đọc:
 
 | Định dạng | Cách xử lý |
 |---|---|
@@ -242,7 +266,7 @@ OCR chỉ nhận chữ, không phải phần tự đánh giá độ phù hợp. 
 
 ### 8.2. Phân tích hồ sơ
 
-[`ResumeAnalyzer`](../resume_profile.py) và các module kinh nghiệm/địa điểm nhận diện:
+[`ResumeAnalyzer`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/resume_profile.py) và các module kinh nghiệm/địa điểm nhận diện:
 
 - Vị trí muốn ứng tuyển, nhóm nghề và lĩnh vực liên quan.
 - Kỹ năng qua alias Việt/Anh và ranh giới từ, tránh Java bị trộn với JavaScript, C++ bị trộn C#.
@@ -270,7 +294,7 @@ Cosine đo góc giữa vector. Điểm dùng để xếp hạng, không phải x
 
 ### 9.2. Hai hàm của hệ nền tảng
 
-[`JobRecommenderSystem`](../job_recommender.py):
+[`JobRecommenderSystem`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/job_recommender.py):
 
 ```python
 recommend_similar_jobs(job_id, top_n=5)
@@ -296,7 +320,7 @@ Sau khi người dùng yêu cầu backup rồi triển khai, năm nhóm cải ti
 4. Giảm gần trùng và điều chỉnh đa dạng công ty có điều kiện.
 5. Đánh giá có thể tái lập qua A/B/C và metrics xếp hạng.
 
-[`HybridJobRecommenderSystem`](../hybrid_recommender.py) dùng sáu thành phần:
+[`HybridJobRecommenderSystem`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/hybrid_recommender.py) dùng sáu thành phần:
 
 | Thành phần | Trọng số gốc | Cách hiểu |
 |---|---:|---|
@@ -346,7 +370,7 @@ Với gợi ý việc tương tự của hybrid: có semantic dùng `0,5×Lexica
 
 ### 9.6. Cache và hiệu năng
 
-[`PublicSemanticIndex`](../semantic_index.py) cache **embedding tin công khai**, dùng SHA-256 từ văn bản, model, revision và schema. Không cache văn bản/embedding truy vấn CV. Có warm-up nền; lượt tìm khi index chưa sẵn sàng dùng nhánh lexical có thông báo, lượt sau mới dùng semantic khi sẵn sàng.
+[`PublicSemanticIndex`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/semantic_index.py) cache **embedding tin công khai**, dùng SHA-256 từ văn bản, model, revision và schema. Không cache văn bản/embedding truy vấn CV. Có warm-up nền; lượt tìm khi index chưa sẵn sàng dùng nhánh lexical có thông báo, lượt sau mới dùng semantic khi sẵn sàng.
 
 Người dùng đổi Việt/Anh không làm mất dữ liệu gốc: các trường `Original_*` phục vụ so khớp và nhóm công ty; trường hiển thị được chọn theo ngôn ngữ. Cải tiến phân nhóm gần trùng giúp tránh so sánh vô ích toàn bộ cặp tin khi catalog lớn hơn.
 
@@ -360,7 +384,7 @@ Chức năng này được sửa theo đúng ý người dùng: **web tự ghi n
 - Tìm lặp dưới 30 giây không tăng số lượt; ảnh hưởng số lần lặp bị giới hạn.
 - Độ quan tâm giảm một nửa sau 14 ngày, để sở thích cũ dần ít ảnh hưởng.
 
-Trong [`SearchInterestRecommender`](../interest_recommender.py):
+Trong [`SearchInterestRecommender`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/interest_recommender.py):
 
 ```text
 Trọng_số_sự_kiện = 2^(-tuổi_sự_kiện/14 ngày) × (1 + ln(số_lượt_đã_giới_hạn_tối_đa_5))
@@ -384,7 +408,7 @@ Mã trình duyệt là actor giả danh, **không phải danh tính người đ�
 
 ### 11.2. Công thức Lab 3 được vận dụng
 
-[`DemandRatingStore`](../demand_rating.py) dùng pandas `to_numeric → sort_values → drop_duplicates → explode → groupby → merge`.
+[`DemandRatingStore`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/demand_rating.py) dùng pandas `to_numeric → sort_values → drop_duplicates → explode → groupby → merge`.
 
 ```text
 N = số actor hợp lệ
@@ -428,9 +452,21 @@ riêng ở bên dưới. Với khoảng cách vùng d (km), `P = 1/(1+d/50)` và
 có khoảng cách xác định. Không sửa điểm CV, không cộng rating nhu cầu vào
 phép cân bằng này. 70/30 và 50 km là cấu hình thử nghiệm, chưa có đánh giá
 chứng minh tăng độ chính xác. Thiếu nơi ở hoặc tọa độ thì không tạo điểm kết hợp.
-Chi tiết: [BALANCED_RECOMMENDATIONS.md](BALANCED_RECOMMENDATIONS.md).
+Chi tiết: [BALANCED_RECOMMENDATIONS.md](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/docs/BALANCED_RECOMMENDATIONS.md).
 
-[`job_proximity.py`](../job_proximity.py) dùng Haversine với bán kính Trái Đất 6.371,0088 km để tính đường chim bay giữa **điểm đại diện vùng/thành phố**. File [`data/region_coordinates.json`](../data/region_coordinates.json) có 25 điểm đại diện, lấy từ [GeoNames cities15000](https://download.geonames.org/export/dump/cities15000.zip), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+Ví dụ tính tay (khoảng cách giả định để minh họa, không phải một lần đo chất lượng):
+
+| Việc | Điểm CV | Khoảng cách vùng | Điểm gần P | Điểm cân bằng B |
+|---|---:|---:|---:|---:|
+| A — chuyên môn cao, xa | 0,90 | 1.200 km | 0,040 | 0,642 |
+| B — chuyên môn khá, cùng vùng | 0,70 | 0 km tại điểm đại diện | 1,000 | 0,790 |
+| C — chuyên môn tốt, gần hơn A | 0,85 | 50 km | 0,500 | 0,745 |
+
+Nhóm kết hợp xếp B, C, A; nhóm chuyên môn riêng vẫn xếp A trước. Nếu B chỉ có điểm CV 0,20 thì điểm cân bằng là 0,44, thấp hơn A: **gần không có nghĩa luôn thắng**. 50 km là tham số làm giảm điểm gần, không phải bán kính loại tin. Điểm cân bằng là một chính sách xếp hạng thử nghiệm, không phải rating nhu cầu, điểm chuyên môn gốc hay xác suất trúng tuyển.
+
+Chưa xác nhận nơi ở thì không tạo gợi ý cân bằng/gần nơi ở; nhóm chuyên môn vẫn có thể có kết quả. Tin chỉ remote hoặc thiếu vùng có tọa độ không bị gán 0 km. Tin nhiều vùng dùng vùng đã biết gần nhất. Không kéo việc trái nghề hoặc không đạt ngưỡng vào chỉ vì gần nhà.
+
+[`job_proximity.py`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/job_proximity.py) dùng Haversine với bán kính Trái Đất 6.371,0088 km để tính đường chim bay giữa **điểm đại diện vùng/thành phố**. File [`data/region_coordinates.json`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/data/region_coordinates.json) có 25 điểm đại diện, lấy từ [GeoNames cities15000](https://download.geonames.org/export/dump/cities15000.zip), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 Đây không phải GPS, lộ trình đường bộ hay thời gian đi làm; không có địa chỉ nhà/công ty chính xác. Cùng vùng hiển thị “Cùng khu vực nơi ở”, không diễn giải là đi làm 0 km. Điểm CV không bị sửa để việc gần trông có vẻ giỏi chuyên môn hơn.
 
@@ -440,13 +476,13 @@ Chi tiết: [BALANCED_RECOMMENDATIONS.md](BALANCED_RECOMMENDATIONS.md).
 
 Trường hợp người dùng phát hiện: Fullstack Java Developer `VN0002` hiển thị chưa rõ nhưng yêu cầu ghi ít nhất 2 năm. Nguyên nhân: chỉ dùng metadata nguồn chưa đủ.
 
-Sửa bằng [`job_experience.py`](../job_experience.py): ưu tiên metadata rõ; nếu thiếu đọc phần yêu cầu, sau đó phần yêu cầu trong JD gộp; lưu nơi suy ra và đoạn bằng chứng. Không lấy tuổi, năm học, phụ cấp hoặc điều kiện chỉ “ưu tiên” làm yêu cầu tối thiểu.
+Sửa bằng [`job_experience.py`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/job_experience.py): ưu tiên metadata rõ; nếu thiếu đọc phần yêu cầu, sau đó phần yêu cầu trong JD gộp; lưu nơi suy ra và đoạn bằng chứng. Không lấy tuổi, năm học, phụ cấp hoặc điều kiện chỉ “ưu tiên” làm yêu cầu tối thiểu.
 
 Bản 500 đã phục hồi 67 tin và còn 67 tin chưa rõ; **catalog 7.050 hiện có 556 tin chưa rõ kinh nghiệm**. Đây là hai mẫu số khác nhau. Nhật ký cũ: `outputs/data_quality/experience_repairs.csv`.
 
 ### 13.2. Mô tả dồn thành một đoạn
 
-Không chỉ CSS: nhiều mô tả nguồn đã mất newline. [`job_presentation.py`](../job_presentation.py) và [`repair_job_presentation.py`](../repair_job_presentation.py) khôi phục bằng quy tắc: giữ cấu trúc HTML/newline nếu có, tách tiêu đề, bullet, danh sách số, câu dính liền và cụm nhiệm vụ rõ trong dòng quá dài. Bảo vệ URL, Node.js và khoảng số để tránh tách bừa.
+Không chỉ CSS: nhiều mô tả nguồn đã mất newline. [`job_presentation.py`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/job_presentation.py) và [`repair_job_presentation.py`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/repair_job_presentation.py) khôi phục bằng quy tắc: giữ cấu trúc HTML/newline nếu có, tách tiêu đề, bullet, danh sách số, câu dính liền và cụm nhiệm vụ rõ trong dòng quá dài. Bảo vệ URL, Node.js và khoảng số để tránh tách bừa.
 
 Lưu bản dễ đọc vào `Job_Description_Display`, `Requirements_Display`; giữ nguyên văn bản NLP để kết quả gợi ý không đổi chỉ vì trình bày. Frontend hiển thị paragraph, heading, ul/ol; escape nội dung để không chạy HTML/script từ nguồn. Không tuyên bố khôi phục đúng 100% bố cục gốc đã mất.
 
@@ -466,7 +502,7 @@ Rà đủ 7.050 tin: 6.855 mô tả và 5.991 phần yêu cầu có nhiều dòn
 
 Lưu `Salary_Original` để đối chiếu; `Salary_Min/Max` dùng **triệu VND** hoặc **USD** theo `Salary_Currency`, không so số giữa tiền tệ/kỳ khác nhau. Giữ dấu dưới/trên/từ/tối đa; không tự thêm “/tháng” khi nguồn không nói.
 
-6.672 nhãn lương khác chuỗi nguồn sau chuẩn hóa không đồng nghĩa 6.672 tin sai lương; phần lớn là thống nhất cách hiển thị. Chi tiết từng tin: [`outputs/data_quality/presentation_audit.csv`](../outputs/data_quality/presentation_audit.csv); thống kê: [`presentation_summary.json`](../outputs/data_quality/presentation_summary.json).
+6.672 nhãn lương khác chuỗi nguồn sau chuẩn hóa không đồng nghĩa 6.672 tin sai lương; phần lớn là thống nhất cách hiển thị. Chi tiết từng tin: [`outputs/data_quality/presentation_audit.csv`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/outputs/data_quality/presentation_audit.csv); thống kê: [`presentation_summary.json`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/outputs/data_quality/presentation_summary.json).
 
 Catalog có checksum và `.gitattributes` để Git không đổi byte xuống dòng khi clone Windows/Linux. Snapshot benchmark cũ giữ nguyên nội dung để tránh làm sai đối chiếu đánh giá.
 
@@ -474,7 +510,7 @@ Catalog có checksum và `.gitattributes` để Git không đổi byte xuống d
 
 ### 14.1. Thiết kế pilot
 
-- Catalog **500 tin được đóng băng**, không phải 7.050: [`data/evaluation/jobs_catalog_500.csv`](../data/evaluation/jobs_catalog_500.csv).
+- Catalog **500 tin được đóng băng**, không phải 7.050: [`data/evaluation/jobs_catalog_500.csv`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/data/evaluation/jobs_catalog_500.csv).
 - 30 CV văn bản giả lập: 10 dev, 20 test. Tập test có 19 truy vấn có nhãn dương, một truy vấn không có việc tại Quảng Ninh.
 - Nhãn pilot do trợ lý biên soạn trước so sánh: grade 2 phù hợp cao, grade 1 liên quan cần kiểm tra; chưa có chuyên gia độc lập xác nhận.
 - Tin chưa gán nhãn tính 0 nên có thể đánh giá thấp những gợi ý hợp lý. Không lấy điểm mô hình tự tạo thành nhãn chuẩn của chính nó.
@@ -514,7 +550,7 @@ Các macro Precision/Recall/NDCG/MRR lấy trên 19 truy vấn dương; truy v�
 | Bản gần trùng dư trung bình | 0,10 | 0,10 | 0,00 |
 | Độ trễ trung vị, ms | 35,62 | 258,63 | 288,77 |
 
-Nguồn số liệu: [`outputs/evaluation/test/summary.csv`](../outputs/evaluation/test/summary.csv), `per_query.csv`, `predictions.json`, `run_metadata.json`; diễn giải ở [`docs/EVALUATION_REPORT.md`](EVALUATION_REPORT.md).
+Nguồn số liệu: [`outputs/evaluation/test/summary.csv`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/outputs/evaluation/test/summary.csv), `per_query.csv`, `predictions.json`, `run_metadata.json`; diễn giải ở [`docs/EVALUATION_REPORT.md`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/docs/EVALUATION_REPORT.md).
 
 **Kết luận đúng:** TF-IDF cao nhất về P@5 và NDCG@5 trên pilot này; hybrid có giải thích và giảm gần trùng nhưng chưa chứng minh cải thiện chất lượng xếp hạng. Hybrid trả ít tin hơn, nên số công ty tuyệt đối giảm; không được kết luận đã tăng độ đa dạng công ty chỉ từ bảng này. Nhãn dương cho các bản gần trùng có thể làm baseline được lợi.
 
@@ -537,7 +573,7 @@ Số test phần mềm đạt không phải độ chính xác AI. Test nhẹ có
 
 ### 15.2. Mười CV giả lập để demo
 
-[`data/sample_cvs/`](../data/sample_cvs/README.md) có Word, PDF có chữ và PNG cho từng hồ sơ; gói tải chung: [`outputs/10_cv_mau_jobvista.zip`](../outputs/10_cv_mau_jobvista.zip).
+[`data/sample_cvs/`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/data/sample_cvs/README.md) có Word, PDF có chữ và PNG cho từng hồ sơ; gói tải chung: [`outputs/10_cv_mau_jobvista.zip`](https://github.com/TienMoi79/job-recommender-system/blob/7206ab73c2208ca79b94661947fe0e7654c9a436/outputs/10_cv_mau_jobvista.zip).
 
 | CV | Nghề/nguyện vọng | Điểm cần kiểm tra |
 |---|---|---|
@@ -571,12 +607,12 @@ Mỗi mã chỉ là một hồ sơ ở ba định dạng. Bộ này dùng kiểm
 | `build_job_catalog.py`, `expand_job_catalog.py` | Pipeline catalog 500 lịch sử / mở rộng 7.050 |
 | `job_presentation.py`, `repair_job_presentation.py` | Tách mô tả và chuẩn hóa lương có provenance |
 | `interest_recommender.py` | Cá nhân hóa theo lịch sử tìm kiếm |
-| `demand_rating.py`, `job_proximity.py` | Rating Lab 3 và Haversine/so sánh vùng |
+| `demand_rating.py`, `job_proximity.py` | Rating Lab 3; Haversine; `BALANCE_POLICY`, ba nhóm `balanced`, `best_fit`, `near_home` |
 | `web_preview.py`, `ui_text.py` | FastAPI, service và thông báo song ngữ |
 | `web_ui/` | HTML/CSS/JavaScript, state, tương tác và localStorage |
 | `evaluation.py`, `build_evaluation_benchmark.py` | Chạy metrics và công cụ biên soạn benchmark |
 | `job_recommender_notebook.ipynb` | Notebook nền tảng, demo và phần hybrid |
-| `lab3_jobvista.ipynb` | Notebook pandas, rating và địa điểm |
+| `lab3_jobvista.ipynb` | Notebook pandas, rating, địa điểm và ba nhóm gợi ý, có điểm cân bằng/điểm gần/điểm CV riêng |
 | `tests/` | Kiểm thử Python và `test_personalization.cjs` |
 | `docs/`, `data/DATA_SOURCE.md` | Thiết kế, kết quả và mô tả nguồn |
 | `outputs/evaluation/`, `outputs/data_quality/` | Kết quả thực nghiệm và nhật ký rà soát |
@@ -592,7 +628,7 @@ Mỗi mã chỉ là một hồ sơ ở ba định dạng. Bộ này dùng kiểm
 | GET | `/api/jobs/{job_id}` | Chi tiết và việc tương tự |
 | GET | `/api/samples` | Đoạn CV mẫu có sẵn |
 | POST | `/api/cv/read` | Đọc tệp CV |
-| POST | `/api/cv/match` | Phân tích, ghép CV, lựa chọn so sánh nơi ở và ghi nhận nhu cầu khi có cờ tương ứng |
+| POST | `/api/cv/match` | Ghép CV; khi `compare_locations=true` trả `comparison.balanced`, `best_fit`, `near_home`, `balance_policy`; danh sách `jobs` vẫn theo vùng muốn làm; ghi nhu cầu khi có cờ tương ứng |
 | POST | `/api/recommendations` | Gợi ý cá nhân từ CV/hành vi; không tự ghi thêm lượt nhu cầu |
 | GET | `/api/demand` | Thống kê rating tổng hợp, không trả nội dung CV |
 | GET | `/api/docs` | Tài liệu API tương tác |
@@ -648,7 +684,7 @@ Mở lần lượt `job_recommender_notebook.ipynb` và `lab3_jobvista.ipynb`; c
 .\.venv\Scripts\python.exe -m ipykernel install --user --name job-recommender --display-name "Python (Job Recommender)"
 ```
 
-Notebook đầu có 26 ô, 12 ô code; notebook Lab 3 có 11 ô, 5 ô code. Các ô code đã có execution count và không có output lỗi ở bản lưu được kiểm tra. **Output notebook đầu có phần được lưu từ giai đoạn catalog 500**; chạy lại đọc catalog hiện tại, nên không dùng ảnh output cũ để gọi là kết quả 7.050. Notebook Lab 3 đã được thực thi cho phần mở rộng, ví dụ 8/10 là dữ liệu mô phỏng tách khỏi DB thật.
+Notebook đầu có 26 ô, 12 ô code; notebook Lab 3 có 11 ô, 5 ô code. Các ô code đã có execution count và không có output lỗi ở bản lưu được kiểm tra. **Output notebook đầu có phần được lưu từ giai đoạn catalog 500**; chạy lại đọc catalog hiện tại, nên không dùng ảnh output cũ để gọi là kết quả 7.050. Notebook Lab 3 đã chạy lại ngày 11/11 với thứ tự `balanced → best_fit → near_home`, hiển thị chính sách và các điểm riêng; ví dụ rating 8/10 là dữ liệu mô phỏng tách khỏi DB thật.
 
 ### 17.4. Test và tái lập đánh giá
 
@@ -674,7 +710,7 @@ Các script mở rộng/sửa dữ liệu không phải bước bắt buộc cho
 | 5 | Đổi Việt/Anh | Nhãn và nội dung hiển thị thay đổi trên cùng dữ liệu |
 | 6 | Tải CV01 PDF rồi PNG | Trích xuất trực tiếp so với OCR; kiểm tra nội dung đã đọc |
 | 7 | Tải CV02 | Ở TP.HCM nhưng muốn Hà Nội; sửa/xác nhận hai vùng |
-| 8 | Ghép CV, xem giải thích và so sánh nơi ở | Sáu điểm chuyên môn, kỹ năng, việc phù hợp/việc gần |
+| 8 | Ghép CV, xem giải thích và so sánh nơi ở | Nhóm cân bằng ở đầu; hai nhóm chuyên môn/gần nơi ở bên dưới; điểm CV/điểm gần/điểm cân bằng được tách rõ |
 | 9 | Về trang chủ, tải lại trang | Hồ sơ đã lưu và “Phù hợp với bạn” |
 | 10 | Xóa hồ sơ, thử tìm kiếm có điều kiện | Gợi ý theo quan tâm; không có bảng lịch sử tìm kiếm |
 | 11 | CV10 và vùng Quảng Ninh | Trả rỗng đúng điều kiện; không tự đưa Hà Nội vào |
@@ -682,6 +718,16 @@ Các script mở rộng/sửa dữ liệu không phải bước bắt buộc cho
 | 13 | Bảng A/B/C và kết quả unittest | Kết quả pilot có phạm vi 500, kiểm thử chức năng riêng |
 
 Không cần làm giả 10 người để chụp rating thật: dùng ví dụ notebook đã ghi rõ mô phỏng. Khi chụp demo, dùng CV giả lập, ghi ngày/chế độ semantic đang hoạt động và đúng quy mô dữ liệu. Không chọn ảnh giao diện Streamlit cũ để mô tả phiên bản cuối.
+
+### 18.1. Hai ảnh minh chứng phiên bản 11/11/2026
+
+Ảnh 1 dùng CV07 DevOps Cần Thơ: nhóm cân bằng hiển thị trước, hai nhóm đối chiếu riêng phía dưới. Số điểm phụ thuộc nội dung CV và trạng thái semantic của lượt chạy, không dùng ảnh làm nhãn benchmark.
+
+![Nhóm cân bằng ở đầu và hai nhóm đối chiếu phía dưới](https://raw.githubusercontent.com/TienMoi79/job-recommender-system/main/docs/images/balanced-recommendations-20261111.png)
+
+Ảnh 2 là danh sách kết quả chính với tên mới và dòng mô tả phạm vi. Ca này chọn Cần Thơ và có 4 kết quả; không lấy ảnh có 4 kết quả để mô tả như ca TP.HCM có 24 kết quả ở lượt thử khác.
+
+![Danh sách việc làm phù hợp CV tại khu vực đã chọn](https://raw.githubusercontent.com/TienMoi79/job-recommender-system/main/docs/images/cv-results-title-20261111.png)
 
 ## 19. Lưu trữ, quyền riêng tư, GitHub và backup
 
@@ -702,7 +748,7 @@ Lưu cục bộ theo trình duyệt + origin; `localhost:8000` và `127.0.0.1:80
 
 ### 19.2. GitHub và các bản sao lưu đã có
 
-Mã được tạo repo và cập nhật qua GitHub để bạn trong nhóm clone/xem thử. Các bản sửa chức năng đến `9b51bad` đã push lên `main`; tài liệu này là phần bàn giao bổ sung. Không upload `.venv`, cache mô hình, dữ liệu CV thật hoặc SQLite tương tác.
+Mã được tạo repo và cập nhật qua GitHub để bạn trong nhóm clone/xem thử. Các bản sửa chức năng đến `7206ab7` đã push lên `main`, gồm gợi ý kết hợp `329c59e` và tên mới của danh sách CV. Tài liệu này là bản bàn giao cập nhật sau các thay đổi đó. Không upload `.venv`, cache mô hình, dữ liệu CV thật hoặc SQLite tương tác.
 
 Trước các đợt thay đổi lớn đã tạo backup ngoài thư mục dự án. Trên máy làm việc có:
 
@@ -710,6 +756,7 @@ Trước các đợt thay đổi lớn đã tạo backup ngoài thư mục dự 
 - `D:\Trí tuệ nhân tạo và ứng dụng\ProJeat_backup_20261105_before_lab3` — trước đợt góp ý Lab 3.
 - Bản ZIP tương ứng đợt 05/11: `ProJeat_backup_20261105_before_lab3.zip`, có manifest kiểm tra, CRC đạt; SHA-256 `da26c019d386e3837dc4f4c19da9b412a78fbfb2d37aa9535179d389e2929cfc`.
 - Trước sửa mô tả/lương có bản CSV/manifest trong `.cache/data-display-before-20261105/` và `.cache/presentation-before-*`.
+- Trước sửa gợi ý cân bằng ngày 11/11: `D:\Trí tuệ nhân tạo và ứng dụng\ProJeat_backup_20261111_before_balanced_recommendations_143544` và ZIP cùng tên. Sao lưu 11 tệp liên quan, có manifest SHA-256 từng tệp và kiểm tra CRC của ZIP; không gọi đây là một bản sao mới của toàn bộ virtualenv/cache.
 
 Backup máy cá nhân không tự có trong bản clone GitHub, không gọi đó là tính năng backup trên giao diện web. Git lưu lịch sử mã nguồn, backup lớn lưu bên ngoài để phục hồi trạng thái môi trường/dữ liệu khi cần.
 
@@ -757,7 +804,7 @@ Backup máy cá nhân không tự có trong bản clone GitHub, không gọi đ�
 
 ### 21.2. Đoạn tóm tắt có thể dùng làm nền
 
-> Đề tài xây dựng hệ gợi ý việc làm trực tuyến trong lĩnh vực CNTT với hai chức năng chính: gợi ý công việc tương tự và ghép CV với công việc. Hệ thống xử lý tập con 7.050 tin từ nguồn dữ liệu công khai, hỗ trợ đọc CV PDF, Word và ảnh, sau đó phân tích kỹ năng, vị trí, kinh nghiệm và địa điểm. Phương pháp xếp hạng kết hợp TF-IDF, embedding đa ngôn ngữ và các đặc trưng nghề nghiệp, đồng thời cung cấp giải thích kết quả. Giao diện JobVista bổ sung cá nhân hóa từ hồ sơ/mối quan tâm, rating nhu cầu nghề và so sánh mức phù hợp chuyên môn với khoảng cách vùng. Đánh giá pilot được thực hiện riêng trên snapshot 500 tin và 30 CV giả lập; kết quả chưa chứng minh hybrid tốt hơn TF-IDF và chưa đại diện cho bản dữ liệu mở rộng.
+> Đề tài xây dựng hệ gợi ý việc làm trực tuyến trong lĩnh vực CNTT với hai chức năng chính: gợi ý công việc tương tự và ghép CV với công việc. Hệ thống xử lý tập con 7.050 tin từ nguồn dữ liệu công khai, hỗ trợ đọc CV PDF, Word và ảnh, sau đó phân tích kỹ năng, vị trí, kinh nghiệm và địa điểm. Phương pháp xếp hạng kết hợp TF-IDF, embedding đa ngôn ngữ và các đặc trưng nghề nghiệp, đồng thời cung cấp giải thích kết quả. Giao diện JobVista bổ sung cá nhân hóa từ hồ sơ/mối quan tâm, rating nhu cầu nghề và nhóm gợi ý cân bằng 70% chuyên môn với 30% độ gần nơi ở. Hai nhóm đối chiếu chuyên môn/khoảng cách nằm bên dưới; danh sách kết quả chính vẫn theo vùng muốn làm việc. Đánh giá pilot được thực hiện riêng trên snapshot 500 tin và 30 CV giả lập; kết quả chưa chứng minh hybrid tốt hơn TF-IDF và chưa đại diện cho bản dữ liệu mở rộng hoặc chính sách cân bằng mới.
 
 Đoạn này cần chỉnh theo mẫu trường; không dùng thay phần phương pháp/thực nghiệm chi tiết.
 
@@ -771,7 +818,9 @@ Backup máy cá nhân không tự có trong bản clone GitHub, không gọi đ�
 | Đã có rating chưa? | Có rating ngầm về nhu cầu nghề, làm trơn theo Lab 3; chưa có người dùng chấm sao trực tiếp |
 | 8/10 là 10 người thật không? | Notebook là mô phỏng; runtime đếm mã trình duyệt, chưa xác minh danh tính |
 | Rating thêm vào có chắc chính xác hơn? | Chưa chứng minh, cần ablation trên bộ nhãn mới; đang giới hạn 10% và chỉ rerank pool hợp lệ |
-| Công việc tốt nhất ở xa thì sao? | Giữ danh sách vùng muốn làm, thêm đối chiếu toàn quốc “phù hợp nhất” và “gần nơi ở nhất” |
+| Công việc tốt nhất ở xa thì sao? | Gợi ý kết hợp 70% chuyên môn + 30% độ gần ở đầu; hai nhóm riêng bên dưới để đối chiếu; danh sách chính vẫn giữ vùng muốn làm |
+| Điểm cân bằng khác rating và điểm CV thế nào? | Điểm CV đo chuyên môn, rating đo mức quan tâm nghề; điểm cân bằng chỉ kết hợp điểm CV với độ gần và chưa đưa vào xếp hạng danh sách chính |
+| Vì sao có ba nhóm trên rồi vẫn có danh sách phía dưới? | Ba nhóm giúp so sánh lựa chọn trên toàn quốc; danh sách chính cho xem/lưu/đọc chi tiết các gợi ý theo vùng muốn làm, có phân trang |
 | Điểm gần nhà tính bằng GPS? | Không, Haversine giữa điểm đại diện vùng; không phải đường đi/thời gian |
 | CV có được lưu lên GitHub hay gửi AI ngoài không? | Không; server xử lý RAM, trình duyệt tự lưu text; model/OCR chạy cục bộ, DB rating không chứa CV |
 | P@5 của hybrid thấp hơn sao vẫn dùng? | Có giải thích và quy tắc nghiệp vụ, giảm gần trùng; báo trung thực hạn chế, không gọi là vượt baseline |
@@ -806,6 +855,8 @@ Chức năng sản phẩm thương mại có thể thay đổi; nếu đưa vào
 - [ ] Giao diện cuối là FastAPI cổng 8000, không phải Streamlit 8501.
 - [ ] Có link nguồn, revision, giấy phép, ngày truy cập và ghi công dữ liệu.
 - [ ] Công thức baseline, sáu điểm hybrid, điểm quan tâm và rating được mô tả thành các tầng riêng.
+- [ ] Bổ sung công thức cân bằng 70/30, cách đổi khoảng cách thành điểm gần, điều kiện thiếu nơi ở; không khẳng định đã tối ưu trọng số.
+- [ ] Mô tả đúng ba nhóm toàn quốc phía trên và danh sách chính theo vùng phía dưới; dùng tiêu đề mới và đúng số kết quả của ảnh minh họa.
 - [ ] Có ảnh chức năng và notebook của đúng phiên bản, ghi semantic/lexical đúng trạng thái.
 - [ ] Bảng A/B/C lấy nguyên kết quả thật, ghi phạm vi 500 và hạn chế nhãn pilot.
 - [ ] Không viết rating mới đã cải thiện độ chính xác nếu chưa đánh giá.
