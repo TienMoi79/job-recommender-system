@@ -16,6 +16,8 @@ const copy = {
     years:'năm', expUnknown:'Kinh nghiệm chưa rõ', salaryUnknown:'Lương thỏa thuận / chưa rõ', minExp:'Từ',
     cvNudge:'Công việc nào hợp với bạn?', cvNudgeSub:'Để CV giúp bạn tìm câu trả lời.', tryCv:'Thử tìm việc với CV',
     resultTitle:'Cơ hội dành cho bạn', resultSuffix:'việc làm phù hợp bộ lọc', relevance:'Theo độ phù hợp', original:'Thứ tự trong dữ liệu',
+    cvResultTitle:'Việc làm phù hợp với CV tại khu vực bạn chọn', cvResultAllTitle:'Việc làm phù hợp với CV trên tất cả khu vực',
+    cvResultSuffix:'việc làm được đề xuất theo CV và khu vực đã chọn', cvResultAllSuffix:'việc làm được đề xuất theo CV trên tất cả khu vực',
     savedTitle:'Những cơ hội bạn muốn giữ lại', savedSub:'Được lưu trên trình duyệt này để bạn dễ quay lại.',
     save:'Lưu công việc', unsave:'Bỏ lưu công việc', savedToast:'Đã lưu vào danh sách của bạn', removedToast:'Đã bỏ lưu công việc',
     details:'Chi tiết công việc', description:'Mô tả công việc', requirements:'Yêu cầu ứng viên', skills:'Kỹ năng',
@@ -93,6 +95,8 @@ const copy = {
     years:'years', expUnknown:'Experience not specified', salaryUnknown:'Salary negotiable / unspecified', minExp:'From',
     cvNudge:'Which job fits your skills?', cvNudgeSub:'Let your CV help you find the answer.', tryCv:'Try CV matching',
     resultTitle:'Your next opportunity', resultSuffix:'jobs match your filters', relevance:'Best match first', original:'Dataset order',
+    cvResultTitle:'Jobs matching your CV in your selected area', cvResultAllTitle:'Jobs matching your CV across all areas',
+    cvResultSuffix:'jobs recommended for your CV and selected area', cvResultAllSuffix:'jobs recommended for your CV across all areas',
     savedTitle:'Opportunities worth keeping', savedSub:'Saved in this browser so you can come back anytime.',
     save:'Save job', unsave:'Remove saved job', savedToast:'Added to your saved jobs', removedToast:'Removed from saved jobs',
     details:'Job details', description:'Job description', requirements:'Requirements', skills:'Skills',
@@ -378,7 +382,7 @@ function emptyState() {
 }
 function results() {
   const jobs=filteredJobs();const pages=Math.max(1,Math.ceil(jobs.length/8));state.page=Math.min(state.page,pages);
-  return `<div class="results-heading"><div><p class="section-kicker">${state.view==='cv'?t('matched'):state.view==='personal'?t('interestEyebrow'):t('explore')}</p><h2>${state.view==='saved'?t('savedTitle'):state.view==='personal'?t(state.savedProfile?'forYou':'interestTitle'):t('resultTitle')}<span>${jobs.length}</span></h2><p>${jobs.length} ${t('resultSuffix')}</p></div><span class="sort-label">${icon('tune')}${t(['cv','personal'].includes(state.view)?'relevance':'original')}</span></div>
+  return `<div class="results-heading"><div><p class="section-kicker">${state.view==='cv'?t('matched'):state.view==='personal'?t('interestEyebrow'):t('explore')}</p><h2>${state.view==='saved'?t('savedTitle'):state.view==='cv'?t(state.cvRegion?'cvResultTitle':'cvResultAllTitle'):state.view==='personal'?t(state.savedProfile?'forYou':'interestTitle'):t('resultTitle')}<span>${jobs.length}</span></h2><p>${jobs.length} ${t(state.view==='cv'?(state.cvRegion?'cvResultSuffix':'cvResultAllSuffix'):'resultSuffix')}</p></div><span class="sort-label">${icon('tune')}${t(['cv','personal'].includes(state.view)?'relevance':'original')}</span></div>
     ${!['cv','personal'].includes(state.view)?`<div class="category-tabs" role="group" aria-label="${t('domain')}">${['all','dev','data','ai'].map(c=>`<button class="${state.category===c?'active':''}" data-category="${c}" aria-pressed="${state.category===c}">${t(c)}</button>`).join('')}</div>`:''}
     <div class="jobs-list">${jobs.slice((state.page-1)*8,state.page*8).map(jobCard).join('')||emptyState()}</div>
     ${pages>1?`<div class="pagination"><button class="page-control" data-page="${state.page-1}" ${state.page===1?'disabled':''} aria-label="${t('previous')}">‹</button><span>${t('page')} <strong>${state.page}</strong> / ${pages}</span><button class="page-control" data-page="${state.page+1}" ${state.page===pages?'disabled':''} aria-label="${t('next')}">›</button></div>`:''}`;
