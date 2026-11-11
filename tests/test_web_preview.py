@@ -153,6 +153,13 @@ class WebPreviewTests(unittest.TestCase):
             self.assertEqual(result['demand']['total_actors'],1)
             self.assertTrue(result['comparison']['best_fit'])
             self.assertTrue(result['comparison']['near_home'])
+            balanced=result['comparison']['balanced']
+            self.assertTrue(balanced)
+            self.assertTrue(all(j['distance_km'] is not None for j in balanced))
+            self.assertEqual([j['balanced_score'] for j in balanced],sorted((j['balanced_score'] for j in balanced),reverse=True))
+            self.assertTrue(all(0<=j['balanced_score']<=1 and 0<=j['proximity_score']<=1 for j in balanced))
+            self.assertEqual(result['comparison']['balance_policy']['fit_weight'],.7)
+            self.assertEqual(result['comparison']['scope'],'nationwide_comparison')
             self.assertTrue(result['comparison']['near_home'][0]['same_region'])
             self.assertGreaterEqual(result['comparison']['best_fit'][0]['score'],result['comparison']['near_home'][0]['score'])
             self.client.post('/api/cv/match',json={**payload,'compare_locations':False})
@@ -164,6 +171,17 @@ class WebPreviewTests(unittest.TestCase):
             rated=self.client.post('/api/cv/match',json={**payload,'compare_locations':False}).json()
             self.assertTrue(all(job['demand_weight']==.1 for job in rated['jobs']))
             self.assertTrue(all('ha_noi' in job['regions'] for job in rated['jobs']))
+
+    def test_balanced_comparison_requires_home_without_breaking_cv_matches(self):
+        payload={'text':'Backend Developer Python\nPython SQL Django FastAPI PostgreSQL Docker\n2 years experience.',
+                 'location':'ha_noi','compare_locations':True,'top_n':3}
+        response=self.client.post('/api/cv/match',json=payload)
+        self.assertEqual(response.status_code,200)
+        result=response.json()
+        self.assertTrue(result['jobs']);self.assertTrue(result['comparison']['best_fit'])
+        self.assertEqual(result['comparison']['balanced'],[])
+        self.assertEqual(result['comparison']['near_home'],[])
+        self.assertTrue(all('ha_noi' in j['regions'] for j in result['jobs']))
 
     def test_invalid_input_and_size_limit(self):
         response = self.client.post('/api/cv/read?language=en', content=b'bad', headers={'X-CV-Filename': 'x.exe'})

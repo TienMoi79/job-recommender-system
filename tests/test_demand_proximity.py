@@ -1,5 +1,6 @@
 """Test rating với đáp án 8/10, không bơm dữ liệu giả vào DB của ứng dụng."""
 from tempfile import TemporaryDirectory
+from copy import deepcopy
 import unittest
 import json
 import pandas as pd
@@ -74,6 +75,52 @@ class ProximityTests(unittest.TestCase):
         self.assertEqual(comparison['near_home'][0]['score'],.7)
         self.assertTrue(comparison['near_home'][0]['same_region'])
         self.assertEqual(compare_options(jobs,None)['near_home'],[])
+
+    def test_balanced_choice_can_be_a_compromise_instead_of_either_extreme(self):
+        jobs=[{'id':'best','score':.95,'regions':['ha_noi']},
+              {'id':'nearest','score':.60,'regions':['ho_chi_minh']},
+              {'id':'compromise','score':.90,'regions':['binh_duong']}]
+        original=deepcopy(jobs)
+        result=compare_options(jobs,'ho_chi_minh')
+        self.assertEqual(result['best_fit'][0]['id'],'best')
+        self.assertEqual(result['near_home'][0]['id'],'nearest')
+        self.assertEqual(result['balanced'][0]['id'],'compromise')
+        self.assertEqual(jobs,original)  # Không sửa điểm chuyên môn/đối tượng đầu vào.
+        self.assertEqual(result['balanced'][0]['score'],.90)
+        scores=[j['balanced_score'] for j in result['balanced']]
+        self.assertEqual(scores,sorted(scores,reverse=True))
+        self.assertTrue(all(0<=s<=1 for s in scores))
+        self.assertEqual(result['balance_policy']['fit_weight'],.7)
+
+    def test_balance_prioritises_fit_and_keeps_nearby_and_demand_scores_separate(self):
+        # Việc gần không mặc định thắng khi chuyên môn thấp hơn nhiều.
+        jobs=[{'id':'far','score':1.,'personal_score':.1,'regions':['ha_noi']},
+              {'id':'near','score':.2,'personal_score':1.,'regions':['ho_chi_minh']}]
+        result=compare_options(jobs,'ho_chi_minh')
+        self.assertEqual(result['balanced'][0]['id'],'far')
+        near=next(j for j in result['balanced'] if j['id']=='near')
+        self.assertEqual(near['proximity_score'],1.)
+        self.assertAlmostEqual(near['balanced_score'],.44)
+        self.assertEqual(near['score'],.2);self.assertEqual(near['personal_score'],1.)
+
+    def test_balance_does_not_fabricate_home_or_remote_distances_and_handles_empty_pool(self):
+        jobs=[{'id':'remote','score':.9,'regions':['remote']},
+              {'id':'missing','score':.8,'regions':[]},
+              {'id':'known','score':.7,'regions':['ha_noi']}]
+        self.assertEqual(compare_options(jobs,None)['balanced'],[])
+        result=compare_options(jobs,'ho_chi_minh')
+        self.assertEqual([j['id'] for j in result['balanced']],['known'])
+        self.assertEqual(len(result['best_fit']),3)
+        for field in ('balanced','best_fit','near_home'):
+            self.assertEqual(compare_options([],'ho_chi_minh')[field],[])
+
+    def test_balance_ties_are_stable_and_multiple_regions_use_nearest_known_area(self):
+        jobs=[{'id':'b','score':.8,'regions':['ha_noi','ho_chi_minh']},
+              {'id':'a','score':.8,'regions':['ho_chi_minh']}]
+        result=compare_options(jobs,'ho_chi_minh',top_n=2)
+        self.assertEqual([j['id'] for j in result['balanced']],['a','b'])
+        self.assertTrue(all(j['same_region'] for j in result['balanced']))
+        self.assertTrue(all(j['proximity_score']==1 for j in result['balanced']))
 
 
 if __name__=='__main__':unittest.main()

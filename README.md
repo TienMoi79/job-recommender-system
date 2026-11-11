@@ -22,6 +22,11 @@ chuyên môn nhất / gần nơi ở nhất**. Đọc [giải thích Lab 3, côn
 nguồn dataset và cách thử](docs/LAB3_RATING_DISTANCE.md). Notebook bổ sung:
 `lab3_jobvista.ipynb`. Benchmark A/B/C cũ vẫn chỉ áp dụng cho snapshot 500 tin.
 
+**Cập nhật 11/11/2026:** sau khi ghép CV, nhóm **Cân bằng chuyên môn và khoảng
+cách** xuất hiện trước hai nhóm đối chiếu cũ. Điểm thử nghiệm kết hợp 70% chuyên
+môn và 30% độ gần; chưa rõ nơi ở thì yêu cầu xác nhận, không bịa khoảng cách.
+Xem [công thức, giới hạn và backup trước sửa](docs/BALANCED_RECOMMENDATIONS.md).
+
 Mô tả/yêu cầu đã được chia tiêu đề, đoạn và bullet; tiền Việt hiển thị thống
 nhất theo triệu và giữ nguyên kỳ trả. Số thiếu đơn vị hoặc tiền bảo hiểm/phụ
 cấp bị lấy nhầm không được coi là lương. Xem [bản rà soát và quy tắc lương](docs/DATA_PRESENTATION_REPAIR.md)
@@ -120,7 +125,8 @@ chưa dùng ngữ nghĩa; không bắt người dùng chờ toàn bộ index. In
    sẽ xóa cả bộ nhớ tìm kiếm, hồ sơ và việc yêu thích.
 
 Sau khi đọc CV, kiểm tra riêng **nơi muốn làm việc** và **nơi ở hiện tại**.
-Bấm **Tìm công việc phù hợp** để xem hai cột so sánh chuyên môn/khoảng cách;
+Bấm **Tìm công việc phù hợp** để xem nhóm kết hợp chuyên môn/khoảng cách trước,
+rồi hai cột đối chiếu từng yếu tố bên dưới;
 danh sách chính vẫn tôn trọng vùng muốn làm. Mỗi lượt ghép CV chủ động cập nhật
 một nguyện vọng nghề gần nhất cho mã trình duyệt ẩn danh trong 30 ngày. Rating
 chỉ góp tối đa 10% khi đủ 5 trình duyệt; nhấn tìm lại không tạo thêm người.

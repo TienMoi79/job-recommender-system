@@ -93,7 +93,13 @@ Hà Nội: hai trường được đọc riêng và đều cho phép sửa. Khô
 hoặc địa điểm dự án cũ để giả làm địa chỉ nhà. Không có nơi ở thì yêu cầu xác
 nhận trước khi kết luận việc gần nhà.
 
-Sau khi ghép CV, hai cột đối chiếu:
+Sau khi ghép CV, bản cập nhật 11/11/2026 hiển thị **Cân bằng chuyên môn và khoảng
+cách** trước: `P = 1/(1+d/50)` và `B = 0,7×điểm CV + 0,3×P`. Chỉ dùng việc
+đã đạt ngưỡng chuyên môn và có khoảng cách xác định; thiếu nơi ở thì yêu cầu
+xác nhận. Đây là trọng số thử nghiệm, không phải kết quả đã chứng minh tăng
+độ chính xác. Xem [công thức, ca thiếu dữ liệu và backup](BALANCED_RECOMMENDATIONS.md).
+
+Bên dưới giữ hai cột đối chiếu:
 
 - **Phù hợp chuyên môn nhất:** các tin có điểm CV cao nhất trên toàn quốc.
 - **Gần nơi ở nhất trong các việc đạt ngưỡng:** các tin đủ phù hợp được sắp

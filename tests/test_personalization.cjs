@@ -175,6 +175,28 @@ test('comparison keeps content scores and distance labels distinct and escapes j
   const rating=h.app.demandExplanation({demand_rating:2.5,demand_actors:10,demand_weight:.1});
   assert.ok(rating.includes('2.50/5'));assert.ok(rating.includes('10%'));assert.ok(rating.includes('không phải đánh giá chất lượng'));
 });
+
+test('balanced recommendations come first, expose separate scores and localise to English', () => {
+  const {app}=appHarness();app.state.cvHomeRegion='ho_chi_minh';app.state.comparison={home_region:'ho_chi_minh',
+    balance_policy:{fit_weight:.7,proximity_weight:.3},
+    balanced:[{id:'balanced-only',title:'<img src=x onerror=bad()>',company:'B',location:'HCM',score:.7,proximity_score:1,balanced_score:.79,same_region:true}],
+    best_fit:[{id:'a',title:'Best',company:'A',location:'Hà Nội',score:.9,distance_km:1135}],
+    near_home:[]};
+  let html=app.locationComparison();
+  assert.ok(html.indexOf('Cân bằng chuyên môn và khoảng cách')<html.indexOf('Phù hợp chuyên môn nhất'));
+  for(const text of ['0.790','0.700','1.000','70%','30%','data-compare-job="balanced-only"','&lt;img'])assert.ok(html.includes(text),text);
+  assert.equal(html.includes('<img src=x'),false);assert.ok(html.includes('không phải xác suất trúng tuyển'));
+  app.state.lang='en';html=app.locationComparison();
+  for(const text of ['Balance career fit and distance','Balanced score','Proximity score','70%','30%'])assert.ok(html.includes(text),text);
+  assert.equal(html.includes('Điểm cân bằng'),false);
+});
+
+test('balanced section asks for a home area without inventing a combined score', () => {
+  const {app}=appHarness();app.state.cvHomeRegion='';
+  app.state.comparison={home_region:null,balanced:[],best_fit:[],near_home:[]};
+  const html=app.locationComparison();
+  assert.ok(html.includes('Cần xác nhận nơi ở'));assert.equal(html.includes('class="balanced-score"'),false);
+});
 test('job text renders as separate paragraphs, headings and lists without source HTML execution', () => {
   const {app}=appHarness();
   const html=app.jobDocument('MÔ TẢ CÔNG VIỆC:\n• Viết API với Node.js\n• Kinh nghiệm 3 - 4 năm\nQUYỀN LỢI:\nLương 15 - 25 triệu.\n<script>bad()</script>');

@@ -43,6 +43,11 @@ const copy = {
     homeUnknown:'Chưa xác định nơi ở', comparisonTitle:'Cân nhắc chuyên môn và khoảng cách',
     comparisonSub:'Đối chiếu toàn quốc; danh sách bên dưới vẫn theo nơi muốn làm việc bạn đã chọn.',
     bestFit:'Phù hợp chuyên môn nhất', nearest:'Gần nơi ở nhất trong các việc đạt ngưỡng',
+    balancedTitle:'Cân bằng chuyên môn và khoảng cách', balancedBadge:'GỢI Ý KẾT HỢP',
+    balancedIntro:'Ưu tiên công việc phù hợp với năng lực, đồng thời cân nhắc độ gần nơi bạn ở.',
+    balancedScore:'Điểm cân bằng', proximityScore:'Điểm gần nơi ở', balanceHow:'Cách sắp xếp gợi ý kết hợp',
+    balanceRule:'Ưu tiên chuyên môn {fit}%, kết hợp độ gần nơi ở {proximity}%. Càng xa, điểm gần càng giảm. Chỉ xét công việc đã đạt ngưỡng phù hợp với CV và có khoảng cách xác định.',
+    balanceNote:'Điểm xếp hạng tham khảo, không phải xác suất trúng tuyển. Hai nhóm bên dưới giúp bạn đối chiếu riêng từng yếu tố.',
     distanceNote:'Khoảng cách ước tính đường chim bay giữa các điểm đại diện thành phố; không phải đường đi thực tế hay địa chỉ công ty. Cùng khu vực vẫn có thể cách xa nhau.',
     sameRegion:'Cùng khu vực nơi ở', approxDistance:'Cách khu vực của bạn khoảng', unknownDistance:'Chưa xác định khoảng cách',
     setHome:'Cần xác nhận nơi ở để so sánh khoảng cách.', noNear:'Chưa có việc đủ phù hợp và đủ thông tin vị trí để đối chiếu.',
@@ -115,6 +120,11 @@ const copy = {
     homeUnknown:'Home area not identified', comparisonTitle:'Compare career fit and distance',
     comparisonSub:'Nationwide comparison; the main list below still follows your preferred work location.',
     bestFit:'Best professional fit', nearest:'Closest to home among qualifying jobs',
+    balancedTitle:'Balance career fit and distance', balancedBadge:'COMBINED PICKS',
+    balancedIntro:'Prioritise jobs that match your skills while considering how close they are to your home area.',
+    balancedScore:'Balanced score', proximityScore:'Proximity score', balanceHow:'How combined picks are ranked',
+    balanceRule:'Professional fit contributes {fit}% and proximity contributes {proximity}%. Proximity decreases with distance. Only jobs meeting the CV relevance threshold and with a known distance are considered.',
+    balanceNote:'An indicative ranking score, not a hiring probability. The two groups below let you compare each factor separately.',
     distanceNote:'Approximate straight-line distance between representative city points, not travel distance or the company address. Jobs in the same area may still be far apart.',
     sameRegion:'In your home area', approxDistance:'Approximately this far from your area:', unknownDistance:'Distance not identified',
     setHome:'Confirm your home area to compare distance.', noNear:'No sufficiently relevant jobs with known locations to compare yet.',
@@ -331,7 +341,13 @@ function demandExplanation(job) {
 }
 function locationComparison() {
   const comparison=state.comparison;if(!comparison)return '';
-  return `<section class="location-comparison"><div class="personal-heading"><div><p class="section-kicker">${t('comparisonTitle')}</p><h2>${t('comparisonTitle')}</h2><p>${t('comparisonSub')}</p></div></div><div class="comparison-columns">${[['best_fit','bestFit'],['near_home','nearest']].map(([key,label])=>`<div><h3>${icon(key==='best_fit'?'spark':'pin')}${t(label)}</h3><div class="comparison-jobs">${comparison[key].map(job=>`<article class="comparison-card"><button data-compare-job="${job.id}"><strong>${escape(job.title)}</strong><small>${escape(job.company)}</small><span>${escape(job.location)}</span><span class="comparison-distance">${escape(distanceLabel(job))}</span><b>${t('cvOnlyScore')}: ${job.score.toFixed(3)}</b></button></article>`).join('')||`<p class="field-hint">${t(state.cvHomeRegion?'noNear':'setHome')}</p>`}</div></div>`).join('')}</div><p class="field-hint">${t('distanceNote')}</p></section>`;
+  const policy=comparison.balance_policy||{fit_weight:.7,proximity_weight:.3};
+  const rule=t('balanceRule').replace('{fit}',Math.round(policy.fit_weight*100)).replace('{proximity}',Math.round(policy.proximity_weight*100));
+  const empty=`<p class="field-hint">${t(comparison.home_region||state.cvHomeRegion?'noNear':'setHome')}</p>`;
+  const card=(job,balanced=false)=>`<article class="comparison-card${balanced?' balanced-card':''}"><button data-compare-job="${escape(job.id)}"><strong>${escape(job.title)}</strong><small>${escape(job.company)}</small><span>${escape(job.location)}</span><span class="comparison-distance">${escape(distanceLabel(job))}</span>${balanced?`<span class="balance-components"><span>${t('cvOnlyScore')}: ${job.score.toFixed(3)}</span><span>${t('proximityScore')}: ${job.proximity_score.toFixed(3)}</span></span><b class="balanced-score">${t('balancedScore')}: ${job.balanced_score.toFixed(3)}</b>`:`<b>${t('cvOnlyScore')}: ${job.score.toFixed(3)}</b>`}</button></article>`;
+  return `<section class="location-comparison"><div class="personal-heading"><div><p class="section-kicker">${t('comparisonTitle')}</p><h2>${t('comparisonTitle')}</h2><p>${t('comparisonSub')}</p></div></div>
+    <section class="balanced-recommendations" aria-labelledby="balanced-heading"><p class="balanced-badge">${icon('spark')}${t('balancedBadge')}</p><h3 id="balanced-heading">${t('balancedTitle')}</h3><p class="balanced-intro">${t('balancedIntro')}</p><div class="balanced-jobs">${(comparison.balanced||[]).map(job=>card(job,true)).join('')||empty}</div><details class="balance-method"><summary>${t('balanceHow')}</summary><p>${escape(rule)}</p><p>${t('balanceNote')}</p></details></section>
+    <div class="comparison-columns">${[['best_fit','bestFit'],['near_home','nearest']].map(([key,label])=>`<div><h3>${icon(key==='best_fit'?'spark':'pin')}${t(label)}</h3><div class="comparison-jobs">${(comparison[key]||[]).map(job=>card(job)).join('')||empty}</div></div>`).join('')}</div><p class="field-hint">${t('distanceNote')}</p></section>`;
 }
 function saveButton(job, extra='') {const saved=state.saved.has(job.id); return `<button class="save-button ${saved?'is-saved':''} ${extra}" data-save="${job.id}" aria-label="${t(saved?'unsave':'save')}" aria-pressed="${saved}" title="${t(saved?'unsave':'save')}">${icon('bookmark')}</button>`;}
 function jobCard(job) {
@@ -402,7 +418,7 @@ function detailPanel() {
   if(!state.selected)return '';
   if(!state.detail||state.detail.job.id!==state.selected)return `${detailTopline()}<div class="detail-loading"><span class="loader"></span></div>`;
   if(state.detail.error)return `${detailTopline()}<div class="empty-state"><p>${t('connection')}</p><button class="secondary" data-retry-job="${state.selected}">${t('retry')}</button></div>`;
-  const comparisonJobs=state.comparison?[...state.comparison.best_fit,...state.comparison.near_home]:[];
+  const comparisonJobs=state.comparison?[...(state.comparison.balanced||[]),...state.comparison.best_fit,...state.comparison.near_home]:[];
   const job={...state.detail.job,...(['cv','personal'].includes(state.view)?state.matches?.find(j=>j.id===state.selected)||comparisonJobs.find(j=>j.id===state.selected)||{}:{})};
   return `${detailTopline(job)}
     <div class="detail-company">${companyLogo(job)}<span>${escape(job.company)}</span></div><h2 class="detail-title">${escape(job.title)}</h2><p class="detail-location">${icon('pin')}${escape(job.location)}</p>

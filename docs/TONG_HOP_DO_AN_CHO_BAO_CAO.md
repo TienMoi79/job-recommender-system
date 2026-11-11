@@ -1,9 +1,11 @@
 # Hồ sơ bàn giao để viết báo cáo đồ án — Hệ gợi ý việc làm trực tuyến (JobVista)
 
-**Ngày tổng hợp:** 10/11/2026.  
+**Ngày tổng hợp:** 10/11/2026; bổ sung nhóm gợi ý kết hợp ngày 11/11/2026.
+
 **Môn học:** Trí tuệ nhân tạo ứng dụng.  
 **Repository:** [TienMoi79/job-recommender-system](https://github.com/TienMoi79/job-recommender-system).  
 **Phiên bản chức năng được đối chiếu:** commit [`9b51bad`](https://github.com/TienMoi79/job-recommender-system/commit/9b51badefd0cf169819e0315a0e29f4a3b112613), ngày 05/11/2026.  
+Phần bổ sung 11/11/2026 được mô tả ở mục 12 và [tài liệu gợi ý kết hợp](BALANCED_RECOMMENDATIONS.md).
 **Mục đích:** giúp thành viên chưa tham gia phát triển hiểu toàn bộ quá trình, đọc mã nguồn, chạy demo và viết báo cáo đúng với sản phẩm đã làm.
 
 Tài liệu này tổng hợp yêu cầu trong cuộc trao đổi, lịch sử Git và mã nguồn hiện có; không phải bản chép nguyên văn hội thoại hay bản báo cáo theo mẫu của trường. Thông tin sinh viên, nhóm, giảng viên, lớp, mẫu bìa và biểu mẫu đánh giá cần do nhóm điền theo thực tế. Không tự điền tên thành viên hay tỷ lệ đóng góp chưa được xác nhận.
@@ -86,6 +88,7 @@ Các ngày bên dưới dựa vào lịch sử commit, giúp người viết ph�
 | 05/11/2026 | Góp ý thầy: tăng dữ liệu, vận dụng pandas/rating Lab 3, xử lý việc xa nhà | `8d07e61`: 7.050 tin, rating nhu cầu và bảng so sánh chuyên môn/khoảng cách |
 | 05/11/2026 | Phát hiện mô tả dồn đoạn, lương nghìn và số trần “105” | `9b51bad`: rà 7.050 tin, phục hồi bố cục và chuẩn hóa lương có bằng chứng |
 | 10/11/2026 | Kiểm tra GitHub, đối chiếu chức năng với nền tảng tuyển dụng và tổng hợp bàn giao | Nhánh `main` đã có bản chức năng `9b51bad`; tài liệu này ghi lại trạng thái để viết báo cáo |
+| 11/11/2026 | Thầy yêu cầu kết hợp chuyên môn và khoảng cách, đưa nhóm kết hợp lên đầu | Backup 11 tệp trước sửa; bổ sung điểm 70% CV + 30% độ gần, giữ hai nhóm cũ phía dưới; không bịa điểm khi thiếu nơi ở |
 
 Trong quá trình làm cũng có yêu cầu dọn các thư mục lab lưu nhầm khỏi Project. Phạm vi dữ liệu ứng dụng không dùng bài lab phim/sách; Lab 3 chỉ được tham khảo cách xử lý pandas và công thức rating. Không ghi tên ba thư mục đã dọn nếu không có chứng cứ để xác nhận.
 
@@ -413,10 +416,19 @@ Góp ý của giảng viên: việc phù hợp nhất có thể quá xa ứng vi
 |---|---|
 | Nơi muốn làm việc | Lọc danh sách chính theo lựa chọn của ứng viên |
 | Nơi ở hiện tại | Làm mốc đối chiếu khoảng cách |
+| Nhóm cân bằng chuyên môn và khoảng cách | Gợi ý đầu tiên, kết hợp điểm CV và độ gần nơi ở |
 | Nhóm phù hợp chuyên môn nhất | Các việc có điểm CV cao trên toàn quốc |
 | Nhóm gần nơi ở nhất | Các việc đã đạt ngưỡng phù hợp, xếp gần trước rồi theo điểm CV |
 
-Bảng so sánh mặc định lấy tối đa 3 tin mỗi nhóm; không lấy nơi ứng viên muốn chuyển đến làm địa chỉ nhà. Nếu chưa rõ nơi ở thì không kết luận việc nào gần nhà. Hai nhóm so sánh toàn quốc là phần riêng, không trộn tin ngoài vùng vào danh sách chính.
+Bảng so sánh mặc định lấy tối đa 3 tin mỗi nhóm; không lấy nơi ứng viên muốn chuyển đến làm địa chỉ nhà. Nếu chưa rõ nơi ở thì không kết luận việc nào gần nhà. Các nhóm so sánh toàn quốc là phần riêng, không trộn tin ngoài vùng vào danh sách chính.
+
+**Bổ sung 11/11/2026:** nhóm kết hợp ở trên cùng, hai nhóm chuyên môn/gần nhà
+riêng ở bên dưới. Với khoảng cách vùng d (km), `P = 1/(1+d/50)` và
+`B = 0,70×điểm CV + 0,30×P`. Chỉ dùng công việc đã đạt ngưỡng chuyên môn,
+có khoảng cách xác định. Không sửa điểm CV, không cộng rating nhu cầu vào
+phép cân bằng này. 70/30 và 50 km là cấu hình thử nghiệm, chưa có đánh giá
+chứng minh tăng độ chính xác. Thiếu nơi ở hoặc tọa độ thì không tạo điểm kết hợp.
+Chi tiết: [BALANCED_RECOMMENDATIONS.md](BALANCED_RECOMMENDATIONS.md).
 
 [`job_proximity.py`](../job_proximity.py) dùng Haversine với bán kính Trái Đất 6.371,0088 km để tính đường chim bay giữa **điểm đại diện vùng/thành phố**. File [`data/region_coordinates.json`](../data/region_coordinates.json) có 25 điểm đại diện, lấy từ [GeoNames cities15000](https://download.geonames.org/export/dump/cities15000.zip), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
@@ -516,10 +528,10 @@ Python kiểm tra validation, TF-IDF/vector hóa, cosine/ranking, vùng, hybrid,
 
 Trạng thái chứng cứ tại lần tổng hợp:
 
-- Mã hiện có khám phá được **86 test Python** và **22 test JavaScript**.
-- Lần chạy toàn bộ Python gần nhất trong đợt sửa đã đạt 84 test; sau đó thêm 2 test định dạng và chạy lại nhóm định dạng cuối (9 test), nhóm catalog liên quan (3 test), JavaScript (22 test), đều đạt.
+- Sau bổ sung nhóm cân bằng ngày 11/11/2026, đã chạy đạt **toàn bộ 91 test Python** và **24 test JavaScript**; notebook Lab 3 đã chạy lại không có ô lỗi.
+- Các test mới kiểm tra lựa chọn kết hợp khác cả hai cực, trường hợp thiếu nơi ở/tọa độ, điểm chuyên môn gốc không đổi, nhiều vùng, đồng điểm, lọc vùng API và thứ tự hiển thị Việt/Anh.
 - Đã kiểm tra web/API các tin người dùng chụp: lương tuần KOH, WOORI 105, ATOMI và mô tả có nhiều dòng; kiểm tra trình duyệt phần hiển thị và Việt/Anh.
-- Không diễn đạt thành “86 test Python vừa chạy toàn bộ đều đạt” nếu chưa thực sự chạy lại toàn suite hiện tại. Nhóm nên chạy lệnh bên dưới trước khi chụp kết quả nộp.
+- Nhóm nên chạy lệnh bên dưới trước khi chụp kết quả nộp; số test và kết quả phải tương ứng phiên bản đang dùng.
 
 Số test phần mềm đạt không phải độ chính xác AI. Test nhẹ có encoder giả lập hoặc tắt semantic để không tải model; thực nghiệm A/B/C với semantic thật là chứng cứ riêng.
 

@@ -11,6 +11,11 @@ from locations import find_regions, plain_text
 
 COORDINATES=json.loads((Path(__file__).resolve().parent/'data/region_coordinates.json').read_text(encoding='utf-8'))['regions']
 
+# Chính sách thử nghiệm, ưu tiên chuyên môn; không phải trọng số học từ dữ liệu.
+# 50 km là tham số làm giảm điểm gần, KHÔNG phải giới hạn loại công việc.
+BALANCE_POLICY={'fit_weight':.7,'proximity_weight':.3,'distance_scale_km':50.,
+                'version':'career-distance-v1'}
+
 
 def home_locations(text):
     result=[]
@@ -44,10 +49,26 @@ def annotate_distance(jobs,home_region):
 
 
 def compare_options(jobs,home_region,top_n=3):
+    """Ba góc nhìn trên cùng pool đã đạt ngưỡng nghề nghiệp của CV Engine.
+
+    Điểm gần = 1/(1+d/50); điểm cân bằng = 70% CV + 30% điểm gần.
+    Chỉ cân bằng khi có nơi ở và khoảng cách hợp lệ, không gán khoảng cách 0
+    cho tin thiếu địa điểm/remote. Không sửa điểm CV hoặc trộn điểm nhu cầu.
+    Khoảng cách vùng không phải thời gian hay số km đi làm thực tế.
+    """
     annotated=annotate_distance(jobs,home_region)
     best=sorted(annotated,key=lambda job:(-job.get('score',0.),job['id']))[:top_n]
-    near=sorted((job for job in annotated if job['distance_km'] is not None),
+    located=[job for job in annotated if home_region and job['distance_km'] is not None]
+    near=sorted(located,
                 key=lambda job:(job['distance_km'],-job.get('score',0.),job['id']))[:top_n]
-    return {'home_region':home_region,'best_fit':best,'near_home':near,
+    balanced=[]
+    for job in located:
+        proximity=1/(1+job['distance_km']/BALANCE_POLICY['distance_scale_km'])
+        fit=float(job.get('score',0.))
+        value=BALANCE_POLICY['fit_weight']*fit+BALANCE_POLICY['proximity_weight']*proximity
+        balanced.append({**job,'proximity_score':proximity,'balanced_score':value})
+    balanced=sorted(balanced,key=lambda job:(-job['balanced_score'],-job.get('score',0.),job['distance_km'],job['id']))[:top_n]
+    return {'home_region':home_region,'balanced':balanced,'balance_policy':dict(BALANCE_POLICY),
+            'best_fit':best,'near_home':near,
             'scope':'nationwide_comparison','distance_kind':'region_centers',
             'note':'Approximate straight-line distance between representative city points, not commuting distance.'}
