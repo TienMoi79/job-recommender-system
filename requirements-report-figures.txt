@@ -1,0 +1,3 @@
+-r requirements.txt
+# Chỉ cần khi tạo lại bộ hình báo cáo; không bắt buộc để chạy web.
+matplotlib>=3.8,<4

@@ -1,6 +1,6 @@
 # Hồ sơ bàn giao để viết báo cáo đồ án — Hệ gợi ý việc làm trực tuyến (JobVista)
 
-**Ngày cập nhật:** 11/11/2026; giữ toàn bộ lịch sử từ ngày bắt đầu đồ án.
+**Ngày cập nhật:** 14/11/2026; giữ toàn bộ lịch sử từ ngày bắt đầu đồ án.
 
 **Môn học:** Trí tuệ nhân tạo ứng dụng.
 
@@ -728,6 +728,25 @@ Không cần làm giả 10 người để chụp rating thật: dùng ví dụ n
 Ảnh 2 là danh sách kết quả chính với tên mới và dòng mô tả phạm vi. Ca này chọn Cần Thơ và có 4 kết quả; không lấy ảnh có 4 kết quả để mô tả như ca TP.HCM có 24 kết quả ở lượt thử khác.
 
 ![Danh sách việc làm phù hợp CV tại khu vực đã chọn](https://raw.githubusercontent.com/TienMoi79/job-recommender-system/main/docs/images/cv-results-title-20261111.png)
+
+### 18.2. Bộ hình Chương 3 để chèn vào Word — xuất ngày 14/11/2026
+
+Đã có [bộ 7 hình PNG 300 dpi, bản SVG, số liệu và chú thích](https://github.com/TienMoi79/job-recommender-system/tree/main/outputs/report_figures_20261114).
+Đọc [hướng dẫn chèn hình và nguồn trích dẫn](https://github.com/TienMoi79/job-recommender-system/blob/main/outputs/report_figures_20261114/HUONG_DAN_CHEN_HINH.md) trước khi đưa vào báo cáo.
+
+| Số hình | Nội dung |
+|---|---|
+| 3.1 | Phân bố tin theo 24 khu vực chính, mỗi tin đếm một lần theo Primary_Region |
+| 3.2 | Phân bố theo 14 lĩnh vực Domain, khác với 20 mã nghề Role_Code |
+| 3.3 | Kinh nghiệm: 6.494 rõ / 556 chưa rõ. Lương: 5.167 có mức tiền / 811 thỏa thuận hoặc cạnh tranh / 1.072 chưa rõ |
+| 3.4 | Kiến trúc trình duyệt, FastAPI, AI Engine và các kho dữ liệu |
+| 3.5 | Cơ sở tri thức gồm dữ kiện, từ điển và quy tắc; tách trạng thái cá nhân, không mô tả như knowledge graph |
+| 3.6 | Luồng ghép CV và luồng gợi ý việc tương tự; tách nhóm đối chiếu toàn quốc với danh sách vùng |
+| 3.7 | Wireframe hai trạng thái đọc/xác nhận CV và xem kết quả, có nhóm cân bằng mới ở đầu |
+
+Số liệu lấy từ catalog 7.050 tin sau chuẩn hóa, không dùng mẫu benchmark 500.
+Các hình sơ đồ được tổng hợp từ mã nguồn, không phải ảnh chụp giao diện.
+File CSV tổng hợp và checksum đi kèm để kiểm chứng; các tin vẫn là dữ liệu lịch sử chưa xác minh còn tuyển.
 
 ## 19. Lưu trữ, quyền riêng tư, GitHub và backup
 

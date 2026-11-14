@@ -1,0 +1,48 @@
+{
+  "generated_date": "14/11/2026",
+  "source_csv": "data/jobs_catalog.csv",
+  "csv_sha256": "eff43c6e978c3aaca075b8a750d06a9683c2b4112d62dafd4efcb19d9681e60f",
+  "code_reference": "bebcf9b732a32b3d98cee2078b7c9e62a73017fe",
+  "rows": 7050,
+  "region_count": 24,
+  "domain_count": 14,
+  "availability": {
+    "experience_known": 6494,
+    "experience_unknown": 556,
+    "salary_numeric": 5167,
+    "salary_negotiable": 811,
+    "salary_unknown": 1072
+  },
+  "source_dataset": "https://huggingface.co/datasets/tinixai/vietnamese-job-descriptions",
+  "source_revision": "679c3a17347ff6ce769d9bf510c122a087493cf6",
+  "source_license": "CC-BY-NC-4.0",
+  "dpi": 300,
+  "captions": {
+    "Hinh_3_1_Phan_bo_tin_theo_khu_vuc": "Hình 3.1. Biểu đồ phân bố tin tuyển dụng theo khu vực chính",
+    "Hinh_3_2_Phan_bo_tin_theo_linh_vuc": "Hình 3.2. Biểu đồ phân bố tin tuyển dụng theo lĩnh vực chuyên môn",
+    "Hinh_3_3_Muc_do_san_co_kinh_nghiem_va_luong": "Hình 3.3. Biểu đồ mức độ sẵn có của thông tin kinh nghiệm và tiền lương",
+    "Hinh_3_4_Kien_truc_tong_the_JobVista": "Hình 3.4. Sơ đồ kiến trúc tổng thể của hệ thống JobVista",
+    "Hinh_3_5_To_chuc_co_so_tri_thuc_JobVista": "Hình 3.5. Sơ đồ tổ chức cơ sở tri thức của hệ thống JobVista",
+    "Hinh_3_6_Luong_xu_ly_goi_y_viec_lam": "Hình 3.6. Sơ đồ luồng xử lý gợi ý việc làm của hệ thống JobVista",
+    "Hinh_3_7_Bo_cuc_giao_dien_tim_viec_CV": "Hình 3.7. Sơ đồ bố cục giao diện tìm việc theo CV của JobVista"
+  },
+  "files": {
+    "Hinh_3_1_Phan_bo_tin_theo_khu_vuc.png": "1b00f6df7eef2df67af9b5f6b4f2c3f7d8ebfc224c8f78899d8d5126c22dba2b",
+    "Hinh_3_2_Phan_bo_tin_theo_linh_vuc.png": "72130187f2d11e57f878c813d21cab1f9ef1024369d288fd92455109a0ece3ef",
+    "Hinh_3_3_Muc_do_san_co_kinh_nghiem_va_luong.png": "6a9f0066cbd5af05dc0ba6ac75fe950a2503f5e71a876a1e2ad6e63ccb1b7900",
+    "Hinh_3_4_Kien_truc_tong_the_JobVista.png": "394c8042206d90c9b7ae05e987b27a5ca4aec392423c9dcd141581e5bf147587",
+    "Hinh_3_5_To_chuc_co_so_tri_thuc_JobVista.png": "b3383bb73a723b13512ef2a00669314fdbcf2d0c669d971324edca92fb7c8be4",
+    "Hinh_3_6_Luong_xu_ly_goi_y_viec_lam.png": "e9f8644456269a213d4c38bb3bf108ddadcc5ed28299eec2d1f2344eec4c1b87",
+    "Hinh_3_7_Bo_cuc_giao_dien_tim_viec_CV.png": "36bc67b4c372d98649aaacf307ee016cb676a240fbb3b663e698d3c9acfa5183",
+    "So_lieu\\Hinh_3_1_so_lieu.csv": "55424f53611f538b9329f60543091d3201a5c6a3a73bdf6143a6dbd37476bbc2",
+    "So_lieu\\Hinh_3_2_so_lieu.csv": "11739341e354cb6b105275e5c7b7729b06ed5752f663523e8bfdb37de58a5741",
+    "So_lieu\\Hinh_3_3_so_lieu.csv": "6b598890f821998dc66ef699e2b1c9687141af08380bbefd698501ca4f7740df",
+    "SVG\\Hinh_3_1_Phan_bo_tin_theo_khu_vuc.svg": "4990d969fe2d9e4354bf223b898006bc5d5bff4b0995e75554fbff7854582c81",
+    "SVG\\Hinh_3_2_Phan_bo_tin_theo_linh_vuc.svg": "aa9c5a3a68fe623f55ad778a9aef320febf206781077f03a3b23bd3c04d58ef6",
+    "SVG\\Hinh_3_3_Muc_do_san_co_kinh_nghiem_va_luong.svg": "b3605b47accd85de5cc09d468f64b2665971fb076a41593be8abb35474a87940",
+    "SVG\\Hinh_3_4_Kien_truc_tong_the_JobVista.svg": "4e292f75fa6b76981825b861d1e406b903984a0aa82f935b447f57ef8d632b48",
+    "SVG\\Hinh_3_5_To_chuc_co_so_tri_thuc_JobVista.svg": "a89e3a8477b606c40acc758d35b74fd98bd9c843e2477d3c50472a83765c12d6",
+    "SVG\\Hinh_3_6_Luong_xu_ly_goi_y_viec_lam.svg": "3dcaca636afd5d018a255092c8ee6121d0c586381dcdd4e306fa9c859f80132a",
+    "SVG\\Hinh_3_7_Bo_cuc_giao_dien_tim_viec_CV.svg": "72ef13449b1696630b351348f5697aa01be93a860e9a2bf946f019b0ce8fa856"
+  }
+}

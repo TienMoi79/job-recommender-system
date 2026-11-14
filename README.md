@@ -4,6 +4,10 @@
 trạng thái đồ án](docs/TONG_HOP_DO_AN_CHO_BAO_CAO.md), gồm lịch sử yêu cầu,
 chức năng, dữ liệu, thuật toán, kết quả thực nghiệm, cách demo và dàn ý báo cáo.
 
+**Bộ hình Chương 3:** [7 hình PNG 300 dpi, SVG và bảng số liệu](outputs/report_figures_20261114/HUONG_DAN_CHEN_HINH.md),
+đánh số 3.1–3.7 theo yêu cầu báo cáo. Tạo lại bằng `python scripts/generate_report_figures.py`
+sau khi cài `requirements-report-figures.txt`; không cần thư viện này để chạy web.
+
 Mã nguồn cho **Mock Data, AI Engine, đánh giá xếp hạng và giao diện web**,
 kèm Jupyter Notebook để trình bày. Python theo hướng đối tượng, có comment/docstring
 tiếng Việt. Phiên bản 2 bổ sung 5 phần: kết hợp từ khóa/ngữ nghĩa, đối chiếu kinh

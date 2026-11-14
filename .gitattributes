@@ -2,3 +2,5 @@
 # exact CSV bytes (including quoted multiline fields) on every platform.
 /data/jobs_catalog.csv -text -whitespace
 /data/evaluation/jobs_catalog_500.csv -text -whitespace
+# Report figures and summary CSVs have checksums in their artifact manifest.
+/outputs/report_figures_20261114/** -text -whitespace
