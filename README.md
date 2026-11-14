@@ -8,6 +8,10 @@ chức năng, dữ liệu, thuật toán, kết quả thực nghiệm, cách dem
 đánh số 3.1–3.7 theo yêu cầu báo cáo. Tạo lại bằng `python scripts/generate_report_figures.py`
 sau khi cài `requirements-report-figures.txt`; không cần thư viện này để chạy web.
 
+**Phần cài đặt và demo cho báo cáo:** [tài liệu theo 10 mục, 24 đoạn code trích nguyên văn và 16 ảnh giao diện thật](outputs/implementation_demo_20261114/CAI_DAT_VA_DEMO_JOBVISTA.md).
+Gói kèm bản HTML để đọc, danh mục chú thích ảnh và CV PDF giả lập dùng demo.
+Các đoạn trích có vị trí nguồn để đối chiếu; ảnh chụp ngày 14/11/2026.
+
 Mã nguồn cho **Mock Data, AI Engine, đánh giá xếp hạng và giao diện web**,
 kèm Jupyter Notebook để trình bày. Python theo hướng đối tượng, có comment/docstring
 tiếng Việt. Phiên bản 2 bổ sung 5 phần: kết hợp từ khóa/ngữ nghĩa, đối chiếu kinh

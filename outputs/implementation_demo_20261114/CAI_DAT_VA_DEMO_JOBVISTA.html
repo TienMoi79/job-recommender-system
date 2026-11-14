@@ -1,0 +1,581 @@
+<!doctype html><html lang="vi"><meta charset="utf-8"><title>JobVista – Cài đặt và Demo</title><style>body{font:16px/1.7 Segoe UI,Arial,sans-serif;max-width:1120px;margin:40px auto;padding:0 26px;color:#173d34}h1,h2{line-height:1.35}h2{margin-top:52px;border-top:2px solid #c9ddd3;padding-top:20px}pre{background:#f2f5f4;color:#172f29;padding:18px;overflow:auto;font:13px/1.6 Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}img{width:100%;height:auto;border:1px solid #d9e6df;margin-top:24px}table{border-collapse:collapse;width:100%;font-size:14px}td{border:1px solid #c9d9d2;padding:9px}tr:first-child{background:#e5f0e9;font-weight:bold}a{color:#13795d}code{font-family:Consolas,monospace}@media print{body{max-width:none;margin:0}img,table{break-inside:avoid}h2{break-before:page}pre{font-size:9pt}a{color:inherit}}</style><body><h1>JobVista — Cài đặt hệ thống và demo chức năng</h1>
+<p>Tài liệu cung cấp đúng 10 mục theo yêu cầu làm báo cáo. Ngày chụp: 14/11/2026. Mã nguồn đối chiếu: <code>c2bf92d5874d235db2f6b45f4db25ce101dcdcf3</code>; ứng dụng thật tại <code>http://127.0.0.1:8000/</code>. Các đoạn code dưới đây được trích nguyên văn từ project, có đường dẫn và số dòng để kiểm tra. Chúng cần các import và class liên quan trong repo; không chạy riêng các file trích <code>.txt</code>. Phần giải thích bên ngoài code dùng để biên tập vào Word. Ảnh là ảnh chụp trình duyệt thật, không dựng lại giao diện, không chỉnh sửa điểm kết quả. CV demo là hồ sơ tổng hợp giả lập CV07.</p>
+<p>Cách dùng: đọc <code>CAI_DAT_VA_DEMO_JOBVISTA.md</code>, hoặc mở bản HTML cùng tên để xem code và ảnh. Khi chèn Word, dùng Insert → Pictures với ảnh gốc trong <code>images</code>; tự đánh số hình theo chương của báo cáo. Các ảnh 01–16 ở đây chưa gán số chương để tránh trùng Hình 3.1–3.7 đã cung cấp.</p>
+<h2>1. Công cụ và môi trường cài đặt</h2>
+<p>Hệ thống được phát triển bằng Python theo hướng đối tượng, giao diện HTML/CSS/JavaScript và Backend FastAPI. VS Code là môi trường lập trình, Jupyter Notebook phục vụ trình bày và thực nghiệm thuật toán. Python thực tế của môi trường chụp demo là 3.12.5; repo yêu cầu Python từ 3.10. Không cần Node.js để chạy web; Node chỉ dùng cho kiểm thử JavaScript.</p>
+<table>
+<tr><td>Thành phần</td><td>Thư viện/công cụ và vai trò</td></tr>
+<tr><td>Xử lý dữ liệu</td><td>pandas, NumPy: chuẩn hóa, lọc, tổng hợp và xử lý dữ liệu theo batch</td></tr>
+<tr><td>Biểu diễn nội dung</td><td>scikit-learn TF-IDF; sentence-transformers cho embedding ngữ nghĩa</td></tr>
+<tr><td>API</td><td>FastAPI, Pydantic, Uvicorn</td></tr>
+<tr><td>Đọc tệp CV</td><td>pypdf, pypdfium2, python-docx, Pillow, RapidOCR, ONNX Runtime</td></tr>
+<tr><td>Lưu trữ</td><td>CSV catalog; JSON cấu hình; SQLite nhu cầu nghề; localStorage hồ sơ và sở thích</td></tr>
+<tr><td>Quản lý mã nguồn</td><td>Git/GitHub</td></tr>
+</table>
+<p>Lệnh PowerShell khi tải project về máy mới:</p>
+<pre><code>git clone --branch main https://github.com/TienMoi79/job-recommender-system.git
+cd job-recommender-system
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-preview.txt -r requirements-semantic.txt
+.\.venv\Scripts\python.exe web_preview.py</code></pre>
+<p>Mở <code>http://127.0.0.1:8000/</code>. Nếu đang ở đúng thư mục và đã có môi trường, chỉ cần lệnh cuối. Dừng server bằng Ctrl+C. Lần đầu tải mô hình cần Internet và tạo embedding có thể mất vài phút. Không dùng lệnh Streamlit cũ. Các file requirements sau là khai báo khoảng phiên bản, không phải bản khóa toàn bộ dependency chính xác.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/requirements-preview.txt#L1-L3">requirements-preview.txt, dòng 1–3</a>. Bản trích riêng: <a href="code/01_requirements_web.txt">01_requirements_web.txt</a>.</p>
+<pre><code>-r requirements-web.txt
+fastapi&gt;=0.128,&lt;1
+uvicorn&gt;=0.40,&lt;1</code></pre>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/requirements-semantic.txt#L1-L2">requirements-semantic.txt, dòng 1–2</a>. Bản trích riêng: <a href="code/02_requirements_semantic.txt">02_requirements_semantic.txt</a>.</p>
+<pre><code>-r requirements.txt
+sentence-transformers&gt;=3.0,&lt;6.0</code></pre>
+<p>Cài và mở notebook để thuyết trình thuật toán:</p>
+<pre><code>.\.venv\Scripts\python.exe -m pip install -r requirements-notebook.txt
+.\.venv\Scripts\python.exe -m notebook</code></pre>
+<p>Mở <code>job_recommender_notebook.ipynb</code> hoặc <code>lab3_jobvista.ipynb</code>, chọn kernel của <code>.venv</code>. Notebook và giao diện web dùng chung các module xử lý của đồ án.</p>
+<h2>2. Cài đặt giao diện người dùng (Frontend)</h2>
+<p>Frontend dùng JavaScript thuần để dựng giao diện và cập nhật trạng thái mà không tải lại trang. <code>index.html</code> nạp CSS, module lưu trữ cá nhân và logic giao diện; cùng server FastAPI phục vụ các tài nguyên tại <code>/assets</code>. Giao diện gồm trang khám phá, tìm việc theo CV và việc đã lưu. Có chuyển Việt/Anh, bộ lọc, phân trang, bảng chi tiết bật/tắt và bố cục thích ứng màn hình. Nội dung bản địa hóa của các tin tiếng Anh có thể là bản tóm tắt theo quy tắc, không phải bản dịch đầy đủ bằng một mô hình dịch.</p>
+<p>Khung HTML thực tế:</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/web_ui/index.html#L1-L18">web_ui/index.html, dòng 1–18</a>. Bản trích riêng: <a href="code/03_khung_frontend.txt">03_khung_frontend.txt</a>.</p>
+<pre><code>&lt;!doctype html&gt;
+&lt;html lang=&quot;vi&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+  &lt;meta name=&quot;description&quot; content=&quot;JobVista — Khám phá việc làm IT và tìm cơ hội phù hợp từ CV của bạn.&quot;&gt;
+  &lt;title&gt;JobVista — Tìm cơ hội của bạn&lt;/title&gt;
+  &lt;link rel=&quot;icon&quot; href=&quot;/assets/favicon.svg&quot; type=&quot;image/svg+xml&quot;&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;/assets/styles.css&quot;&gt;
+  &lt;script src=&quot;/assets/personalization.js&quot; defer&gt;&lt;/script&gt;
+  &lt;script src=&quot;/assets/app.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;a class=&quot;skip-link&quot; href=&quot;#main&quot;&gt;Đến nội dung / Skip to content&lt;/a&gt;
+  &lt;div id=&quot;app&quot;&gt;&lt;div class=&quot;initial-loading&quot;&gt;&lt;span class=&quot;loader&quot;&gt;&lt;/span&gt; JobVista&lt;/div&gt;&lt;/div&gt;
+  &lt;div id=&quot;toast&quot; class=&quot;toast&quot; role=&quot;status&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p>Bộ lọc được dựng từ dữ liệu catalog và từ điển giao diện <code>t(...)</code>; <code>escape(...)</code> bảo vệ nội dung khi ghép vào HTML:</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/web_ui/app.js#L326-L333">web_ui/app.js, dòng 326–333</a>. Bản trích riêng: <a href="code/04_frontend_bo_loc.txt">04_frontend_bo_loc.txt</a>.</p>
+<pre><code>function filters() {
+  return `&lt;aside class=&quot;filters&quot;&gt;&lt;div class=&quot;filter-heading&quot;&gt;&lt;h3&gt;${icon(&#x27;tune&#x27;)}${t(&#x27;filters&#x27;)}&lt;/h3&gt;&lt;button class=&quot;text-button&quot; id=&quot;reset&quot;&gt;${t(&#x27;reset&#x27;)}&lt;/button&gt;&lt;/div&gt;
+    &lt;label class=&quot;field-label&quot; for=&quot;filter-region&quot;&gt;${t(&#x27;location&#x27;)}&lt;/label&gt;&lt;select id=&quot;filter-region&quot;&gt;${regionOptions(state.region)}&lt;/select&gt;
+    &lt;label class=&quot;field-label&quot; for=&quot;filter-domain&quot;&gt;${t(&#x27;domain&#x27;)}&lt;/label&gt;&lt;select id=&quot;filter-domain&quot;&gt;&lt;option value=&quot;&quot;&gt;${t(&#x27;allDomains&#x27;)}&lt;/option&gt;${(state.data?.domain_options||[]).map(([id,label])=&gt;`&lt;option value=&quot;${escape(id)}&quot; ${state.domain===id?&#x27;selected&#x27;:&#x27;&#x27;}&gt;${escape(label)}&lt;/option&gt;`).join(&#x27;&#x27;)}&lt;/select&gt;
+    &lt;fieldset class=&quot;experience&quot;&gt;&lt;legend&gt;${t(&#x27;experience&#x27;)}&lt;/legend&gt;${[[&#x27;&#x27;,&#x27;expAny&#x27;],[&#x27;0&#x27;,&#x27;exp0&#x27;],[&#x27;1&#x27;,&#x27;exp1&#x27;],[&#x27;3&#x27;,&#x27;exp3&#x27;]].map(([value,label])=&gt;`&lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;experience&quot; value=&quot;${value}&quot; ${state.exp===value?&#x27;checked&#x27;:&#x27;&#x27;}&gt;${t(label)}&lt;/label&gt;`).join(&#x27;&#x27;)}&lt;/fieldset&gt;
+    &lt;div class=&quot;cv-nudge&quot;&gt;&lt;span class=&quot;nudge-icon&quot;&gt;${icon(&#x27;spark&#x27;)}&lt;/span&gt;&lt;h3&gt;${t(&#x27;cvNudge&#x27;)}&lt;/h3&gt;&lt;p&gt;${t(&#x27;cvNudgeSub&#x27;)}&lt;/p&gt;&lt;button data-nav=&quot;cv&quot;&gt;${t(&#x27;tryCv&#x27;)}${icon(&#x27;arrow&#x27;)}&lt;/button&gt;&lt;/div&gt;
+    &lt;p class=&quot;filter-note&quot;&gt;${t(&#x27;sourceNote&#x27;)}&lt;/p&gt;&lt;/aside&gt;`;
+}</code></pre>
+<p>Hàm chuyển trạng thái mở/đóng chi tiết công việc:</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/web_ui/app.js#L505-L508">web_ui/app.js, dòng 505–508</a>. Bản trích riêng: <a href="code/05_frontend_bat_tat_chi_tiet.txt">05_frontend_bat_tat_chi_tiet.txt</a>.</p>
+<pre><code>function toggleJobDetails(id) {
+  if(state.selected===id){closeJobDetails();return;}
+  loadDetail(id);
+}</code></pre>
+<h2>3. Cài đặt Backend xử lý yêu cầu</h2>
+<p>Backend nhận dữ liệu, kiểm tra đầu vào, gọi các class nghiệp vụ rồi trả JSON. <code>CatalogService</code> nạp CSV bằng pandas, chuẩn bị dữ liệu theo ngôn ngữ và khởi tạo engine. Catalog/embedding tin công khai có thể được cache dùng chung; văn bản CV truy vấn không được đưa vào cache embedding công khai. Server phục vụ cả HTML và API trên cổng 8000.</p>
+<table>
+<tr><td>API</td><td>Mục đích</td></tr>
+<tr><td>GET <code>/api/catalog</code></td><td>Dữ liệu khám phá và các lựa chọn bộ lọc</td></tr>
+<tr><td>GET <code>/api/jobs/{job_id}</code></td><td>Chi tiết và gợi ý công việc tương tự</td></tr>
+<tr><td>POST <code>/api/cv/read</code></td><td>Đọc nội dung tệp CV, trả văn bản và hồ sơ nhận diện</td></tr>
+<tr><td>POST <code>/api/cv/match</code></td><td>Ghép CV, đối chiếu chuyên môn và khoảng cách</td></tr>
+<tr><td>POST <code>/api/recommendations</code></td><td>Cá nhân hóa từ hồ sơ CV và mối quan tâm</td></tr>
+<tr><td>GET <code>/api/demand</code></td><td>Thống kê rating nhu cầu nghề</td></tr>
+</table>
+<p>Lớp dịch vụ nạp catalog:</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/web_preview.py#L45-L51">web_preview.py, dòng 45–51</a>. Bản trích riêng: <a href="code/06_khoi_tao_catalog.txt">06_khoi_tao_catalog.txt</a>.</p>
+<pre><code>    def __init__(self, language: str):
+        self.language = language
+        original = pd.read_csv(ROOT / &quot;data/jobs_catalog.csv&quot;, encoding=&quot;utf-8-sig&quot;).fillna(&quot;&quot;)
+        self.company_count = int(original[&quot;Company&quot;].nunique())
+        self.jobs = localize_jobs(original, language)
+        self.engine = HybridJobRecommenderSystem(self.jobs, use_semantic=os.environ.get(&#x27;JOBVISTA_SEMANTIC&#x27;,&#x27;1&#x27;)!=&#x27;0&#x27;)
+        self.interests = SearchInterestRecommender(self.jobs, self.engine.diversifier)</code></pre>
+<p>Pydantic kiểm tra độ dài CV, giới hạn số kết quả, năm kinh nghiệm và cấu trúc request trước khi chạy engine:</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/web_preview.py#L182-L192">web_preview.py, dòng 182–192</a>. Bản trích riêng: <a href="code/07_request_kiem_tra_dau_vao.txt">07_request_kiem_tra_dau_vao.txt</a>.</p>
+<pre><code>class MatchRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=MAX_TEXT_CHARS)
+    location: str | None = None
+    top_n: int = Field(default=12, ge=1, le=50)
+    language: Language = &quot;vi&quot;
+    experience_years: float | None = Field(default=None,ge=0,le=60,allow_inf_nan=False)
+    experience_override: bool = False
+    home_region: str | None = None
+    compare_locations: bool = False
+    actor_id: str | None = Field(default=None, pattern=r&#x27;^[a-fA-F0-9-]{32,36}$&#x27;)
+    record_demand: bool = False</code></pre>
+<p>Endpoint đọc CV nhận từng phần dữ liệu, chặn quá 15 MB và đưa tác vụ đọc/OCR sang thread pool:</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/web_preview.py#L164-L179">web_preview.py, dòng 164–179</a>. Bản trích riêng: <a href="code/08_api_doc_cv.txt">08_api_doc_cv.txt</a>.</p>
+<pre><code>@app.post(&quot;/api/cv/read&quot;)
+async def read_cv(request: Request, language: Language = &quot;vi&quot;):
+    # Nhận raw bytes theo từng đoạn, giới hạn 15 MB ngay khi đọc. Không dùng
+    # UploadFile vì multipart mặc định có thể spool tệp lớn xuống ổ đĩa.
+    content = bytearray()
+    async for chunk in request.stream():
+        content.extend(chunk)
+        if len(content) &gt; MAX_FILE_BYTES:
+            raise HTTPException(413, TEXT[language][&quot;cv_file_large&quot;])
+    filename = unquote(request.headers.get(&quot;X-CV-Filename&quot;, &quot;&quot;))
+    try:
+        document = await run_in_threadpool(ResumeDocumentReader().read, bytes(content), filename)
+    except CVReadError as exc:
+        raise HTTPException(400, TEXT[language].get(exc.code, TEXT[language][&quot;cv_file_invalid&quot;])) from None
+    return {&quot;text&quot;: document.text, &quot;ocr&quot;: document.used_ocr, &quot;pages&quot;: document.page_count,
+            &quot;profile&quot;: profile_data(document.text, ocr=document.used_ocr)}</code></pre>
+<h2>4. Tích hợp các mô hình học máy và thuật toán gợi ý</h2>
+<p>JobVista là <strong>hệ gợi ý lai lấy nội dung làm chính</strong>: kết hợp TF-IDF, embedding ngữ nghĩa, kỹ năng, vị trí nghề, lĩnh vực và kinh nghiệm. Các lớp quy tắc bổ sung cá nhân hóa, nhu cầu nghề và khoảng cách địa lý. Hiện không có lọc cộng tác bằng ma trận user–item, không huấn luyện lại mô hình ngôn ngữ từ 7.050 tin.</p>
+<p>TF-IDF được fit trên tin tuyển dụng, CV chỉ transform vào cùng không gian vector. Sentence Transformer dùng mô hình pretrained <code>paraphrase-multilingual-MiniLM-L12-v2</code>, embedding 384 chiều; chia văn bản dài thành các đoạn token, encode rồi trung bình và chuẩn hóa L2. Dot product của vector đã chuẩn hóa tương đương cosine similarity. Model dùng CPU; phiên bản trọng số được ghim trong <code>semantic_index.py</code>. Nếu model chưa sẵn sàng, hệ thống thông báo chế độ <code>hybrid-lexical</code>, bỏ thành phần ngữ nghĩa và chuẩn hóa lại trọng số.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/job_recommender.py#L70-L89">job_recommender.py, dòng 70–89</a>. Bản trích riêng: <a href="code/09_tfidf_vectorizer.txt">09_tfidf_vectorizer.txt</a>.</p>
+<pre><code>class TfidfTextVectorizer(TextVectorizer):
+    &quot;&quot;&quot;Baseline nhẹ, không tải mô hình và chạy được hoàn toàn offline.&quot;&quot;&quot;
+
+    def __init__(self) -&gt; None:
+        self._vectorizer = TfidfVectorizer(
+            preprocessor=TextPreprocessor.for_tfidf,
+            # Giữ cả token 1 ký tự (R, C) và số năm; bigram giữ cụm &#x27;power bi&#x27;.
+            token_pattern=r&quot;(?u)\b\w+\b&quot;,
+            ngram_range=(1, 2),
+            sublinear_tf=True,
+            norm=&quot;l2&quot;,
+        )
+
+    def fit_transform(self, texts: list[str]) -&gt; csr_matrix:
+        return self._vectorizer.fit_transform(texts)
+
+    def transform(self, texts: list[str]) -&gt; csr_matrix:
+        # Không fit lại trên CV: fit lại sẽ thay vocabulary/IDF và làm lệch
+        # không gian vector so với những việc làm đã được lưu trong bộ nhớ.
+        return self._vectorizer.transform(texts)</code></pre>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/job_recommender.py#L113-L137">job_recommender.py, dòng 113–137</a>. Bản trích riêng: <a href="code/10_semantic_embedding.txt">10_semantic_embedding.txt</a>.</p>
+<pre><code>    def transform(self, texts: list[str]) -&gt; np.ndarray:
+        # Chia văn bản dài thành các đoạn token trước khi encode để phần cuối
+        # CV không bị cắt bỏ bởi giới hạn ngữ cảnh của mô hình.
+        tokenizer = self._model.tokenizer
+        chunk_size = self._model.max_seq_length - tokenizer.num_special_tokens_to_add(False)
+        if chunk_size &lt; 1:
+            raise ValueError(&quot;Mô hình có giới hạn token không hợp lệ.&quot;)
+        chunks, groups = [], []
+        for text in texts:
+            tokens = tokenizer.encode(text, add_special_tokens=False, verbose=False)
+            start = len(chunks)
+            for offset in range(0, len(tokens), chunk_size):
+                chunks.append(tokenizer.decode(tokens[offset:offset + chunk_size]))
+            if len(chunks) == start:
+                chunks.append(text)
+            groups.append((start, len(chunks)))
+        chunk_vectors = self._model.encode(
+            chunks, batch_size=16, convert_to_numpy=True,
+            normalize_embeddings=True, show_progress_bar=False,
+        )
+        # Lấy trung bình các đoạn rồi chuẩn hóa L2 về một vector cho mỗi hồ sơ.
+        # Đây là phép gộp đơn giản; chưa phải mô hình hiểu cấu trúc CV đầy đủ.
+        vectors = np.vstack([chunk_vectors[start:end].mean(axis=0) for start, end in groups])
+        norms = np.linalg.norm(vectors, axis=1, keepdims=True)
+        return vectors / np.maximum(norms, 1e-12)</code></pre>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/semantic_index.py#L51-L56">semantic_index.py, dòng 51–56</a>. Bản trích riêng: <a href="code/11_cosine_semantic_index.txt">11_cosine_semantic_index.txt</a>.</p>
+<pre><code>    def similarity(self, text: str) -&gt; np.ndarray:
+        # Model không giữ văn bản truy vấn sau khi encode. Chỉ ma trận tin công
+        # khai ở self.vectors mới được ghi xuống đĩa.
+        with _model_lock:
+            vector = self.model.transform([text])[0]
+        return np.clip(self.vectors @ vector, 0, 1)</code></pre>
+<p>Trọng số mặc định: từ khóa 15%, ngữ nghĩa 25%, kỹ năng 30%, vị trí 15%, lĩnh vực 5%, kinh nghiệm 10%. Đây là tham số thử nghiệm, không phải xác suất trúng tuyển và không được suy ra là độ chính xác 100%. Thành phần thiếu bằng chứng được bỏ rồi chuẩn hóa lại.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/hybrid_recommender.py#L25-L25">hybrid_recommender.py, dòng 25–25</a>. Bản trích riêng: <a href="code/12_trong_so_sau_thanh_phan.txt">12_trong_so_sau_thanh_phan.txt</a>.</p>
+<pre><code>DEFAULT_WEIGHTS = {&quot;Lexical&quot;:.15,&quot;Semantic&quot;:.25,&quot;Skills&quot;:.30,&quot;Title&quot;:.15,&quot;Domain&quot;:.05,&quot;Experience&quot;:.10}</code></pre>
+<h2>5. Cài đặt chức năng đọc và phân tích CV ứng viên</h2>
+<p>Chức năng gồm hai tầng: trích xuất văn bản từ tệp và phân tích văn bản thành hồ sơ. PDF có chữ dùng pypdf; trang PDF quét được render bằng pypdfium2 và OCR; ảnh dùng Pillow/RapidOCR; Word dùng python-docx. Giới hạn 15 MB, 20 trang và 60.000 ký tự. Định dạng <code>.doc</code> cần đổi sang <code>.docx</code>; OCR có thể sai nên luôn cho người dùng kiểm tra.</p>
+<p><code>ResumeAnalyzer</code> nhận diện theo từ điển kỹ năng, alias nhóm nghề, quy tắc số năm kinh nghiệm và địa danh. Nó ưu tiên vị trí mong muốn, tách dòng liên hệ khỏi văn bản so khớp chuyên môn. Đây chưa phải bộ phân tích cấu trúc CV bằng LLM. Nơi ở phục vụ khoảng cách được xử lý riêng với nơi muốn làm việc; người dùng xác nhận hai trường này trước khi gợi ý.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/cv_documents.py#L95-L131">cv_documents.py, dòng 95–131</a>. Bản trích riêng: <a href="code/13_doc_tep_cv_da_dinh_dang.txt">13_doc_tep_cv_da_dinh_dang.txt</a>.</p>
+<pre><code>    def read(self, content: bytes, filename: str) -&gt; CVDocument:
+        if not isinstance(content, bytes) or not content:
+            raise CVReadError(&quot;cv_file_empty&quot;)
+        if len(content) &gt; MAX_FILE_BYTES:
+            raise CVReadError(&quot;cv_file_large&quot;)
+        extension = Path(filename).suffix.lower()
+        try:
+            if extension == &quot;.pdf&quot;:
+                result = self._pdf(content)
+            elif extension == &quot;.docx&quot;:
+                result = self._docx(content)
+            elif extension in IMAGE_EXTENSIONS:
+                with warnings.catch_warnings():
+                    warnings.simplefilter(&quot;error&quot;, Image.DecompressionBombWarning)
+                    with Image.open(BytesIO(content)) as image:
+                        frames = getattr(image, &quot;n_frames&quot;, 1)
+                        if frames &gt; MAX_PAGES:
+                            raise CVReadError(&quot;cv_too_many_pages&quot;)
+                        texts = []
+                        for frame in range(frames):
+                            image.seek(frame)
+                            texts.append(self._read_image(image))
+                result = CVDocument(&quot;\n&quot;.join(texts), frames, True, &quot;image&quot;)
+            else:
+                raise CVReadError(&quot;cv_format_unsupported&quot;)
+        except CVReadError:
+            raise
+        except (Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
+            raise CVReadError(&quot;cv_image_too_large&quot;) from exc
+        except Exception as exc:
+            raise CVReadError(&quot;cv_file_invalid&quot;) from exc
+        text = result.text.replace(&quot;\x00&quot;, &quot;&quot;).strip()
+        if len(text) &gt; MAX_TEXT_CHARS:
+            raise CVReadError(&quot;cv_text_too_long&quot;)
+        if len(text) &lt; 20:
+            raise CVReadError(&quot;cv_no_text&quot;)
+        return CVDocument(text, result.page_count, result.used_ocr, result.format)</code></pre>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/resume_profile.py#L129-L159">resume_profile.py, dòng 129–159</a>. Bản trích riêng: <a href="code/14_phan_tich_ho_so_cv.txt">14_phan_tich_ho_so_cv.txt</a>.</p>
+<pre><code>    def analyze(self, text: str, *, ocr: bool = False) -&gt; ResumeProfile:
+        if not isinstance(text, str) or not text.strip():
+            raise ValueError(&quot;CV text is empty&quot;)
+        lines = text.splitlines()
+        # Ưu tiên dòng vị trí mong muốn trước khi tìm trong phần đầu CV.
+        title_lines = [line for line in lines if re.search(
+            r&quot;vi tri ung tuyen|vi tri mong muon|desired role|target role|job title|career objective&quot;, plain_text(line))]
+        roles = identify_roles(&quot; &quot;.join(title_lines)) if title_lines else []
+        role_explicit = bool(roles)
+        if not roles:
+            roles = identify_roles(&quot;\n&quot;.join(lines[:12])[:1500])
+        if not roles:
+            roles = identify_roles(text)
+        # Địa chỉ phục vụ gợi ý vùng riêng; các dòng liên hệ/cá nhân có nhãn
+        # không được đưa vào vector so sánh nghề nghiệp.
+        professional_lines = [line for line in lines if not re.match(
+            r&quot;^(?:dia chi|address|noi o|noi muon lam(?: viec)?|dia diem mong muon|preferred location|desired location|ho ten|full name|name|email|e-mail|dien thoai|phone|ngay sinh|date of birth|gioi tinh|gender)\s*[:：]&quot;, plain_text(line))]
+        matching_text = &quot;\n&quot;.join(professional_lines)
+        matching_text = re.sub(r&quot;[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}&quot;, &quot; &quot;, matching_text)
+        from experience_matching import extract_experience
+        experience = extract_experience(text)
+        return ResumeProfile(
+            text=text, matching_text=matching_text, skills=tuple(extract_skills(matching_text)),
+            role_codes=tuple(role[0] for role in roles),
+            title_text=&quot;; &quot;.join(role[1] + &quot; &quot; + role[2] for role in roles),
+            domain_text=&quot;; &quot;.join(dict.fromkeys(role[3] + &quot; &quot; + role[4] for role in roles)),
+            location_candidates=tuple(cv_location_candidates(text, tolerant=ocr)),
+            experience_years=experience.years, experience_status=experience.status,
+            target_skills=tuple(extract_skills(&quot; &quot;.join(title_lines) if title_lines else &quot;\n&quot;.join(lines[:2]))),
+            role_explicit=role_explicit,
+        )</code></pre>
+<p>Frontend gửi tệp gốc đến API nội bộ rồi nhận văn bản/hồ sơ. Sau khi đọc thành công, nội dung và lựa chọn được tự lưu trong localStorage của trình duyệt, không lưu tệp gốc. CV không được gửi đến dịch vụ AI/OCR bên ngoài. Nút Xóa hồ sơ giúp xóa dữ liệu trên trình duyệt.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/web_ui/app.js#L569-L574">web_ui/app.js, dòng 569–574</a>. Bản trích riêng: <a href="code/15_frontend_goi_api_doc_cv.txt">15_frontend_goi_api_doc_cv.txt</a>.</p>
+<pre><code>async function readCv() {
+  if(!state.file||state.reading)return;state.reading=true;const version=++state.cvVersion;const file=state.file;render();
+  try {const data=await api(`/api/cv/read?language=${state.lang}`,{method:&#x27;POST&#x27;,headers:{&#x27;Content-Type&#x27;:&#x27;application/octet-stream&#x27;,&#x27;X-CV-Filename&#x27;:encodeURIComponent(file.name)},body:file});
+    if(version!==state.cvVersion)return;Object.assign(state,{cvText:data.text,profile:data.profile,ocr:data.ocr,cvRegion:data.profile.locations.find(code=&gt;state.data.all_regions.some(r=&gt;r.id===code))||&#x27;&#x27;,cvHomeRegion:data.profile.home_locations?.[0]||&#x27;&#x27;,cvExperience:data.profile.experience_years??&#x27;&#x27;,cvExperienceEdited:false,reading:false});persistCv();render();if(state.view===&#x27;explore&#x27;)refreshHome();
+  }catch(error){if(version===state.cvVersion){state.reading=false;render();toast(error.message);}}
+}</code></pre>
+<h2>6. Cài đặt chức năng gợi ý công việc tương tự (Job-to-Job Recommendation)</h2>
+<p>Khi xem một tin, hệ thống lấy vector nội dung của tin làm truy vấn, tính cosine với catalog, kết hợp 50% TF-IDF và 50% semantic nếu model sẵn sàng; nếu chưa thì dùng lexical. Chính tin đang xem và nhóm tin gần trùng với nó bị loại. Danh sách được sắp điểm giảm dần, có xử lý đa dạng công ty. Đây là item-to-item dựa nội dung, không cần lịch sử tương tác của nhiều người dùng. API trả ba gợi ý để hiển thị trong bảng chi tiết.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/hybrid_recommender.py#L318-L328">hybrid_recommender.py, dòng 318–328</a>. Bản trích riêng: <a href="code/16_job_to_job.txt">16_job_to_job.txt</a>.</p>
+<pre><code>    def recommend_similar_jobs(self, job_id, top_n=5, *, location=None):
+        self._validate_top_n(top_n)
+        if job_id not in self._id_to_position:
+            raise KeyError(job_id)
+        position = self._id_to_position[job_id]
+        lexical = cosine_similarity(self._job_vectors[position:position+1],self._job_vectors).ravel()
+        semantic, available = self._semantic_scores(self._documents[position])
+        scores = .5*lexical+.5*semantic if available else lexical
+        eligible = [i for i in self._eligible_positions(location)
+                    if self.diversifier.group[str(self._jobs.iloc[i].Job_ID)] != self.diversifier.group[job_id]]
+        return self._finish(scores,top_n,eligible)</code></pre>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/web_preview.py#L147-L156">web_preview.py, dòng 147–156</a>. Bản trích riêng: <a href="code/17_api_chi_tiet_va_tuong_tu.txt">17_api_chi_tiet_va_tuong_tu.txt</a>.</p>
+<pre><code>@app.get(&quot;/api/jobs/{job_id}&quot;)
+def get_job(job_id: str, language: Language = &quot;vi&quot;, location: str | None = None):
+    service = catalog(language)
+    found = service.jobs.loc[service.jobs[&quot;Job_ID&quot;] == job_id]
+    if found.empty:
+        raise HTTPException(404, &quot;job_not_found&quot;)
+    if location is not None and location not in REGIONS:
+        raise HTTPException(422, &quot;invalid_location&quot;)
+    return {&quot;job&quot;: service.serialize(found.iloc[0], detail=True),
+            &quot;similar&quot;: service.records(service.engine.recommend_similar_jobs(job_id, 3, location=location))}</code></pre>
+<h2>7. Cài đặt chức năng gợi ý việc làm theo CV (CV-to-Job Recommendation)</h2>
+<p>Từ hồ sơ đã đọc, engine tạo sáu thành phần điểm rồi cộng theo trọng số đang có bằng chứng. Điểm kỹ năng kết hợp độ phủ kỹ năng CV và độ phủ kỹ năng trong tin, giảm khi thiếu yêu cầu bắt buộc được nêu rõ. Kinh nghiệm thiếu không bị coi bằng 0; thiếu năm so với yêu cầu bị giảm điểm mềm. Engine kiểm tra mục tiêu nghề/stack, ngưỡng nội dung, địa điểm, giảm gần trùng và đa dạng công ty trước khi trả kết quả.</p>
+<p>Cần phân biệt: <code>score</code> là điểm chuyên môn từ engine; <code>personal_score</code> là điểm gợi ý sau các lớp sắp xếp phù hợp luồng. Badge trên thẻ dùng <code>personal_score</code> nếu có, nếu không dùng <code>score</code>. Ở lần demo rating chưa đủ mẫu nên hai điểm có thể bằng nhau.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/hybrid_recommender.py#L240-L316">hybrid_recommender.py, dòng 240–316</a>. Bản trích riêng: <a href="code/18_cv_to_job.txt">18_cv_to_job.txt</a>.</p>
+<pre><code>    def match_cv_to_jobs(self, cv_text, top_n=5, *, location=None, profile: ResumeProfile | None=None):
+        self._validate_top_n(top_n)
+        if not isinstance(cv_text,str) or not cv_text.strip():
+            raise ValueError(&#x27;cv_text must be a nonempty string&#x27;)
+        eligible = self._eligible_positions(location)
+        profile = profile or ResumeAnalyzer().analyze(cv_text)
+        if profile.text != cv_text:
+            raise ValueError(&#x27;CV profile does not match current text&#x27;)
+        if not eligible:
+            return self._rank(np.zeros(len(self._jobs)),top_n,eligible_positions=[])
+        lexical = np.clip(cosine_similarity(self._encoder.transform([profile.matching_text]),self._job_vectors).ravel(),0,1)
+        semantic, semantic_available = self._semantic_scores(profile.matching_text)
+        components = {field:np.zeros(len(self._jobs)) for field in DEFAULT_WEIGHTS}
+        components.update(Lexical=lexical,Semantic=semantic)
+        explanations, per_job_weights = [], []
+        cv_coverage, job_coverage, intent_supported = [], [], []
+        cv_domains = {ROLE_DOMAINS[code] for code in profile.role_codes if code in ROLE_DOMAINS}
+        target_stack = set(profile.target_skills) &amp; STACK_LANGUAGES
+        if not target_stack:
+            candidate_stack = set(profile.skills) &amp; STACK_LANGUAGES
+            target_stack = candidate_stack if len(candidate_stack)==1 else set()
+        for index,row in self._jobs.iterrows():
+            evidence = self._evidence[index]
+            coverage, matched, missing = skill_fit(profile.skills,evidence)
+            fit, exp_status = experience_fit(profile.experience_years,float(row.Experience_Years),known=bool(row.get(&#x27;Experience_Known&#x27;,True)))
+            candidate_coverage = len(matched)/len(profile.skills) if profile.skills else 0.
+            missing_required = evidence.required-set(profile.skills)
+            required_penalty = 1.-.5*len(missing_required)/len(evidence.required) if evidence.required else 1.
+            # Kết hợp tỷ lệ kỹ năng của tin được bao phủ và tỷ lệ kỹ năng CV
+            # được công việc sử dụng, tránh tin chỉ có một kỹ năng chung thắng
+            # tin đúng chuyên môn nhưng nhắc nhiều công nghệ hơn.
+            components[&#x27;Skills&#x27;][index] = (.6*candidate_coverage+.4*coverage)*required_penalty
+            raw_role_score = role_fit(profile.role_codes,self._roles[index])
+            title_score = raw_role_score
+            requested_stack = set(profile.target_skills)&amp;STACK_LANGUAGES
+            job_title_stack = set(extract_skills(str(row.get(&#x27;Original_Title&#x27;,row.Title))))&amp;STACK_LANGUAGES
+            stack_conflict = bool(requested_stack and job_title_stack and not requested_stack&amp;job_title_stack)
+            intent_supported.append(not stack_conflict and
+                                    (not profile.role_explicit or not self._roles[index] or raw_role_score&gt;=.35))
+            if target_stack and evidence.mentioned &amp; STACK_LANGUAGES and not (target_stack &amp; evidence.mentioned):
+                title_score *= .25
+            components[&#x27;Title&#x27;][index] = title_score
+            cv_coverage.append(candidate_coverage); job_coverage.append(coverage)
+            components[&#x27;Domain&#x27;][index] = float(bool(cv_domains &amp; {ROLE_DOMAINS[code] for code in self._roles[index] if code in ROLE_DOMAINS}))
+            components[&#x27;Experience&#x27;][index] = fit
+            active = dict(self.weights)
+            if not semantic_available: active[&#x27;Semantic&#x27;] = 0.
+            if not profile.skills or not evidence.mentioned: active[&#x27;Skills&#x27;] = 0.
+            if not profile.role_codes or not self._roles[index]: active[&#x27;Title&#x27;] = 0.; active[&#x27;Domain&#x27;] = 0.
+            if exp_status == &#x27;unknown&#x27;: active[&#x27;Experience&#x27;] = 0.
+            total = sum(active.values())
+            active = {field:weight/total for field,weight in active.items()} if total else {field:0. for field in active}
+            per_job_weights.append(active)
+            explanations.append({&#x27;matched&#x27;:matched,&#x27;missing&#x27;:missing,&#x27;required_missing&#x27;:sorted(evidence.required-set(profile.skills)),
+                                 &#x27;required&#x27;:sorted(evidence.required),&#x27;preferred&#x27;:sorted(evidence.preferred),&#x27;experience_status&#x27;:exp_status})
+        scores = np.array([sum(per_job_weights[i][field]*components[field][i] for field in components) for i in range(len(self._jobs))])
+        # Ngữ nghĩa thường có nền dương ngay cả với nội dung không liên quan.
+        # Cần ít nhất một tín hiệu nghề nghiệp, kỹ năng hoặc nội dung đáng kể.
+        eligible = [i for i in eligible if intent_supported[i] and scores[i]&gt;=self.min_score and
+                    (components[&#x27;Title&#x27;][i]&gt;0 or explanations[i][&#x27;matched&#x27;] or lexical[i]&gt;.04 or (semantic_available and semantic[i]&gt;.4))]
+        result = self._finish(scores,top_n,eligible,components)
+        by_id = {str(row.Job_ID):i for i,row in self._jobs.iterrows()}
+        indices = [by_id[str(identifier)] for identifier in result.Job_ID]
+        result[&#x27;Matched_Skills&#x27;] = [&#x27;; &#x27;.join(explanations[i][&#x27;matched&#x27;]) for i in indices]
+        result[&#x27;Not_Mentioned_Skills&#x27;] = [&#x27;; &#x27;.join(explanations[i][&#x27;missing&#x27;]) for i in indices]
+        result[&#x27;Missing_Required_Skills&#x27;] = [&#x27;; &#x27;.join(explanations[i][&#x27;required_missing&#x27;]) for i in indices]
+        result[&#x27;Required_Skills&#x27;] = [&#x27;; &#x27;.join(explanations[i][&#x27;required&#x27;]) for i in indices]
+        result[&#x27;Preferred_Skills&#x27;] = [&#x27;; &#x27;.join(explanations[i][&#x27;preferred&#x27;]) for i in indices]
+        result[&#x27;Experience_Status&#x27;] = [explanations[i][&#x27;experience_status&#x27;] for i in indices]
+        result[&#x27;Candidate_Experience_Years&#x27;] = profile.experience_years
+        result[&#x27;Component_Weights&#x27;] = [per_job_weights[i] for i in indices]
+        result[&#x27;CV_Skill_Coverage&#x27;] = [cv_coverage[i] for i in indices]
+        result[&#x27;Job_Skill_Coverage&#x27;] = [job_coverage[i] for i in indices]
+        result[&#x27;Job_Skills_Count&#x27;] = [len(self._evidence[i].mentioned) for i in indices]
+        result[&#x27;Ranking_Method&#x27;] = &#x27;hybrid&#x27; if semantic_available else &#x27;hybrid-lexical&#x27;
+        result.attrs[&#x27;semantic_used&#x27;] = semantic_available
+        return result</code></pre>
+<p>Endpoint giữ danh sách chính theo nơi muốn làm, đồng thời chuẩn bị một pool toàn quốc riêng để đối chiếu ba góc nhìn:</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/web_preview.py#L195-L233">web_preview.py, dòng 195–233</a>. Bản trích riêng: <a href="code/19_api_ghep_cv.txt">19_api_ghep_cv.txt</a>.</p>
+<pre><code>@app.post(&quot;/api/cv/match&quot;)
+def match_cv(payload: MatchRequest):
+    if not payload.text.strip():
+        raise HTTPException(422, &quot;empty_cv&quot;)
+    if payload.location is not None and payload.location not in REGIONS:
+        raise HTTPException(422, &quot;invalid_location&quot;)
+    if payload.home_region is not None and payload.home_region not in REGIONS:
+        raise HTTPException(422, &#x27;invalid_location&#x27;)
+    service = catalog(payload.language)
+    profile=ResumeAnalyzer().analyze(payload.text)
+    if payload.experience_override:
+        profile=replace(profile,experience_years=payload.experience_years,
+                        experience_status=&#x27;confirmed&#x27; if payload.experience_years is not None else &#x27;unknown&#x27;)
+    national=None
+    if payload.compare_locations:
+        national=service.engine.match_cv_to_jobs(payload.text,len(service.jobs),location=None,profile=profile)
+        regional=national if payload.location is None else national.loc[national.Region_Codes.map(lambda value:payload.location in str(value).split(&#x27;;&#x27;))]
+        result=service.engine.diversifier.select(regional,payload.top_n) if service.engine.diversify else regional.head(payload.top_n)
+        semantic_used=national.attrs.get(&#x27;semantic_used&#x27;,False)
+    else:
+        result=service.engine.match_cv_to_jobs(payload.text,payload.top_n,location=payload.location,profile=profile)
+        semantic_used=result.attrs.get(&#x27;semantic_used&#x27;,False)
+    if payload.record_demand and payload.actor_id:
+        demand_store().record(payload.actor_id,profile.role_codes)
+    demand=demand_store().snapshot()
+    home=payload.home_region
+    jobs=annotate_distance(DemandRatingStore.rerank(service.records(result),demand),home)
+    comparison=None
+    if payload.compare_locations:
+        # Bảng đối chiếu toàn quốc riêng, KHÔNG lẫn tin ngoài vùng vào danh sách
+        # chính đã lọc theo nơi muốn làm. Tính cả pool đạt ngưỡng, không chỉ top50
+        # để việc gần nhà nhưng điểm thấp hơn vẫn có cơ hội được đối chiếu.
+        comparison=compare_options(DemandRatingStore.rerank(service.records(national),demand),home)
+    details=profile_data(payload.text)
+    details.update(experience_years=profile.experience_years,experience_status=profile.experience_status)
+    return {&quot;jobs&quot;:jobs,&quot;profile&quot;:details,&quot;comparison&quot;:comparison,
+            &quot;demand&quot;:{&quot;total_actors&quot;:demand[&#x27;total_actors&#x27;],&#x27;ready&#x27;:demand[&#x27;ready&#x27;],&#x27;window_days&#x27;:30},
+            &quot;algorithm&quot;:{&quot;mode&quot;:&#x27;hybrid&#x27; if semantic_used else &#x27;hybrid-lexical&#x27;,
+                         &quot;semantic_status&quot;:service.engine.semantic_status,&quot;diversify&quot;:service.engine.diversify}}</code></pre>
+<h2>8. Cài đặt chức năng cá nhân hóa và gợi ý theo khoảng cách địa lý, chuyên môn</h2>
+<p><strong>Cá nhân hóa:</strong> web ghi nhớ ngầm các điều kiện tìm kiếm hợp lệ, không có bảng lịch sử tìm kiếm trên giao diện. Dữ liệu nằm trong trình duyệt, tối đa 20 điều kiện và 90 ngày; ảnh hưởng giảm với chu kỳ bán rã 14 ngày. Khi có CV và lịch sử hữu ích, điểm kết hợp 85% nền CV và 15% mối quan tâm trên pool đã phù hợp. Nơi muốn làm trong CV vẫn là ràng buộc. Không có CV thì có thể gợi ý dựa mối quan tâm gần đây.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/interest_recommender.py#L76-L109">interest_recommender.py, dòng 76–109</a>. Bản trích riêng: <a href="code/20_ca_nhan_hoa_tu_moi_quan_tam.txt">20_ca_nhan_hoa_tu_moi_quan_tam.txt</a>.</p>
+<pre><code>    def recommend(self, candidates, events, top_n=24, *, has_cv=False, now_ms=None):
+        now_ms = time.time() * 1000 if now_ms is None else now_ms
+        active = self.active_events(events, now_ms)
+        # Không có CV: lựa chọn vùng của lượt tìm mới nhất là ràng buộc hiện tại.
+        # Có CV: candidates đã được Hybrid Engine lọc theo khu vực của hồ sơ.
+        location = active[0].get(&#x27;region&#x27;, &#x27;&#x27;) if active and not has_cv else &#x27;&#x27;
+        weighted = [(event, 2 ** (-max(0., now_ms-event[&#x27;updatedAt&#x27;]) / (14*DAY_MS)) *
+                     (1 + math.log(min(max(event.get(&#x27;count&#x27;, 1), 1), 5)))) for event in active]
+        total = sum(weight for _, weight in weighted)
+        scored = []
+        for job in candidates:
+            if location and location not in self.lookup[job[&#x27;id&#x27;]][&#x27;regions&#x27;]:
+                continue
+            interest = sum(weight for event, weight in weighted if self._matches(job[&#x27;id&#x27;], event)) / total if total else 0.
+            if not has_cv and interest &lt;= 0:
+                continue
+            scored.append((job, interest))
+        use_interest = bool(active) and any(score &gt; 0 for _, score in scored)
+        alpha = .15 if has_cv and use_interest else 0. if has_cv else 1.
+        result = []
+        for job, interest in scored:
+            score = (1-alpha)*job.get(&#x27;score&#x27;, 0.) + alpha*interest
+            result.append({**job, &#x27;personal_score&#x27;: round(score, 4), &#x27;interest_score&#x27;: round(interest, 4),
+                           &#x27;interest_weight&#x27;: alpha,
+                           &#x27;personalization_mode&#x27;: &#x27;cv+interest&#x27; if has_cv and use_interest else &#x27;cv&#x27; if has_cv else &#x27;interest&#x27;})
+        result.sort(key=lambda job: (-job[&#x27;personal_score&#x27;], -job.get(&#x27;score&#x27;, 0.), job[&#x27;id&#x27;]))
+        if result:
+            frame = pd.DataFrame({&#x27;Job_ID&#x27;: [job[&#x27;id&#x27;] for job in result],
+                                  &#x27;Similarity_Score&#x27;: [job[&#x27;personal_score&#x27;] for job in result]})
+            selected = list(self.diversifier.select(frame, top_n)[&#x27;Job_ID&#x27;])
+            lookup = {job[&#x27;id&#x27;]: job for job in result}
+            result = [lookup[identifier] for identifier in selected]
+        return result, {&#x27;mode&#x27;: &#x27;cv+interest&#x27; if has_cv and use_interest else &#x27;cv&#x27; if has_cv else &#x27;interest&#x27;,
+                        &#x27;interest_weight&#x27;: alpha, &#x27;history_used&#x27;: len(active), &#x27;location&#x27;: location}</code></pre>
+<p><strong>Rating nhu cầu vận dụng pandas/Lab 3:</strong> mỗi mã trình duyệt chỉ đóng góp nguyện vọng mới nhất trong 30 ngày; nhiều nhóm nghề chia đều một lượt. pandas dùng to_numeric, drop_duplicates, explode, groupby và merge. R = 5 × nhu cầu nghề / N, C = 5/K, m = 5, WR = N/(N+m) × R + m/(N+m) × C. Khi có ít nhất năm trình duyệt, điểm gợi ý cuối kết hợp 90% nền hiện có với 10% WR/5. Đây là nhu cầu ẩn danh, không phải sao đánh giá chất lượng công việc, không phải số người đã xác minh. Chỉ rerank pool đúng chuyên môn.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/demand_rating.py#L62-L90">demand_rating.py, dòng 62–90</a>. Bản trích riêng: <a href="code/21_pandas_rating_nhu_cau.txt">21_pandas_rating_nhu_cau.txt</a>.</p>
+<pre><code>    @staticmethod
+    def aggregate(events: pd.DataFrame):
+        &quot;&quot;&quot;Lab 3: to_numeric -&gt; sort/drop_duplicates -&gt; explode -&gt; groupby -&gt; merge.
+
+        Một CV có nhiều mục tiêu chia đều 1 lượt. R=5*nhu_cầu/N, v=N,
+        C=5/K, m=5 lượt prior. Đây là độ phổ biến, KHÔNG phải số sao người dùng
+        chấm hay chất lượng nhà tuyển dụng. Khác Lab: không loại nghề ít lượt;
+        làm trơn và giới hạn trọng số để nghề hiếm vẫn có cơ hội.
+        &quot;&quot;&quot;
+        frame=events.copy(); total=0
+        if not frame.empty:
+            frame[&#x27;updated_at&#x27;]=pd.to_numeric(frame.updated_at,errors=&#x27;coerce&#x27;)
+            frame=frame.dropna(subset=[&#x27;actor&#x27;,&#x27;updated_at&#x27;]).sort_values(&#x27;updated_at&#x27;,kind=&#x27;mergesort&#x27;).drop_duplicates(&#x27;actor&#x27;,keep=&#x27;last&#x27;)
+            frame[&#x27;roles&#x27;]=frame.roles.map(lambda value: sorted(set(json.loads(value) if isinstance(value,str) else value)&amp;set(ROLE_CODES)))
+            frame=frame.loc[frame.roles.map(bool)];total=len(frame)
+        scores=pd.DataFrame({&#x27;role_code&#x27;:ROLE_CODES})
+        if total:
+            frame[&#x27;weight&#x27;]=1/frame.roles.str.len()
+            counts=frame.explode(&#x27;roles&#x27;).groupby(&#x27;roles&#x27;,as_index=False).agg(demand_count=(&#x27;weight&#x27;,&#x27;sum&#x27;),actors=(&#x27;actor&#x27;,&#x27;nunique&#x27;))
+            scores=scores.merge(counts.rename(columns={&#x27;roles&#x27;:&#x27;role_code&#x27;}),on=&#x27;role_code&#x27;,how=&#x27;left&#x27;)
+        else:scores=scores.assign(demand_count=0.,actors=0)
+        scores[[&#x27;demand_count&#x27;,&#x27;actors&#x27;]]=scores[[&#x27;demand_count&#x27;,&#x27;actors&#x27;]].fillna(0)
+        scores[&#x27;vote_average&#x27;]=5*scores.demand_count/total if total else 0.
+        scores[&#x27;vote_count&#x27;]=total
+        prior=5/len(ROLE_CODES);m=5.
+        scores[&#x27;rating&#x27;]=weighted_rating(scores.vote_average,total,m,prior) if total else 0.
+        return {&#x27;total_actors&#x27;:total,&#x27;window_days&#x27;:30,&#x27;m&#x27;:m,&#x27;C&#x27;:prior,&#x27;ready&#x27;:total&gt;=5,
+                &#x27;roles&#x27;:scores.to_dict(&#x27;records&#x27;),
+                &#x27;meaning&#x27;:&#x27;Browser-based implicit demand, not verified people or employer quality.&#x27;}</code></pre>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/demand_rating.py#L92-L107">demand_rating.py, dòng 92–107</a>. Bản trích riêng: <a href="code/22_rating_sap_xep_lai.txt">22_rating_sap_xep_lai.txt</a>.</p>
+<pre><code>    @staticmethod
+    def rerank(jobs, snapshot):
+        by_role={row[&#x27;role_code&#x27;]:row for row in snapshot[&#x27;roles&#x27;]}
+        active=snapshot[&#x27;ready&#x27;]
+        result=[]
+        for job in jobs:
+            stat=by_role.get(job.get(&#x27;role_code&#x27;),{})
+            base=job.get(&#x27;personal_score&#x27;,job.get(&#x27;score&#x27;,0.))
+            # Rating chỉ sắp lại pool đã qua kiểm tra nội dung; tuyệt đối không
+            # kéo việc trái nghề lên chỉ vì nghề đang được tìm nhiều.
+            value=.9*base+.1*stat.get(&#x27;rating&#x27;,0.)/5 if active else base
+            result.append({**job,&#x27;content_score&#x27;:base,&#x27;demand_rating&#x27;:round(stat.get(&#x27;rating&#x27;,0.),4),
+                           &#x27;demand_count&#x27;:round(stat.get(&#x27;demand_count&#x27;,0.),2),
+                           &#x27;demand_actors&#x27;:snapshot[&#x27;total_actors&#x27;],&#x27;demand_weight&#x27;:.1 if active else 0.,
+                           &#x27;personal_score&#x27;:round(value,4)})
+        return sorted(result,key=lambda job:(-job[&#x27;personal_score&#x27;],-job.get(&#x27;score&#x27;,0.),job[&#x27;id&#x27;]))</code></pre>
+<p><strong>Chuyên môn và địa lý:</strong> Haversine ước tính đường chim bay giữa các điểm đại diện thành phố, không tính quãng đường đi làm thực tế. Khi biết nơi ở và tọa độ tin, P = 1/(1+d/50), B = 0,7 × điểm chuyên môn CV + 0,3 × P. 50 km là tham số giảm điểm, không phải bán kính loại tin. Nhóm cân bằng B được hiển thị trước hai nhóm chuyên môn tốt nhất/gần nơi ở nhất. Ba nhóm đối chiếu toàn quốc; danh sách chính bên dưới vẫn theo khu vực người dùng chọn. Không trộn rating vào B, không đổi điểm CV gốc. Thiếu nơi ở hoặc tọa độ thì không tự gán khoảng cách bằng 0. Cùng thành phố được ghi Cùng khu vực nơi ở, không khẳng định nhà sát công ty.</p>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/job_proximity.py#L31-L36">job_proximity.py, dòng 31–36</a>. Bản trích riêng: <a href="code/23_haversine_khoang_cach.txt">23_haversine_khoang_cach.txt</a>.</p>
+<pre><code>def distance_km(left,right):
+    if left not in COORDINATES or right not in COORDINATES:return None
+    a,b=COORDINATES[left],COORDINATES[right]
+    lat1,lat2=map(math.radians,[a[&#x27;lat&#x27;],b[&#x27;lat&#x27;]]);dlon=math.radians(b[&#x27;lon&#x27;]-a[&#x27;lon&#x27;])
+    value=math.sin((lat2-lat1)/2)**2+math.cos(lat1)*math.cos(lat2)*math.sin(dlon/2)**2
+    return 6371.0088*2*math.asin(min(1,math.sqrt(value)))</code></pre>
+<p>Nguồn: <a href="https://github.com/TienMoi79/job-recommender-system/blob/c2bf92d5874d235db2f6b45f4db25ce101dcdcf3/job_proximity.py#L51-L74">job_proximity.py, dòng 51–74</a>. Bản trích riêng: <a href="code/24_can_bang_chuyen_mon_khoang_cach.txt">24_can_bang_chuyen_mon_khoang_cach.txt</a>.</p>
+<pre><code>def compare_options(jobs,home_region,top_n=3):
+    &quot;&quot;&quot;Ba góc nhìn trên cùng pool đã đạt ngưỡng nghề nghiệp của CV Engine.
+
+    Điểm gần = 1/(1+d/50); điểm cân bằng = 70% CV + 30% điểm gần.
+    Chỉ cân bằng khi có nơi ở và khoảng cách hợp lệ, không gán khoảng cách 0
+    cho tin thiếu địa điểm/remote. Không sửa điểm CV hoặc trộn điểm nhu cầu.
+    Khoảng cách vùng không phải thời gian hay số km đi làm thực tế.
+    &quot;&quot;&quot;
+    annotated=annotate_distance(jobs,home_region)
+    best=sorted(annotated,key=lambda job:(-job.get(&#x27;score&#x27;,0.),job[&#x27;id&#x27;]))[:top_n]
+    located=[job for job in annotated if home_region and job[&#x27;distance_km&#x27;] is not None]
+    near=sorted(located,
+                key=lambda job:(job[&#x27;distance_km&#x27;],-job.get(&#x27;score&#x27;,0.),job[&#x27;id&#x27;]))[:top_n]
+    balanced=[]
+    for job in located:
+        proximity=1/(1+job[&#x27;distance_km&#x27;]/BALANCE_POLICY[&#x27;distance_scale_km&#x27;])
+        fit=float(job.get(&#x27;score&#x27;,0.))
+        value=BALANCE_POLICY[&#x27;fit_weight&#x27;]*fit+BALANCE_POLICY[&#x27;proximity_weight&#x27;]*proximity
+        balanced.append({**job,&#x27;proximity_score&#x27;:proximity,&#x27;balanced_score&#x27;:value})
+    balanced=sorted(balanced,key=lambda job:(-job[&#x27;balanced_score&#x27;],-job.get(&#x27;score&#x27;,0.),job[&#x27;distance_km&#x27;],job[&#x27;id&#x27;]))[:top_n]
+    return {&#x27;home_region&#x27;:home_region,&#x27;balanced&#x27;:balanced,&#x27;balance_policy&#x27;:dict(BALANCE_POLICY),
+            &#x27;best_fit&#x27;:best,&#x27;near_home&#x27;:near,
+            &#x27;scope&#x27;:&#x27;nationwide_comparison&#x27;,&#x27;distance_kind&#x27;:&#x27;region_centers&#x27;,
+            &#x27;note&#x27;:&#x27;Approximate straight-line distance between representative city points, not commuting distance.&#x27;}</code></pre>
+<h2>9. Giới thiệu hệ thống và kịch bản Demo</h2>
+<p>JobVista hỗ trợ khám phá việc làm IT từ catalog công khai, so sánh tin tuyển dụng và tìm việc theo CV. Dữ liệu hiện gồm 7.050 tin đã chuẩn hóa, không phải 7.050 tin còn đang tuyển đã được xác minh. Thông tin nguồn và giấy phép nằm tại <a href="https://github.com/TienMoi79/job-recommender-system/blob/main/data/DATA_SOURCE.md">DATA_SOURCE.md</a>.</p>
+<p>Lời giới thiệu có thể đọc: “JobVista là hệ gợi ý việc làm lấy nội dung làm chính. Hệ thống đọc CV, đối chiếu kỹ năng và kinh nghiệm với tin tuyển dụng, sau đó giúp người dùng cân nhắc cả chuyên môn và nơi muốn làm. Các kết quả có giải thích để người dùng tự kiểm tra và quyết định.”</p>
+<img alt="Ảnh 01. Giao diện trang chủ hệ thống JobVista" src="images/Anh_01_Trang_chu.jpg">
+<p><strong>Ảnh 01. Giao diện trang chủ hệ thống JobVista.</strong> Trang chủ hiển thị 7.050 tin, 3.594 công ty và 24 khu vực chính. Thẻ Backend Developer trong banner là minh họa giao diện, không phải một kết quả xếp hạng.</p>
+<p>Kịch bản trình diễn khoảng 7–10 phút:</p>
+<table>
+<tr><td>Bước</td><td>Thao tác</td><td>Điểm cần giải thích</td><td>Ảnh</td></tr>
+<tr><td>1</td><td>Mở trang chủ</td><td>Catalog 7.050 tin, 3.594 công ty, 24 vùng</td><td>01</td></tr>
+<tr><td>2</td><td>Gõ DevOps, chọn Hồ Chí Minh, tìm kiếm</td><td>Kết hợp từ khóa và bộ lọc, 72 tin trong lần chụp</td><td>15</td></tr>
+<tr><td>3</td><td>Đặt lại, mở Fullstack Java Developer</td><td>Chi tiết bật/tắt, lương và kinh nghiệm thống nhất</td><td>03–04</td></tr>
+<tr><td>4</td><td>Cuộn đến Cơ hội tương tự</td><td>Item-to-item dựa nội dung, ba gợi ý</td><td>05</td></tr>
+<tr><td>5</td><td>Tìm việc với CV, tải CV07 PDF</td><td>Đọc tệp thật; Word/ảnh có nhánh xử lý tương ứng</td><td>06</td></tr>
+<tr><td>6</td><td>Đọc và kiểm tra thông tin</td><td>Tám kỹ năng, Cần Thơ, ba năm; có thể chỉnh sửa</td><td>07–08</td></tr>
+<tr><td>7</td><td>Bấm Tìm công việc phù hợp</td><td>Nhóm cân bằng đứng đầu, giải thích 70/30</td><td>09</td></tr>
+<tr><td>8</td><td>So sánh hai nhóm bên dưới</td><td>Chuyên môn tốt nhất có thể ở xa, việc gần nhà đạt ngưỡng</td><td>10</td></tr>
+<tr><td>9</td><td>Xem danh sách chính, mở một tin</td><td>Bốn việc Cần Thơ, lý do khớp và điểm thành phần</td><td>11–13</td></tr>
+<tr><td>10</td><td>Lưu một tin, về trang chủ</td><td>Việc đã lưu; hồ sơ được nhớ để cá nhân hóa</td><td>14, 02, 16</td></tr>
+</table>
+<p>Tệp demo kèm theo: <code>CV_demo/CV07_devops_can_tho.pdf</code>, sao chép nguyên bản từ bộ CV giả lập của project. Có thể thử thêm ảnh và Word trong <code>data/sample_cvs</code> của repo. Kết quả/số thập phân có thể đổi theo lịch sử trình duyệt, số mẫu rating, trạng thái semantic và phiên bản catalog. Không khẳng định luôn phải giống hệt ảnh.</p>
+<h2>10. Demo các chức năng chính của hệ thống JobVista</h2>
+<p>Các ảnh dưới được chụp ngày 14/11/2026 ở viewport 1265 × 712, giữ nguyên JPEG của công cụ chụp. Khi đưa vào Word, nên dùng khổ ngang hoặc chiều rộng trang cho các ảnh nhiều cột. Ảnh 12 và 13 bổ sung nhau để đọc toàn bộ phần giải thích, không phải hai lần chấm khác nhau.</p>
+<img alt="Ảnh 15. Tìm kiếm DevOps kết hợp bộ lọc Hồ Chí Minh" src="images/Anh_15_Tim_kiem_va_loc_khu_vuc.jpg">
+<p><strong>Ảnh 15. Tìm kiếm DevOps kết hợp bộ lọc Hồ Chí Minh.</strong> Gõ DevOps, chọn Hồ Chí Minh, bấm Tìm việc: 72 tin phù hợp bộ lọc trong catalog hiện tại. Đây là kết quả tìm kiếm từ khóa, không phải 72 khuyến nghị CV.</p>
+<img alt="Ảnh 03. Danh sách việc làm và bộ lọc" src="images/Anh_03_Danh_sach_va_bo_loc.jpg">
+<p><strong>Ảnh 03. Danh sách việc làm và bộ lọc.</strong> Khi đóng chi tiết, màn hình rộng có bốn thẻ mỗi hàng. Bộ lọc gồm địa điểm, lĩnh vực và kinh nghiệm; phân trang tám tin mỗi trang.</p>
+<img alt="Ảnh 04. Bảng chi tiết tin tuyển dụng" src="images/Anh_04_Chi_tiet_cong_viec.jpg">
+<p><strong>Ảnh 04. Bảng chi tiết tin tuyển dụng.</strong> Nhấp Fullstack Java Developer để mở chi tiết: lương 12–20 triệu và tối thiểu 2 năm. Nhấp lại cùng tin, nút X hoặc ESC để đóng.</p>
+<img alt="Ảnh 05. Gợi ý công việc tương tự theo nội dung" src="images/Anh_05_Goi_y_cong_viec_tuong_tu.jpg">
+<p><strong>Ảnh 05. Gợi ý công việc tương tự theo nội dung.</strong> Cuộn trong bảng chi tiết đến Cơ hội tương tự. Hệ thống trả về các tin gần nội dung với tin đang xem, loại chính tin đó và nhóm gần trùng.</p>
+<img alt="Ảnh 06. Giao diện tải tệp CV" src="images/Anh_06_Tai_CV.jpg">
+<p><strong>Ảnh 06. Giao diện tải tệp CV.</strong> Tại Tìm việc với CV, chọn PDF, Word .docx hoặc ảnh. Nút đọc chỉ bật sau khi chọn một tệp hợp lệ.</p>
+<img alt="Ảnh 07. Kết quả nhận diện kỹ năng, nơi ở và kinh nghiệm" src="images/Anh_07_Ket_qua_phan_tich_CV.jpg">
+<p><strong>Ảnh 07. Kết quả nhận diện kỹ năng, nơi ở và kinh nghiệm.</strong> CV07 PDF được đọc thực tế: tám kỹ năng, nơi muốn làm Cần Thơ, nơi ở Cần Thơ, ba năm kinh nghiệm. Người dùng có thể xác nhận hoặc sửa.</p>
+<img alt="Ảnh 08. Kiểm tra và chỉnh sửa văn bản CV đã đọc" src="images/Anh_08_Xem_sua_noi_dung_CV.jpg">
+<p><strong>Ảnh 08. Kiểm tra và chỉnh sửa văn bản CV đã đọc.</strong> Mở Xem và sửa nội dung đã đọc để đối chiếu văn bản trước khi bấm tìm việc. Hồ sơ trong ảnh hoàn toàn là dữ liệu giả lập.</p>
+<img alt="Ảnh 09. Khuyến nghị kết hợp chuyên môn và khoảng cách" src="images/Anh_09_Goi_y_can_bang.jpg">
+<p><strong>Ảnh 09. Khuyến nghị kết hợp chuyên môn và khoảng cách.</strong> Nhóm kết hợp được đưa lên đầu: chuyên môn CV 0,671, điểm gần 1,000, điểm cân bằng 0,770 ở tin đứng đầu trong lần demo này.</p>
+<img alt="Ảnh 10. Đối chiếu chuyên môn tốt nhất và việc gần nhà" src="images/Anh_10_Doi_chieu_chuyen_mon_va_gan_nha.jpg">
+<p><strong>Ảnh 10. Đối chiếu chuyên môn tốt nhất và việc gần nhà.</strong> Tin đứng đầu theo chuyên môn ở Hà Nội đạt 0,801 nhưng cách vùng Cần Thơ khoảng 1.222 km; tin gần nơi ở đạt 0,671. Đây là đối chiếu toàn quốc, tách khỏi danh sách chính.</p>
+<img alt="Ảnh 11. Danh sách công việc phù hợp CV tại khu vực đã chọn" src="images/Anh_11_Ket_qua_CV_theo_khu_vuc.jpg">
+<p><strong>Ảnh 11. Danh sách công việc phù hợp CV tại khu vực đã chọn.</strong> CV07 với nơi muốn làm Cần Thơ trả bốn tin trong lần demo. Số lượng không bị ép đủ 24 nếu không có đủ tin qua điều kiện.</p>
+<img alt="Ảnh 12. Giải thích điểm chuyên môn và kỹ năng trùng" src="images/Anh_12_Giai_thich_diem_CV.jpg">
+<p><strong>Ảnh 12. Giải thích điểm chuyên môn và kỹ năng trùng.</strong> Mở tin Junior/ Senior DevOps Engineer: sáu trong mười hai kỹ năng của tin đã thấy trong CV. Hệ thống hiển thị kỹ năng chưa thấy và từng thành phần điểm.</p>
+<img alt="Ảnh 13. Giải thích rating nhu cầu nghề nghiệp" src="images/Anh_13_Rating_nhu_cau_nganh.jpg">
+<p><strong>Ảnh 13. Giải thích rating nhu cầu nghề nghiệp.</strong> Ảnh tiếp nối phần giải thích điểm. Có hai trình duyệt tham gia trong dữ liệu demo, chưa đủ năm nên rating chưa tác động thứ hạng; không tạo lượt giả để làm đẹp ảnh.</p>
+<img alt="Ảnh 14. Chức năng lưu công việc yêu thích" src="images/Anh_14_Viec_da_luu.jpg">
+<p><strong>Ảnh 14. Chức năng lưu công việc yêu thích.</strong> Bấm biểu tượng lưu một tin rồi vào Việc đã lưu. Danh sách chỉ lưu trong trình duyệt; tin thử đã được bỏ lưu sau khi chụp để khôi phục trạng thái ban đầu.</p>
+<img alt="Ảnh 02. Khối gợi ý cá nhân hóa trên trang chủ" src="images/Anh_02_Ca_nhan_hoa_trang_chu.jpg">
+<p><strong>Ảnh 02. Khối gợi ý cá nhân hóa trên trang chủ.</strong> Hồ sơ CV07 được tự lưu trên trình duyệt; khu vực Cần Thơ và 3 năm kinh nghiệm được giữ lại cho các lần gợi ý sau.</p>
+<img alt="Ảnh 16. Xem toàn bộ danh sách gợi ý cá nhân" src="images/Anh_16_Danh_sach_ca_nhan_hoa.jpg">
+<p><strong>Ảnh 16. Xem toàn bộ danh sách gợi ý cá nhân.</strong> Từ khối Phù hợp với bạn, bấm Xem tất cả gợi ý. Hồ sơ Cần Thơ vẫn được ưu tiên; một lượt tìm ở Hồ Chí Minh không tự thay nơi muốn làm của CV.</p>
+<p>Lưu ý khi viết kết luận: ảnh minh họa chức năng hoạt động, không đo độ chính xác mô hình. Kết quả đánh giá A/B/C hiện có thuộc benchmark pilot 500 tin và CV tổng hợp, không áp dụng trực tiếp cho toàn bộ catalog 7.050 tin hay chất lượng tuyển dụng thực tế. Các trọng số và chính sách khoảng cách là cấu hình thử nghiệm, còn cần đánh giá thêm bằng người dùng thật.</p>
+<p>Gói này chỉ bổ sung tài liệu/code trích/ảnh minh họa, không thay đổi thuật toán hoặc giao diện ứng dụng.</p></body></html>

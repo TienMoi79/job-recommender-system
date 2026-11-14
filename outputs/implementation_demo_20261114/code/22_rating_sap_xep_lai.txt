@@ -1,0 +1,16 @@
+    @staticmethod
+    def rerank(jobs, snapshot):
+        by_role={row['role_code']:row for row in snapshot['roles']}
+        active=snapshot['ready']
+        result=[]
+        for job in jobs:
+            stat=by_role.get(job.get('role_code'),{})
+            base=job.get('personal_score',job.get('score',0.))
+            # Rating chỉ sắp lại pool đã qua kiểm tra nội dung; tuyệt đối không
+            # kéo việc trái nghề lên chỉ vì nghề đang được tìm nhiều.
+            value=.9*base+.1*stat.get('rating',0.)/5 if active else base
+            result.append({**job,'content_score':base,'demand_rating':round(stat.get('rating',0.),4),
+                           'demand_count':round(stat.get('demand_count',0.),2),
+                           'demand_actors':snapshot['total_actors'],'demand_weight':.1 if active else 0.,
+                           'personal_score':round(value,4)})
+        return sorted(result,key=lambda job:(-job['personal_score'],-job.get('score',0.),job['id']))

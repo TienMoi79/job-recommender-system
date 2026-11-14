@@ -1,0 +1,10 @@
+@app.get("/api/jobs/{job_id}")
+def get_job(job_id: str, language: Language = "vi", location: str | None = None):
+    service = catalog(language)
+    found = service.jobs.loc[service.jobs["Job_ID"] == job_id]
+    if found.empty:
+        raise HTTPException(404, "job_not_found")
+    if location is not None and location not in REGIONS:
+        raise HTTPException(422, "invalid_location")
+    return {"job": service.serialize(found.iloc[0], detail=True),
+            "similar": service.records(service.engine.recommend_similar_jobs(job_id, 3, location=location))}

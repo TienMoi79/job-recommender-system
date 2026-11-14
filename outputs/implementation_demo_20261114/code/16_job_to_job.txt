@@ -1,0 +1,11 @@
+    def recommend_similar_jobs(self, job_id, top_n=5, *, location=None):
+        self._validate_top_n(top_n)
+        if job_id not in self._id_to_position:
+            raise KeyError(job_id)
+        position = self._id_to_position[job_id]
+        lexical = cosine_similarity(self._job_vectors[position:position+1],self._job_vectors).ravel()
+        semantic, available = self._semantic_scores(self._documents[position])
+        scores = .5*lexical+.5*semantic if available else lexical
+        eligible = [i for i in self._eligible_positions(location)
+                    if self.diversifier.group[str(self._jobs.iloc[i].Job_ID)] != self.diversifier.group[job_id]]
+        return self._finish(scores,top_n,eligible)

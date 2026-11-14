@@ -1,0 +1,1 @@
+DEFAULT_WEIGHTS = {"Lexical":.15,"Semantic":.25,"Skills":.30,"Title":.15,"Domain":.05,"Experience":.10}

@@ -1,0 +1,11 @@
+class MatchRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=MAX_TEXT_CHARS)
+    location: str | None = None
+    top_n: int = Field(default=12, ge=1, le=50)
+    language: Language = "vi"
+    experience_years: float | None = Field(default=None,ge=0,le=60,allow_inf_nan=False)
+    experience_override: bool = False
+    home_region: str | None = None
+    compare_locations: bool = False
+    actor_id: str | None = Field(default=None, pattern=r'^[a-fA-F0-9-]{32,36}$')
+    record_demand: bool = False

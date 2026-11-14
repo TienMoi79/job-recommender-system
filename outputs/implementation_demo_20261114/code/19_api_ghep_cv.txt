@@ -1,0 +1,39 @@
+@app.post("/api/cv/match")
+def match_cv(payload: MatchRequest):
+    if not payload.text.strip():
+        raise HTTPException(422, "empty_cv")
+    if payload.location is not None and payload.location not in REGIONS:
+        raise HTTPException(422, "invalid_location")
+    if payload.home_region is not None and payload.home_region not in REGIONS:
+        raise HTTPException(422, 'invalid_location')
+    service = catalog(payload.language)
+    profile=ResumeAnalyzer().analyze(payload.text)
+    if payload.experience_override:
+        profile=replace(profile,experience_years=payload.experience_years,
+                        experience_status='confirmed' if payload.experience_years is not None else 'unknown')
+    national=None
+    if payload.compare_locations:
+        national=service.engine.match_cv_to_jobs(payload.text,len(service.jobs),location=None,profile=profile)
+        regional=national if payload.location is None else national.loc[national.Region_Codes.map(lambda value:payload.location in str(value).split(';'))]
+        result=service.engine.diversifier.select(regional,payload.top_n) if service.engine.diversify else regional.head(payload.top_n)
+        semantic_used=national.attrs.get('semantic_used',False)
+    else:
+        result=service.engine.match_cv_to_jobs(payload.text,payload.top_n,location=payload.location,profile=profile)
+        semantic_used=result.attrs.get('semantic_used',False)
+    if payload.record_demand and payload.actor_id:
+        demand_store().record(payload.actor_id,profile.role_codes)
+    demand=demand_store().snapshot()
+    home=payload.home_region
+    jobs=annotate_distance(DemandRatingStore.rerank(service.records(result),demand),home)
+    comparison=None
+    if payload.compare_locations:
+        # Bảng đối chiếu toàn quốc riêng, KHÔNG lẫn tin ngoài vùng vào danh sách
+        # chính đã lọc theo nơi muốn làm. Tính cả pool đạt ngưỡng, không chỉ top50
+        # để việc gần nhà nhưng điểm thấp hơn vẫn có cơ hội được đối chiếu.
+        comparison=compare_options(DemandRatingStore.rerank(service.records(national),demand),home)
+    details=profile_data(payload.text)
+    details.update(experience_years=profile.experience_years,experience_status=profile.experience_status)
+    return {"jobs":jobs,"profile":details,"comparison":comparison,
+            "demand":{"total_actors":demand['total_actors'],'ready':demand['ready'],'window_days':30},
+            "algorithm":{"mode":'hybrid' if semantic_used else 'hybrid-lexical',
+                         "semantic_status":service.engine.semantic_status,"diversify":service.engine.diversify}}

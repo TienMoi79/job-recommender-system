@@ -1,0 +1,16 @@
+@app.post("/api/cv/read")
+async def read_cv(request: Request, language: Language = "vi"):
+    # Nhận raw bytes theo từng đoạn, giới hạn 15 MB ngay khi đọc. Không dùng
+    # UploadFile vì multipart mặc định có thể spool tệp lớn xuống ổ đĩa.
+    content = bytearray()
+    async for chunk in request.stream():
+        content.extend(chunk)
+        if len(content) > MAX_FILE_BYTES:
+            raise HTTPException(413, TEXT[language]["cv_file_large"])
+    filename = unquote(request.headers.get("X-CV-Filename", ""))
+    try:
+        document = await run_in_threadpool(ResumeDocumentReader().read, bytes(content), filename)
+    except CVReadError as exc:
+        raise HTTPException(400, TEXT[language].get(exc.code, TEXT[language]["cv_file_invalid"])) from None
+    return {"text": document.text, "ocr": document.used_ocr, "pages": document.page_count,
+            "profile": profile_data(document.text, ocr=document.used_ocr)}

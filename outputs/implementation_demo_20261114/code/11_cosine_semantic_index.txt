@@ -1,0 +1,6 @@
+    def similarity(self, text: str) -> np.ndarray:
+        # Model không giữ văn bản truy vấn sau khi encode. Chỉ ma trận tin công
+        # khai ở self.vectors mới được ghi xuống đĩa.
+        with _model_lock:
+            vector = self.model.transform([text])[0]
+        return np.clip(self.vectors @ vector, 0, 1)

@@ -1,0 +1,34 @@
+    def recommend(self, candidates, events, top_n=24, *, has_cv=False, now_ms=None):
+        now_ms = time.time() * 1000 if now_ms is None else now_ms
+        active = self.active_events(events, now_ms)
+        # Không có CV: lựa chọn vùng của lượt tìm mới nhất là ràng buộc hiện tại.
+        # Có CV: candidates đã được Hybrid Engine lọc theo khu vực của hồ sơ.
+        location = active[0].get('region', '') if active and not has_cv else ''
+        weighted = [(event, 2 ** (-max(0., now_ms-event['updatedAt']) / (14*DAY_MS)) *
+                     (1 + math.log(min(max(event.get('count', 1), 1), 5)))) for event in active]
+        total = sum(weight for _, weight in weighted)
+        scored = []
+        for job in candidates:
+            if location and location not in self.lookup[job['id']]['regions']:
+                continue
+            interest = sum(weight for event, weight in weighted if self._matches(job['id'], event)) / total if total else 0.
+            if not has_cv and interest <= 0:
+                continue
+            scored.append((job, interest))
+        use_interest = bool(active) and any(score > 0 for _, score in scored)
+        alpha = .15 if has_cv and use_interest else 0. if has_cv else 1.
+        result = []
+        for job, interest in scored:
+            score = (1-alpha)*job.get('score', 0.) + alpha*interest
+            result.append({**job, 'personal_score': round(score, 4), 'interest_score': round(interest, 4),
+                           'interest_weight': alpha,
+                           'personalization_mode': 'cv+interest' if has_cv and use_interest else 'cv' if has_cv else 'interest'})
+        result.sort(key=lambda job: (-job['personal_score'], -job.get('score', 0.), job['id']))
+        if result:
+            frame = pd.DataFrame({'Job_ID': [job['id'] for job in result],
+                                  'Similarity_Score': [job['personal_score'] for job in result]})
+            selected = list(self.diversifier.select(frame, top_n)['Job_ID'])
+            lookup = {job['id']: job for job in result}
+            result = [lookup[identifier] for identifier in selected]
+        return result, {'mode': 'cv+interest' if has_cv and use_interest else 'cv' if has_cv else 'interest',
+                        'interest_weight': alpha, 'history_used': len(active), 'location': location}

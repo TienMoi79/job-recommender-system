@@ -1,0 +1,37 @@
+    def read(self, content: bytes, filename: str) -> CVDocument:
+        if not isinstance(content, bytes) or not content:
+            raise CVReadError("cv_file_empty")
+        if len(content) > MAX_FILE_BYTES:
+            raise CVReadError("cv_file_large")
+        extension = Path(filename).suffix.lower()
+        try:
+            if extension == ".pdf":
+                result = self._pdf(content)
+            elif extension == ".docx":
+                result = self._docx(content)
+            elif extension in IMAGE_EXTENSIONS:
+                with warnings.catch_warnings():
+                    warnings.simplefilter("error", Image.DecompressionBombWarning)
+                    with Image.open(BytesIO(content)) as image:
+                        frames = getattr(image, "n_frames", 1)
+                        if frames > MAX_PAGES:
+                            raise CVReadError("cv_too_many_pages")
+                        texts = []
+                        for frame in range(frames):
+                            image.seek(frame)
+                            texts.append(self._read_image(image))
+                result = CVDocument("\n".join(texts), frames, True, "image")
+            else:
+                raise CVReadError("cv_format_unsupported")
+        except CVReadError:
+            raise
+        except (Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
+            raise CVReadError("cv_image_too_large") from exc
+        except Exception as exc:
+            raise CVReadError("cv_file_invalid") from exc
+        text = result.text.replace("\x00", "").strip()
+        if len(text) > MAX_TEXT_CHARS:
+            raise CVReadError("cv_text_too_long")
+        if len(text) < 20:
+            raise CVReadError("cv_no_text")
+        return CVDocument(text, result.page_count, result.used_ocr, result.format)

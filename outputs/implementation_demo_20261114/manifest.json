@@ -1,0 +1,405 @@
+{
+  "date": "2026-11-14",
+  "source_revision": "c2bf92d5874d235db2f6b45f4db25ce101dcdcf3",
+  "ui_url": "http://127.0.0.1:8000/",
+  "screenshots": 16,
+  "screenshot_kind": "Unmodified real browser screenshots, JPEG, 1265x712",
+  "sample_cv": "CV07_devops_can_tho.pdf (synthetic)",
+  "excerpts": [
+    {
+      "file": "requirements-preview.txt",
+      "start_line": 1,
+      "end_line": 3,
+      "symbol": null,
+      "excerpt": "code/01_requirements_web.txt"
+    },
+    {
+      "file": "requirements-semantic.txt",
+      "start_line": 1,
+      "end_line": 2,
+      "symbol": null,
+      "excerpt": "code/02_requirements_semantic.txt"
+    },
+    {
+      "file": "web_ui/index.html",
+      "start_line": 1,
+      "end_line": 18,
+      "symbol": null,
+      "excerpt": "code/03_khung_frontend.txt"
+    },
+    {
+      "file": "web_ui/app.js",
+      "start_line": 326,
+      "end_line": 333,
+      "symbol": "filters",
+      "excerpt": "code/04_frontend_bo_loc.txt"
+    },
+    {
+      "file": "web_ui/app.js",
+      "start_line": 505,
+      "end_line": 508,
+      "symbol": "toggleJobDetails",
+      "excerpt": "code/05_frontend_bat_tat_chi_tiet.txt"
+    },
+    {
+      "file": "web_preview.py",
+      "start_line": 45,
+      "end_line": 51,
+      "symbol": "CatalogService.__init__",
+      "excerpt": "code/06_khoi_tao_catalog.txt"
+    },
+    {
+      "file": "web_preview.py",
+      "start_line": 182,
+      "end_line": 192,
+      "symbol": "MatchRequest",
+      "excerpt": "code/07_request_kiem_tra_dau_vao.txt"
+    },
+    {
+      "file": "web_preview.py",
+      "start_line": 164,
+      "end_line": 179,
+      "symbol": "read_cv",
+      "excerpt": "code/08_api_doc_cv.txt"
+    },
+    {
+      "file": "job_recommender.py",
+      "start_line": 70,
+      "end_line": 89,
+      "symbol": "TfidfTextVectorizer",
+      "excerpt": "code/09_tfidf_vectorizer.txt"
+    },
+    {
+      "file": "job_recommender.py",
+      "start_line": 113,
+      "end_line": 137,
+      "symbol": "SentenceTransformerVectorizer.transform",
+      "excerpt": "code/10_semantic_embedding.txt"
+    },
+    {
+      "file": "semantic_index.py",
+      "start_line": 51,
+      "end_line": 56,
+      "symbol": "PublicSemanticIndex.similarity",
+      "excerpt": "code/11_cosine_semantic_index.txt"
+    },
+    {
+      "file": "hybrid_recommender.py",
+      "start_line": 25,
+      "end_line": 25,
+      "symbol": null,
+      "excerpt": "code/12_trong_so_sau_thanh_phan.txt"
+    },
+    {
+      "file": "cv_documents.py",
+      "start_line": 95,
+      "end_line": 131,
+      "symbol": "ResumeDocumentReader.read",
+      "excerpt": "code/13_doc_tep_cv_da_dinh_dang.txt"
+    },
+    {
+      "file": "resume_profile.py",
+      "start_line": 129,
+      "end_line": 159,
+      "symbol": "ResumeAnalyzer.analyze",
+      "excerpt": "code/14_phan_tich_ho_so_cv.txt"
+    },
+    {
+      "file": "web_ui/app.js",
+      "start_line": 569,
+      "end_line": 574,
+      "symbol": "readCv",
+      "excerpt": "code/15_frontend_goi_api_doc_cv.txt"
+    },
+    {
+      "file": "hybrid_recommender.py",
+      "start_line": 318,
+      "end_line": 328,
+      "symbol": "HybridJobRecommenderSystem.recommend_similar_jobs",
+      "excerpt": "code/16_job_to_job.txt"
+    },
+    {
+      "file": "web_preview.py",
+      "start_line": 147,
+      "end_line": 156,
+      "symbol": "get_job",
+      "excerpt": "code/17_api_chi_tiet_va_tuong_tu.txt"
+    },
+    {
+      "file": "hybrid_recommender.py",
+      "start_line": 240,
+      "end_line": 316,
+      "symbol": "HybridJobRecommenderSystem.match_cv_to_jobs",
+      "excerpt": "code/18_cv_to_job.txt"
+    },
+    {
+      "file": "web_preview.py",
+      "start_line": 195,
+      "end_line": 233,
+      "symbol": "match_cv",
+      "excerpt": "code/19_api_ghep_cv.txt"
+    },
+    {
+      "file": "interest_recommender.py",
+      "start_line": 76,
+      "end_line": 109,
+      "symbol": "SearchInterestRecommender.recommend",
+      "excerpt": "code/20_ca_nhan_hoa_tu_moi_quan_tam.txt"
+    },
+    {
+      "file": "demand_rating.py",
+      "start_line": 62,
+      "end_line": 90,
+      "symbol": "DemandRatingStore.aggregate",
+      "excerpt": "code/21_pandas_rating_nhu_cau.txt"
+    },
+    {
+      "file": "demand_rating.py",
+      "start_line": 92,
+      "end_line": 107,
+      "symbol": "DemandRatingStore.rerank",
+      "excerpt": "code/22_rating_sap_xep_lai.txt"
+    },
+    {
+      "file": "job_proximity.py",
+      "start_line": 31,
+      "end_line": 36,
+      "symbol": "distance_km",
+      "excerpt": "code/23_haversine_khoang_cach.txt"
+    },
+    {
+      "file": "job_proximity.py",
+      "start_line": 51,
+      "end_line": 74,
+      "symbol": "compare_options",
+      "excerpt": "code/24_can_bang_chuyen_mon_khoang_cach.txt"
+    }
+  ],
+  "files": [
+    {
+      "path": "CAI_DAT_VA_DEMO_JOBVISTA.html",
+      "bytes": 65278,
+      "sha256": "a5b99094847b5eb5fa323ece25fd8bcefbe2132ff3460db45ed0f1b38b4f213e"
+    },
+    {
+      "path": "CAI_DAT_VA_DEMO_JOBVISTA.md",
+      "bytes": 57960,
+      "sha256": "bac2c588e20697a0a61218ba67c1edc73398eb19ce15ba2f2eb16164e9cbb514"
+    },
+    {
+      "path": "code/01_requirements_web.txt",
+      "bytes": 62,
+      "sha256": "a9352c87b9e437ea314ee768c7723aa109a8a6a263da26781e7e83c3184fc236"
+    },
+    {
+      "path": "code/02_requirements_semantic.txt",
+      "bytes": 54,
+      "sha256": "4a672f1b94892481fc4aef374d127b3c7fc8f069558bb24f076f52cfa3876148"
+    },
+    {
+      "path": "code/03_khung_frontend.txt",
+      "bytes": 841,
+      "sha256": "17345ef1590ef0cfda305de7dc65bd0ac32d9b9df4660bf306161a7c91c4a5be"
+    },
+    {
+      "path": "code/04_frontend_bo_loc.txt",
+      "bytes": 1187,
+      "sha256": "e9b56abd50350160df05fc25003474aa0475676ddb66c288f0ac9d4430b9e50f"
+    },
+    {
+      "path": "code/05_frontend_bat_tat_chi_tiet.txt",
+      "bytes": 109,
+      "sha256": "eecf77936a8eae5c7239b52bc5d52205c88eb2d6c705cb70e76c65c133c473e8"
+    },
+    {
+      "path": "code/06_khoi_tao_catalog.txt",
+      "bytes": 499,
+      "sha256": "371b478392d8a1110d499fd205ac7e76c11abcbb003535bfd47637678005eadd"
+    },
+    {
+      "path": "code/07_request_kiem_tra_dau_vao.txt",
+      "bytes": 525,
+      "sha256": "be85b53c6ba60f6ac7b88044954039554756155d58d3b5258026040a31b3a920"
+    },
+    {
+      "path": "code/08_api_doc_cv.txt",
+      "bytes": 977,
+      "sha256": "fc9aacc16acabdb45b1596c4d65f713f2fa33e2c238cf000ff390b874e990d60"
+    },
+    {
+      "path": "code/09_tfidf_vectorizer.txt",
+      "bytes": 921,
+      "sha256": "debc7fb20240ecb32082fb473524a87ed681023f5c4d9e28e8d438fd01c19b78"
+    },
+    {
+      "path": "code/10_semantic_embedding.txt",
+      "bytes": 1541,
+      "sha256": "e265251de976472a84d4f1856aafe08c08b0c1aac45b36e2973c9dc354f1cb05"
+    },
+    {
+      "path": "code/11_cosine_semantic_index.txt",
+      "bytes": 347,
+      "sha256": "0132fb2baf81442007d18d9e06b7b52df39a019e3f091b626505a21268f3337c"
+    },
+    {
+      "path": "code/12_trong_so_sau_thanh_phan.txt",
+      "bytes": 105,
+      "sha256": "b99cf350d780a7cff4ffe6d197644170b5c1e119a0bbac1c936c59cde497b4a0"
+    },
+    {
+      "path": "code/13_doc_tep_cv_da_dinh_dang.txt",
+      "bytes": 1878,
+      "sha256": "1db726abcfb430db262cdc422ebc381e9daa094ecbeff407643e08b59863b05a"
+    },
+    {
+      "path": "code/14_phan_tich_ho_so_cv.txt",
+      "bytes": 2191,
+      "sha256": "34b02fb424e48528cf2ea6ee91d9fd627e3f5c49b6a00f25a142afc80df90ae5"
+    },
+    {
+      "path": "code/15_frontend_goi_api_doc_cv.txt",
+      "bytes": 851,
+      "sha256": "b1c3aa2cb54e51a67503dab5d676d4acb41b22241a0d2126f2a79a69aca96108"
+    },
+    {
+      "path": "code/16_job_to_job.txt",
+      "bytes": 727,
+      "sha256": "603b82721e8b68b6f3cd9bb668f61efa411f30effebdc1ecd27e31ac4f097371"
+    },
+    {
+      "path": "code/17_api_chi_tiet_va_tuong_tu.txt",
+      "bytes": 573,
+      "sha256": "77780f41ef902f1bace737b9d040629a3a8020ce318dd638412b9db14edaf8ed"
+    },
+    {
+      "path": "code/18_cv_to_job.txt",
+      "bytes": 6278,
+      "sha256": "1b84a250f432ddc4856e4d50f3c9bea5b3a360f5d9bf5aad4ce131aec2fb8503"
+    },
+    {
+      "path": "code/19_api_ghep_cv.txt",
+      "bytes": 2703,
+      "sha256": "ad6d127869e4ff03d02f8306841a321f99fb3efad13eaec13b8e9631792af5ee"
+    },
+    {
+      "path": "code/20_ca_nhan_hoa_tu_moi_quan_tam.txt",
+      "bytes": 2416,
+      "sha256": "df92455c5b073f545f29cdb2206604db4b71bcd5d01738905d7c3040518870d4"
+    },
+    {
+      "path": "code/21_pandas_rating_nhu_cau.txt",
+      "bytes": 2052,
+      "sha256": "7d205a8bcc30bc3dfcac1b8681a0655f6bb93143c02f9b22601c8b90f61a7e2f"
+    },
+    {
+      "path": "code/22_rating_sap_xep_lai.txt",
+      "bytes": 1038,
+      "sha256": "09a1d36739d668bf002bf43ead30b03155245d1b1f2444c59a0bd237808f3769"
+    },
+    {
+      "path": "code/23_haversine_khoang_cach.txt",
+      "bytes": 385,
+      "sha256": "26bea235df21b0813d17d90660b81b14642fddc3f2630d906df55ddd9c1d1b09"
+    },
+    {
+      "path": "code/24_can_bang_chuyen_mon_khoang_cach.txt",
+      "bytes": 1678,
+      "sha256": "41e3fec89666f64efe28d92f142239f8b7f8e014c6cb49e4196e66b8fd67c0c9"
+    },
+    {
+      "path": "CV_demo/CV07_devops_can_tho.pdf",
+      "bytes": 81820,
+      "sha256": "85e740bc458d235536636695a7cef388d716adb69c4f056b6711ece3f09c61b3"
+    },
+    {
+      "path": "DANH_MUC_ANH.md",
+      "bytes": 5442,
+      "sha256": "9d34c82cc0a0b50e2386eb3165bf5a7842640f1e6ce0f2108805bde83231fc93"
+    },
+    {
+      "path": "images/Anh_01_Trang_chu.jpg",
+      "bytes": 59501,
+      "sha256": "6971f315150351c79774ebd1faa934333c9c853f0e7c8568a3eaea63fe34c1b7"
+    },
+    {
+      "path": "images/Anh_02_Ca_nhan_hoa_trang_chu.jpg",
+      "bytes": 68255,
+      "sha256": "e5fb4d36839f5de2a95e8882e6a9e3b649c6120b954646db3dd34a322fa96e6c"
+    },
+    {
+      "path": "images/Anh_03_Danh_sach_va_bo_loc.jpg",
+      "bytes": 73777,
+      "sha256": "f164c39a01d280db42ff81abff178b858d75950d7d99205102367fe2986cbc5f"
+    },
+    {
+      "path": "images/Anh_04_Chi_tiet_cong_viec.jpg",
+      "bytes": 64368,
+      "sha256": "e3345ce734410a06b99f453c1aabd3a3ed37cd2d8b7ba2ae0d54f015a1825dec"
+    },
+    {
+      "path": "images/Anh_05_Goi_y_cong_viec_tuong_tu.jpg",
+      "bytes": 81880,
+      "sha256": "cf356d78c556ce5911e8b6041c792e25d7db74aaa6ce51c49648786d004805f5"
+    },
+    {
+      "path": "images/Anh_06_Tai_CV.jpg",
+      "bytes": 56526,
+      "sha256": "27ca05ce5d367fa384de800515c0641747c958878e72f7023bf6a098d6461799"
+    },
+    {
+      "path": "images/Anh_07_Ket_qua_phan_tich_CV.jpg",
+      "bytes": 61456,
+      "sha256": "4dda76c47afe0e41052c26672ab1278fc5e5d936627bd2a7a15bb409fd82bb4f"
+    },
+    {
+      "path": "images/Anh_08_Xem_sua_noi_dung_CV.jpg",
+      "bytes": 47044,
+      "sha256": "5fd3b027dc1cf0dec327ea88299965ce455f897a0c518fbe174001b2842863da"
+    },
+    {
+      "path": "images/Anh_09_Goi_y_can_bang.jpg",
+      "bytes": 63546,
+      "sha256": "f65323939ffdeec6362cf7f35746346631fc3fbcf11c50a57760dfa2d8f7542d"
+    },
+    {
+      "path": "images/Anh_10_Doi_chieu_chuyen_mon_va_gan_nha.jpg",
+      "bytes": 72964,
+      "sha256": "6312e9edd180edd475643564fc275cdb3b5e01833b20d02f533b6137d244ea98"
+    },
+    {
+      "path": "images/Anh_11_Ket_qua_CV_theo_khu_vuc.jpg",
+      "bytes": 79792,
+      "sha256": "aa81e03af1ebee1c3ab0e88866349e414e3e59a10d60ad319f8d2289406463f2"
+    },
+    {
+      "path": "images/Anh_12_Giai_thich_diem_CV.jpg",
+      "bytes": 72828,
+      "sha256": "b55ecf676e8d2186bba3b6c66463bef8841668567ea90836f876f4231772e38a"
+    },
+    {
+      "path": "images/Anh_13_Rating_nhu_cau_nganh.jpg",
+      "bytes": 73819,
+      "sha256": "468bd5f799c9976227d7a5cf3afeeffd6ea10eae1493ce15dbca88f408c2c994"
+    },
+    {
+      "path": "images/Anh_14_Viec_da_luu.jpg",
+      "bytes": 49551,
+      "sha256": "5f9039783db02d45861677a49a6430aa8ef0904e9648a1bf0f8c71540cc1ffdb"
+    },
+    {
+      "path": "images/Anh_15_Tim_kiem_va_loc_khu_vuc.jpg",
+      "bytes": 83274,
+      "sha256": "fcd70819824c2e98df1935994d0db6cc91c6d5f0e0f6f5497d9d0d4842aee857"
+    },
+    {
+      "path": "images/Anh_16_Danh_sach_ca_nhan_hoa.jpg",
+      "bytes": 77459,
+      "sha256": "5068a755887c2d181087ed788ca258330acf68e3b128fb9a5d1b84f3f6e37a0f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 775,
+      "sha256": "b9ea1f11a8f342efa33d245f83ae8e6fc598c612c08012b287b0d7d8884c6456"
+    }
+  ]
+}

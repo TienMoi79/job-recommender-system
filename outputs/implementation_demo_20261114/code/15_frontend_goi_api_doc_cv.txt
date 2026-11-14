@@ -1,0 +1,6 @@
+async function readCv() {
+  if(!state.file||state.reading)return;state.reading=true;const version=++state.cvVersion;const file=state.file;render();
+  try {const data=await api(`/api/cv/read?language=${state.lang}`,{method:'POST',headers:{'Content-Type':'application/octet-stream','X-CV-Filename':encodeURIComponent(file.name)},body:file});
+    if(version!==state.cvVersion)return;Object.assign(state,{cvText:data.text,profile:data.profile,ocr:data.ocr,cvRegion:data.profile.locations.find(code=>state.data.all_regions.some(r=>r.id===code))||'',cvHomeRegion:data.profile.home_locations?.[0]||'',cvExperience:data.profile.experience_years??'',cvExperienceEdited:false,reading:false});persistCv();render();if(state.view==='explore')refreshHome();
+  }catch(error){if(version===state.cvVersion){state.reading=false;render();toast(error.message);}}
+}

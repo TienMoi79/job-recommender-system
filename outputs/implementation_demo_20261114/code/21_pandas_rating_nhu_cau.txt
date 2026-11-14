@@ -1,0 +1,29 @@
+    @staticmethod
+    def aggregate(events: pd.DataFrame):
+        """Lab 3: to_numeric -> sort/drop_duplicates -> explode -> groupby -> merge.
+
+        Một CV có nhiều mục tiêu chia đều 1 lượt. R=5*nhu_cầu/N, v=N,
+        C=5/K, m=5 lượt prior. Đây là độ phổ biến, KHÔNG phải số sao người dùng
+        chấm hay chất lượng nhà tuyển dụng. Khác Lab: không loại nghề ít lượt;
+        làm trơn và giới hạn trọng số để nghề hiếm vẫn có cơ hội.
+        """
+        frame=events.copy(); total=0
+        if not frame.empty:
+            frame['updated_at']=pd.to_numeric(frame.updated_at,errors='coerce')
+            frame=frame.dropna(subset=['actor','updated_at']).sort_values('updated_at',kind='mergesort').drop_duplicates('actor',keep='last')
+            frame['roles']=frame.roles.map(lambda value: sorted(set(json.loads(value) if isinstance(value,str) else value)&set(ROLE_CODES)))
+            frame=frame.loc[frame.roles.map(bool)];total=len(frame)
+        scores=pd.DataFrame({'role_code':ROLE_CODES})
+        if total:
+            frame['weight']=1/frame.roles.str.len()
+            counts=frame.explode('roles').groupby('roles',as_index=False).agg(demand_count=('weight','sum'),actors=('actor','nunique'))
+            scores=scores.merge(counts.rename(columns={'roles':'role_code'}),on='role_code',how='left')
+        else:scores=scores.assign(demand_count=0.,actors=0)
+        scores[['demand_count','actors']]=scores[['demand_count','actors']].fillna(0)
+        scores['vote_average']=5*scores.demand_count/total if total else 0.
+        scores['vote_count']=total
+        prior=5/len(ROLE_CODES);m=5.
+        scores['rating']=weighted_rating(scores.vote_average,total,m,prior) if total else 0.
+        return {'total_actors':total,'window_days':30,'m':m,'C':prior,'ready':total>=5,
+                'roles':scores.to_dict('records'),
+                'meaning':'Browser-based implicit demand, not verified people or employer quality.'}

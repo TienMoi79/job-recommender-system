@@ -1,0 +1,6 @@
+def distance_km(left,right):
+    if left not in COORDINATES or right not in COORDINATES:return None
+    a,b=COORDINATES[left],COORDINATES[right]
+    lat1,lat2=map(math.radians,[a['lat'],b['lat']]);dlon=math.radians(b['lon']-a['lon'])
+    value=math.sin((lat2-lat1)/2)**2+math.cos(lat1)*math.cos(lat2)*math.sin(dlon/2)**2
+    return 6371.0088*2*math.asin(min(1,math.sqrt(value)))

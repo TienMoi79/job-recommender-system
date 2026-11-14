@@ -1,0 +1,4 @@
+function toggleJobDetails(id) {
+  if(state.selected===id){closeJobDetails();return;}
+  loadDetail(id);
+}

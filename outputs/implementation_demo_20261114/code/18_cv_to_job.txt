@@ -1,0 +1,77 @@
+    def match_cv_to_jobs(self, cv_text, top_n=5, *, location=None, profile: ResumeProfile | None=None):
+        self._validate_top_n(top_n)
+        if not isinstance(cv_text,str) or not cv_text.strip():
+            raise ValueError('cv_text must be a nonempty string')
+        eligible = self._eligible_positions(location)
+        profile = profile or ResumeAnalyzer().analyze(cv_text)
+        if profile.text != cv_text:
+            raise ValueError('CV profile does not match current text')
+        if not eligible:
+            return self._rank(np.zeros(len(self._jobs)),top_n,eligible_positions=[])
+        lexical = np.clip(cosine_similarity(self._encoder.transform([profile.matching_text]),self._job_vectors).ravel(),0,1)
+        semantic, semantic_available = self._semantic_scores(profile.matching_text)
+        components = {field:np.zeros(len(self._jobs)) for field in DEFAULT_WEIGHTS}
+        components.update(Lexical=lexical,Semantic=semantic)
+        explanations, per_job_weights = [], []
+        cv_coverage, job_coverage, intent_supported = [], [], []
+        cv_domains = {ROLE_DOMAINS[code] for code in profile.role_codes if code in ROLE_DOMAINS}
+        target_stack = set(profile.target_skills) & STACK_LANGUAGES
+        if not target_stack:
+            candidate_stack = set(profile.skills) & STACK_LANGUAGES
+            target_stack = candidate_stack if len(candidate_stack)==1 else set()
+        for index,row in self._jobs.iterrows():
+            evidence = self._evidence[index]
+            coverage, matched, missing = skill_fit(profile.skills,evidence)
+            fit, exp_status = experience_fit(profile.experience_years,float(row.Experience_Years),known=bool(row.get('Experience_Known',True)))
+            candidate_coverage = len(matched)/len(profile.skills) if profile.skills else 0.
+            missing_required = evidence.required-set(profile.skills)
+            required_penalty = 1.-.5*len(missing_required)/len(evidence.required) if evidence.required else 1.
+            # Kết hợp tỷ lệ kỹ năng của tin được bao phủ và tỷ lệ kỹ năng CV
+            # được công việc sử dụng, tránh tin chỉ có một kỹ năng chung thắng
+            # tin đúng chuyên môn nhưng nhắc nhiều công nghệ hơn.
+            components['Skills'][index] = (.6*candidate_coverage+.4*coverage)*required_penalty
+            raw_role_score = role_fit(profile.role_codes,self._roles[index])
+            title_score = raw_role_score
+            requested_stack = set(profile.target_skills)&STACK_LANGUAGES
+            job_title_stack = set(extract_skills(str(row.get('Original_Title',row.Title))))&STACK_LANGUAGES
+            stack_conflict = bool(requested_stack and job_title_stack and not requested_stack&job_title_stack)
+            intent_supported.append(not stack_conflict and
+                                    (not profile.role_explicit or not self._roles[index] or raw_role_score>=.35))
+            if target_stack and evidence.mentioned & STACK_LANGUAGES and not (target_stack & evidence.mentioned):
+                title_score *= .25
+            components['Title'][index] = title_score
+            cv_coverage.append(candidate_coverage); job_coverage.append(coverage)
+            components['Domain'][index] = float(bool(cv_domains & {ROLE_DOMAINS[code] for code in self._roles[index] if code in ROLE_DOMAINS}))
+            components['Experience'][index] = fit
+            active = dict(self.weights)
+            if not semantic_available: active['Semantic'] = 0.
+            if not profile.skills or not evidence.mentioned: active['Skills'] = 0.
+            if not profile.role_codes or not self._roles[index]: active['Title'] = 0.; active['Domain'] = 0.
+            if exp_status == 'unknown': active['Experience'] = 0.
+            total = sum(active.values())
+            active = {field:weight/total for field,weight in active.items()} if total else {field:0. for field in active}
+            per_job_weights.append(active)
+            explanations.append({'matched':matched,'missing':missing,'required_missing':sorted(evidence.required-set(profile.skills)),
+                                 'required':sorted(evidence.required),'preferred':sorted(evidence.preferred),'experience_status':exp_status})
+        scores = np.array([sum(per_job_weights[i][field]*components[field][i] for field in components) for i in range(len(self._jobs))])
+        # Ngữ nghĩa thường có nền dương ngay cả với nội dung không liên quan.
+        # Cần ít nhất một tín hiệu nghề nghiệp, kỹ năng hoặc nội dung đáng kể.
+        eligible = [i for i in eligible if intent_supported[i] and scores[i]>=self.min_score and
+                    (components['Title'][i]>0 or explanations[i]['matched'] or lexical[i]>.04 or (semantic_available and semantic[i]>.4))]
+        result = self._finish(scores,top_n,eligible,components)
+        by_id = {str(row.Job_ID):i for i,row in self._jobs.iterrows()}
+        indices = [by_id[str(identifier)] for identifier in result.Job_ID]
+        result['Matched_Skills'] = ['; '.join(explanations[i]['matched']) for i in indices]
+        result['Not_Mentioned_Skills'] = ['; '.join(explanations[i]['missing']) for i in indices]
+        result['Missing_Required_Skills'] = ['; '.join(explanations[i]['required_missing']) for i in indices]
+        result['Required_Skills'] = ['; '.join(explanations[i]['required']) for i in indices]
+        result['Preferred_Skills'] = ['; '.join(explanations[i]['preferred']) for i in indices]
+        result['Experience_Status'] = [explanations[i]['experience_status'] for i in indices]
+        result['Candidate_Experience_Years'] = profile.experience_years
+        result['Component_Weights'] = [per_job_weights[i] for i in indices]
+        result['CV_Skill_Coverage'] = [cv_coverage[i] for i in indices]
+        result['Job_Skill_Coverage'] = [job_coverage[i] for i in indices]
+        result['Job_Skills_Count'] = [len(self._evidence[i].mentioned) for i in indices]
+        result['Ranking_Method'] = 'hybrid' if semantic_available else 'hybrid-lexical'
+        result.attrs['semantic_used'] = semantic_available
+        return result

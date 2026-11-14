@@ -4,3 +4,5 @@
 /data/evaluation/jobs_catalog_500.csv -text -whitespace
 # Report figures and summary CSVs have checksums in their artifact manifest.
 /outputs/report_figures_20261114/** -text -whitespace
+# Verbatim code excerpts and demo material checksums must survive checkout.
+/outputs/implementation_demo_20261114/** -text -whitespace

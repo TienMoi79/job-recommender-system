@@ -1,0 +1,7 @@
+    def __init__(self, language: str):
+        self.language = language
+        original = pd.read_csv(ROOT / "data/jobs_catalog.csv", encoding="utf-8-sig").fillna("")
+        self.company_count = int(original["Company"].nunique())
+        self.jobs = localize_jobs(original, language)
+        self.engine = HybridJobRecommenderSystem(self.jobs, use_semantic=os.environ.get('JOBVISTA_SEMANTIC','1')!='0')
+        self.interests = SearchInterestRecommender(self.jobs, self.engine.diversifier)

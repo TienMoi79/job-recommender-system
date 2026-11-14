@@ -1,0 +1,20 @@
+class TfidfTextVectorizer(TextVectorizer):
+    """Baseline nhẹ, không tải mô hình và chạy được hoàn toàn offline."""
+
+    def __init__(self) -> None:
+        self._vectorizer = TfidfVectorizer(
+            preprocessor=TextPreprocessor.for_tfidf,
+            # Giữ cả token 1 ký tự (R, C) và số năm; bigram giữ cụm 'power bi'.
+            token_pattern=r"(?u)\b\w+\b",
+            ngram_range=(1, 2),
+            sublinear_tf=True,
+            norm="l2",
+        )
+
+    def fit_transform(self, texts: list[str]) -> csr_matrix:
+        return self._vectorizer.fit_transform(texts)
+
+    def transform(self, texts: list[str]) -> csr_matrix:
+        # Không fit lại trên CV: fit lại sẽ thay vocabulary/IDF và làm lệch
+        # không gian vector so với những việc làm đã được lưu trong bộ nhớ.
+        return self._vectorizer.transform(texts)
